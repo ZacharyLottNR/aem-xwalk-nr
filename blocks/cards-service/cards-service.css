@@ -8,42 +8,81 @@
 }
 
 .cards-service > ul > li {
-  background-color: var(--background-color);
-  border-radius: 10px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgb(0 0 0 / 6%);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  background-color: #f5f5f5;
+  border: 1px solid #bfbcbc;
+  border-radius: 12px;
+  padding: 30px 15px 50px;
+  transition: box-shadow 0.3s ease;
 }
 
 .cards-service > ul > li:hover {
-  box-shadow: 0 6px 20px rgb(0 0 0 / 10%);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
 }
 
 .cards-service .cards-service-card-body {
   margin: 0;
 }
 
-.cards-service .cards-service-card-body h3 {
-  font-size: 20px;
-  font-weight: 600;
+.cards-service .cards-service-card-body h3,
+.cards-service .cards-service-card-body h5 {
+  font-size: 18px;
+  font-weight: 700;
   color: var(--heading-color);
-  margin-top: 12px;
+  margin-top: 0;
 }
 
 .cards-service .cards-service-card-body p {
   font-size: var(--body-font-size-s);
-  color: var(--brand-gray);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.cards-service .cards-service-card-body ul {
+  padding-left: 20px;
+  margin: 16px 0;
+}
+
+.cards-service .cards-service-card-body li {
+  font-size: var(--body-font-size-s);
+  color: var(--text-color);
+  margin-bottom: 8px;
   line-height: 1.5;
+}
+
+.cards-service .cards-service-card-body a {
+  color: #000;
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: underline;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-top: 16px;
+}
+
+.cards-service .cards-service-card-body a:hover {
+  color: var(--brand-accent);
+}
+
+.cards-service .cards-service-card-body a.button:any-link {
+  background-color: transparent;
+  border: none;
+  color: #000;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: underline;
+  text-transform: uppercase;
+  letter-spacing: normal;
+  border-radius: 0;
+  margin: 16px 0 0;
+}
+
+.cards-service .cards-service-card-body a.button:hover {
+  background-color: transparent;
+  color: var(--brand-accent);
 }
 
 .cards-service .cards-service-card-image {
   line-height: 0;
-}
-
-.cards-service > ul > li img {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: 8px;
+  display: none;
 }

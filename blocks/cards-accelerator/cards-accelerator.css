@@ -8,42 +8,67 @@
 }
 
 .cards-accelerator > ul > li {
-  background-color: var(--background-color);
-  border-radius: 10px;
-  padding: 24px;
-  box-shadow: 0 2px 12px rgb(0 0 0 / 6%);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  background-color: #f5f5f5;
+  border: 1px solid #bfbcbc;
+  border-radius: 12px;
+  padding: 30px 20px 50px;
+  transition: box-shadow 0.3s ease;
 }
 
 .cards-accelerator > ul > li:hover {
-  box-shadow: 0 6px 20px rgb(0 0 0 / 10%);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
 }
 
 .cards-accelerator .cards-accelerator-card-body {
   margin: 0;
 }
 
-.cards-accelerator .cards-accelerator-card-body h3 {
-  font-size: 20px;
-  font-weight: 600;
+.cards-accelerator .cards-accelerator-card-body h3,
+.cards-accelerator .cards-accelerator-card-body h5 {
+  font-size: 18px;
+  font-weight: 700;
   color: var(--heading-color);
-  margin-top: 12px;
+  margin-top: 0;
 }
 
 .cards-accelerator .cards-accelerator-card-body p {
   font-size: var(--body-font-size-s);
-  color: var(--brand-gray);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.cards-accelerator .cards-accelerator-card-body ul {
+  padding-left: 20px;
+  margin: 16px 0;
+}
+
+.cards-accelerator .cards-accelerator-card-body li {
+  font-size: var(--body-font-size-s);
+  color: var(--text-color);
+  margin-bottom: 8px;
   line-height: 1.5;
+}
+
+.cards-accelerator .cards-accelerator-card-body a.button:any-link {
+  background-color: transparent;
+  border: none;
+  color: #000;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: underline;
+  text-transform: uppercase;
+  letter-spacing: normal;
+  border-radius: 0;
+  margin: 16px 0 0;
+}
+
+.cards-accelerator .cards-accelerator-card-body a.button:hover {
+  background-color: transparent;
+  color: var(--brand-accent);
 }
 
 .cards-accelerator .cards-accelerator-card-image {
   line-height: 0;
-}
-
-.cards-accelerator > ul > li img {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  aspect-ratio: auto;
+  display: none;
 }
