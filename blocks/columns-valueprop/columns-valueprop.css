@@ -1,0 +1,46 @@
+.columns-valueprop > div {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px 0;
+}
+
+.columns-valueprop img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.columns-valueprop > div > div {
+  order: 1;
+}
+
+.columns-valueprop > div > div h2,
+.columns-valueprop > div > div h3 {
+  color: var(--heading-color);
+}
+
+.columns-valueprop > div > div p {
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.columns-valueprop > div > .columns-valueprop-img-col {
+  order: 0;
+}
+
+.columns-valueprop > div > .columns-valueprop-img-col img {
+  display: block;
+}
+
+@media (width >= 900px) {
+  .columns-valueprop > div {
+    align-items: center;
+    flex-direction: row;
+    gap: 48px;
+  }
+
+  .columns-valueprop > div > div {
+    flex: 1;
+    order: unset;
+  }
+}

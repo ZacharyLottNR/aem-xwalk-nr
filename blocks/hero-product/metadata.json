@@ -1,0 +1,39 @@
+{
+  "variantName": "hero-product",
+  "baseBlock": "hero",
+  "version": "1.0.0",
+  "created": "2026-05-11T08:50:33.680Z",
+  "sourceContext": {
+    "originUrl": "https://www.nextrow.com/quiptag",
+    "originPage": "QuipTag product page",
+    "blockPosition": "top"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "minimal",
+    "purpose": "product-hero",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "heading + paragraph",
+    "buttonCount": 0,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "product landing pages with dark background image",
+      "pages with centered heading and subtitle over background",
+      "dark-themed hero sections without CTA buttons"
+    ],
+    "notSuitableFor": [
+      "hero sections with CTA buttons",
+      "hero sections with side-by-side text and image",
+      "light-themed hero sections"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/quiptag", "/partners"],
+    "reuseCount": 2,
+    "lastUsed": "2026-05-11T08:58:16.356Z"
+  }
+}

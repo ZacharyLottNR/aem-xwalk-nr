@@ -1,14 +1,26 @@
 .columns > div {
   display: flex;
   flex-direction: column;
-}
-
-.columns img {
-  width: 100%;
+  gap: 24px;
 }
 
 .columns > div > div {
   order: 1;
+}
+
+.columns > div > div h2,
+.columns > div > div h3 {
+  color: var(--heading-color);
+}
+
+.columns > div > div p {
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.columns img {
+  width: 100%;
+  border-radius: 8px;
 }
 
 .columns > div > .columns-img-col {
@@ -23,7 +35,7 @@
   .columns > div {
     align-items: center;
     flex-direction: unset;
-    gap: 24px;
+    gap: 48px;
   }
 
   .columns > div > div {

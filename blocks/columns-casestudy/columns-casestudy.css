@@ -1,0 +1,71 @@
+.columns-casestudy > div {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 40px 0;
+}
+
+.columns-casestudy img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.columns-casestudy > div > div {
+  order: 1;
+}
+
+.columns-casestudy > div > div h2 {
+  color: var(--heading-color);
+  font-size: var(--heading-font-size-xl);
+  font-weight: 800;
+}
+
+.columns-casestudy > div > div h5 {
+  color: var(--heading-color);
+  font-size: var(--heading-font-size-xs);
+  font-weight: 700;
+}
+
+.columns-casestudy > div > div p {
+  color: var(--text-color);
+  font-size: var(--body-font-size-m);
+  line-height: 1.6;
+}
+
+.columns-casestudy > div > .columns-casestudy-img-col {
+  order: 0;
+}
+
+.columns-casestudy > div > .columns-casestudy-img-col img {
+  display: block;
+}
+
+.columns-casestudy a.button:any-link {
+  background-color: transparent;
+  border: none;
+  color: var(--text-color);
+  padding: 16px 0;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  position: relative;
+}
+
+.columns-casestudy a.button:hover {
+  color: var(--brand-accent);
+  background-color: transparent;
+}
+
+@media (width >= 900px) {
+  .columns-casestudy > div {
+    align-items: center;
+    flex-direction: row;
+    gap: 48px;
+  }
+
+  .columns-casestudy > div > div {
+    flex: 1;
+    order: unset;
+  }
+}

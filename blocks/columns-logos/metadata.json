@@ -1,0 +1,40 @@
+{
+  "variantName": "columns-logos",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-05-11T08:14:48.919Z",
+  "sourceContext": {
+    "originUrl": "https://www.nextrow.com/",
+    "originPage": "homepage",
+    "blockPosition": "top"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "logo-strip",
+    "imagePattern": "icon"
+  },
+  "contentPattern": {
+    "structure": "5 logo images in a row",
+    "buttonCount": 0,
+    "imageCount": 5
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "client logo strips",
+      "partner logo displays",
+      "brand trust badges",
+      "technology partner logos"
+    ],
+    "notSuitableFor": [
+      "text-heavy side-by-side layouts",
+      "content with headings and paragraphs",
+      "image galleries with descriptions"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/index"],
+    "reuseCount": 1,
+    "lastUsed": "2026-05-11T08:14:48.919Z"
+  }
+}

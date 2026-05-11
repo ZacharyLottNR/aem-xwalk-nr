@@ -1,0 +1,40 @@
+{
+  "variantName": "columns-casestudy",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-05-11T08:14:53.695Z",
+  "sourceContext": {
+    "originUrl": "https://www.nextrow.com/",
+    "originPage": "homepage",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "case-study",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "heading + paragraph + CTA + image",
+    "buttonCount": 1,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "case study highlights",
+      "product feature showcases",
+      "text + image split layouts",
+      "solution overviews with illustration"
+    ],
+    "notSuitableFor": [
+      "multi-column logo displays",
+      "equal-weight content columns",
+      "image galleries"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/index", "/b2b-marketing", "/quiptag", "/partners"],
+    "reuseCount": 4,
+    "lastUsed": "2026-05-11T08:58:16.356Z"
+  }
+}

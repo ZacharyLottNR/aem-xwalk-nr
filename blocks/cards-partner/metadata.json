@@ -1,0 +1,40 @@
+{
+  "variantName": "cards-partner",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-05-11T09:01:45.260Z",
+  "sourceContext": {
+    "originUrl": "https://www.nextrow.com/partners",
+    "originPage": "Partners page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "partner-capabilities",
+    "imagePattern": "icon"
+  },
+  "contentPattern": {
+    "structure": "icon + heading + text",
+    "buttonCount": 0,
+    "imageCount": 8
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "partner capability listings with small logo/icon",
+      "technology partner grids with icon and description",
+      "feature grids with brand icons and short text",
+      "service capability cards with small partner logos"
+    ],
+    "notSuitableFor": [
+      "blog post listings with large images",
+      "product cards with thumbnails",
+      "text-only card grids without icons"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/partners"],
+    "reuseCount": 1,
+    "lastUsed": "2026-05-11T09:01:45.260Z"
+  }
+}

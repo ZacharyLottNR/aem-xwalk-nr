@@ -1,0 +1,41 @@
+{
+  "variantName": "cards-accelerator",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-05-11T08:38:08.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.nextrow.com/b2b-marketing",
+    "originPage": "B2B Marketing service page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "service-accelerators",
+    "imagePattern": "noimg"
+  },
+  "contentPattern": {
+    "structure": "heading + text + link",
+    "buttonCount": 0,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "text-only card grids without images",
+      "service capability listings",
+      "feature/accelerator grids with heading, description, and link",
+      "2x2 or 2-column text card layouts"
+    ],
+    "notSuitableFor": [
+      "cards with images or thumbnails",
+      "blog post listings",
+      "team member profiles",
+      "cards with icons"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/b2b-marketing"],
+    "reuseCount": 1,
+    "lastUsed": "2026-05-11T08:38:08.000Z"
+  }
+}

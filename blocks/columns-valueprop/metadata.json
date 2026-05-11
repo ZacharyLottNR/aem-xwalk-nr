@@ -1,0 +1,41 @@
+{
+  "variantName": "columns-valueprop",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-05-11T08:38:08.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.nextrow.com/b2b-marketing",
+    "originPage": "B2B Marketing service page",
+    "blockPosition": "top"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "value-props",
+    "imagePattern": "icon"
+  },
+  "contentPattern": {
+    "structure": "icon + heading + text",
+    "buttonCount": 0,
+    "imageCount": 2
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "value proposition sections with icons",
+      "feature highlights with decorative icons",
+      "two-column benefit summaries",
+      "icon-driven content blocks"
+    ],
+    "notSuitableFor": [
+      "text + large image layouts",
+      "logo strips",
+      "case study layouts with CTAs",
+      "multi-row column layouts"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/b2b-marketing"],
+    "reuseCount": 1,
+    "lastUsed": "2026-05-11T08:38:08.000Z"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "variantName": "columns-stats",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-05-11T08:50:33.720Z",
+  "sourceContext": {
+    "originUrl": "https://www.nextrow.com/quiptag",
+    "originPage": "QuipTag product page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "statistics",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "3 images side-by-side",
+    "buttonCount": 0,
+    "imageCount": 3
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "statistic/metric displays with infographic images",
+      "three-column image-only layouts",
+      "KPI or result displays using images",
+      "side-by-side infographic cards"
+    ],
+    "notSuitableFor": [
+      "text-heavy column layouts",
+      "icon + heading + text value propositions",
+      "two-column text and image splits"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/quiptag"],
+    "reuseCount": 1,
+    "lastUsed": "2026-05-11T08:50:33.720Z"
+  }
+}

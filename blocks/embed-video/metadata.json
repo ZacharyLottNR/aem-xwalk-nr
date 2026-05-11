@@ -1,0 +1,40 @@
+{
+  "variantName": "embed-video",
+  "baseBlock": "embed",
+  "version": "1.0.0",
+  "created": "2026-05-11T08:50:33.702Z",
+  "sourceContext": {
+    "originUrl": "https://www.nextrow.com/quiptag",
+    "originPage": "QuipTag product page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "video-demo",
+    "imagePattern": "noimg"
+  },
+  "contentPattern": {
+    "structure": "video URL",
+    "buttonCount": 0,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "product demo videos",
+      "explainer video embeds",
+      "YouTube/Vimeo video embeds",
+      "self-hosted MP4 video embeds"
+    ],
+    "notSuitableFor": [
+      "meeting scheduler embeds (use embed-calendar)",
+      "social media post embeds",
+      "map embeds"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/quiptag"],
+    "reuseCount": 1,
+    "lastUsed": "2026-05-11T08:50:33.702Z"
+  }
+}

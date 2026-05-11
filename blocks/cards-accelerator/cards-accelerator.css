@@ -1,0 +1,49 @@
+.cards-accelerator > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.cards-accelerator > ul > li {
+  background-color: var(--background-color);
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 6%);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.cards-accelerator > ul > li:hover {
+  box-shadow: 0 6px 20px rgb(0 0 0 / 10%);
+  transform: translateY(-2px);
+}
+
+.cards-accelerator .cards-accelerator-card-body {
+  margin: 0;
+}
+
+.cards-accelerator .cards-accelerator-card-body h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--heading-color);
+  margin-top: 12px;
+}
+
+.cards-accelerator .cards-accelerator-card-body p {
+  font-size: var(--body-font-size-s);
+  color: var(--brand-gray);
+  line-height: 1.5;
+}
+
+.cards-accelerator .cards-accelerator-card-image {
+  line-height: 0;
+}
+
+.cards-accelerator > ul > li img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  aspect-ratio: auto;
+}
