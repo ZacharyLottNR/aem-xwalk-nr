@@ -1,0 +1,41 @@
+{
+  "variantName": "cards-asset",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-05-11T20:46:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/light.html",
+    "originPage": "Asset Share Commons home/search page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "asset-browse",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "image + heading + metadata properties + action buttons",
+    "buttonCount": 3,
+    "imageCount": 24
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "DAM asset browsing grids",
+      "media library card displays",
+      "asset catalog pages with thumbnails and metadata",
+      "file browser interfaces with image preview"
+    ],
+    "notSuitableFor": [
+      "blog post listings",
+      "service category grids",
+      "simple image galleries without metadata",
+      "text-only card layouts"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/content/asset-share-commons/en/light"],
+    "reuseCount": 1,
+    "lastUsed": "2026-05-11T20:46:00.000Z"
+  }
+}

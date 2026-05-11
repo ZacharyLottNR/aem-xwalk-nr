@@ -1,0 +1,70 @@
+.accordion-filter details {
+  border: none;
+  border-top: 1px solid var(--asc-border);
+  margin: 0;
+}
+
+.accordion-filter details + details {
+  margin-top: 0;
+}
+
+.accordion-filter details summary {
+  position: relative;
+  padding: 9px 12px 6px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 12.6px;
+  color: var(--asc-text-muted);
+  transition: background-color 0.2s;
+}
+
+.accordion-filter details summary::-webkit-details-marker {
+  display: none;
+}
+
+.accordion-filter details summary::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%) rotate(45deg);
+  width: 5px;
+  height: 5px;
+  border: 1.5px solid;
+  border-width: 0 0 1.5px 1.5px;
+  transition: transform 0.2s;
+}
+
+.accordion-filter details[open] summary::after {
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+.accordion-filter details summary:focus,
+.accordion-filter details summary:hover {
+  background-color: var(--asc-surface);
+}
+
+.accordion-filter details .accordion-filter-item-body {
+  padding: 7px 14px 21px;
+  font-size: 14px;
+  color: var(--asc-text);
+}
+
+.accordion-filter details .accordion-filter-item-body ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.accordion-filter details .accordion-filter-item-body ul li {
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+.accordion-filter details:not([open]) .accordion-filter-item-body {
+  display: none;
+}
+
+.accordion-filter details p {
+  margin: 0;
+}

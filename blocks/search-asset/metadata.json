@@ -1,0 +1,40 @@
+{
+  "variantName": "search-asset",
+  "baseBlock": "search",
+  "version": "1.0.0",
+  "created": "2026-05-11T20:46:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/light.html",
+    "originPage": "Asset Share Commons home/search page",
+    "blockPosition": "top"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "asset-search",
+    "imagePattern": "noimg"
+  },
+  "contentPattern": {
+    "structure": "search input + button + view toggles + sort controls",
+    "buttonCount": 1,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "DAM asset search pages",
+      "content search/browse interfaces",
+      "resource library search functionality",
+      "media search with text input and results"
+    ],
+    "notSuitableFor": [
+      "simple site-wide search",
+      "filter-only interfaces without text search",
+      "navigation search autocomplete"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/content/asset-share-commons/en/light"],
+    "reuseCount": 1,
+    "lastUsed": "2026-05-11T20:46:00.000Z"
+  }
+}

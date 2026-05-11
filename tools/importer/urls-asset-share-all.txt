@@ -1,0 +1,6 @@
+https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/light/whats-new.html
+https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/light/faqs.html
+https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/dark.html
+https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/dark/whats-new.html
+https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/dark/faqs.html
+https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/dark/featured.html

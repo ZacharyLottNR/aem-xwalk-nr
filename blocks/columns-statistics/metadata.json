@@ -1,0 +1,41 @@
+{
+  "variantName": "columns-statistics",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-05-11T20:46:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/light.html",
+    "originPage": "Asset Share Commons home/search page",
+    "blockPosition": "bottom"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "statistics",
+    "imagePattern": "noimg"
+  },
+  "contentPattern": {
+    "structure": "3 number-label pairs side-by-side",
+    "buttonCount": 0,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "search result statistics displays",
+      "KPI/metric summaries with number + label",
+      "compact three-column statistic readouts",
+      "dashboard summary statistics"
+    ],
+    "notSuitableFor": [
+      "text-heavy column layouts",
+      "image + text side-by-side content",
+      "multi-row data displays",
+      "logo strips"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/content/asset-share-commons/en/light"],
+    "reuseCount": 1,
+    "lastUsed": "2026-05-11T20:46:00.000Z"
+  }
+}

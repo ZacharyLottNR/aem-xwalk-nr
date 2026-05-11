@@ -199,6 +199,57 @@
       ],
       "description": "General utility pages including partners, contact form, blog listing, training, and legal content",
       "blocks": []
+    },
+    {
+      "name": "asset-share-light",
+      "urls": [
+        "https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/light.html"
+      ],
+      "description": "Asset Share Commons light theme page with asset browsing and search functionality",
+      "blocks": [
+        {
+          "name": "search-asset",
+          "instances": [".cmp-search-search-bar", ".cmp-search-layout-toggle", ".cmp-search-sort"]
+        },
+        {
+          "name": "cards-asset",
+          "instances": [".cards.cmp-cards"]
+        },
+        {
+          "name": "accordion-filter",
+          "instances": [".cmp-search-property", ".cmp-search-date-range", ".cmp-search-tags"]
+        },
+        {
+          "name": "columns-statistics",
+          "instances": [".cmp-search-statistics"]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1-search",
+          "name": "Search Controls",
+          "selector": ".cmp-search-search-bar, .cmp-search-layout-toggle, .cmp-search-sort",
+          "style": null,
+          "blocks": ["search-asset"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2-results",
+          "name": "Asset Results",
+          "selector": ".cmp-search-results",
+          "style": null,
+          "blocks": ["cards-asset"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-3-sidebar",
+          "name": "Filter Sidebar",
+          "selector": "#rail",
+          "style": null,
+          "blocks": ["accordion-filter", "columns-statistics"],
+          "defaultContent": []
+        }
+      ]
     }
   ]
 }

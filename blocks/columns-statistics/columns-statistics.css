@@ -1,0 +1,28 @@
+.columns-statistics > div {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 14px 0;
+}
+
+.columns-statistics > div > div {
+  text-align: center;
+  flex: 1;
+}
+
+.columns-statistics > div > div p:first-child {
+  font-size: 21px;
+  font-weight: 400;
+  color: var(--asc-text-strong);
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1;
+}
+
+.columns-statistics > div > div p:last-child {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--asc-text);
+  text-transform: uppercase;
+  margin: 4px 0 0;
+}

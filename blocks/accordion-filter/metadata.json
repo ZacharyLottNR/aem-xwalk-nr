@@ -1,0 +1,41 @@
+{
+  "variantName": "accordion-filter",
+  "baseBlock": "accordion",
+  "version": "1.0.0",
+  "created": "2026-05-11T20:46:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/light.html",
+    "originPage": "Asset Share Commons home/search page",
+    "blockPosition": "bottom"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "filter-facets",
+    "imagePattern": "noimg"
+  },
+  "contentPattern": {
+    "structure": "label + expandable filter options (checkboxes, radios, toggles, date pickers)",
+    "buttonCount": 0,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "search filter sidebars with collapsible facets",
+      "DAM asset filter panels",
+      "faceted search with checkbox/radio/toggle options",
+      "category filter accordions"
+    ],
+    "notSuitableFor": [
+      "FAQ accordions with rich text answers",
+      "content-heavy expandable sections",
+      "navigation menus",
+      "simple expand/collapse without form controls"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/content/asset-share-commons/en/light"],
+    "reuseCount": 1,
+    "lastUsed": "2026-05-11T20:46:00.000Z"
+  }
+}

@@ -379,3 +379,37 @@ main .section.hero-banner h3 {
 main .section.hero-banner p {
   color: rgb(255 255 255 / 85%);
 }
+
+/* Asset Share Commons - Light Theme */
+.asset-share-light {
+  --asc-background: #f9f9f9;
+  --asc-surface: #fff;
+  --asc-text: rgb(80 80 80);
+  --asc-text-strong: rgb(0 0 0 / 85%);
+  --asc-text-muted: rgb(0 0 0 / 40%);
+  --asc-text-subtle: rgb(0 0 0 / 60%);
+  --asc-accent: rgb(47 204 156);
+  --asc-border: rgb(34 36 38 / 15%);
+  --asc-card-border: #f9f9f9;
+  --asc-input-bg: #fff;
+  --asc-input-text: rgb(80 80 80);
+  --asc-button-bg: rgb(224 225 226);
+  --asc-button-text: rgb(0 0 0 / 60%);
+}
+
+/* Asset Share Commons - Dark Theme */
+.asset-share-dark {
+  --asc-background: rgb(60 60 60);
+  --asc-surface: rgb(52 52 52);
+  --asc-text: rgb(208 208 208);
+  --asc-text-strong: #fff;
+  --asc-text-muted: rgb(160 160 160);
+  --asc-text-subtle: rgb(208 208 208);
+  --asc-accent: rgb(237 28 37);
+  --asc-border: rgb(52 52 52);
+  --asc-card-border: rgb(60 60 60);
+  --asc-input-bg: rgb(52 52 52);
+  --asc-input-text: rgb(224 224 224);
+  --asc-button-bg: rgb(52 52 52);
+  --asc-button-text: rgb(208 208 208);
+}
