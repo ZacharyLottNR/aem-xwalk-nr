@@ -57,8 +57,21 @@
 }
 
 .accordion-filter details .accordion-filter-item-body ul li {
-  padding: 4px 0;
+  padding: 6px 8px;
   font-size: 14px;
+  border-radius: 3px;
+  transition: background-color 0.15s;
+  user-select: none;
+}
+
+.accordion-filter details .accordion-filter-item-body ul li:hover {
+  background-color: var(--asc-surface, #f9f9f9);
+}
+
+.accordion-filter details .accordion-filter-item-body ul li.selected {
+  background-color: var(--asc-accent, rgb(47 204 156));
+  color: #fff;
+  font-weight: 700;
 }
 
 .accordion-filter details:not([open]) .accordion-filter-item-body {

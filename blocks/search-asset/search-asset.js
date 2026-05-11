@@ -1,272 +1,263 @@
-import {
-  createOptimizedPicture,
-  decorateIcons,
-} from '../../scripts/aem.js';
+import { decorateIcons } from '../../scripts/aem.js';
 
-async function fetchPlaceholders() {
-  return {};
+function getCardsBlock() {
+  return document.querySelector('.cards-asset');
 }
 
-const searchParams = new URLSearchParams(window.location.search);
+function getAllCards() {
+  const cards = getCardsBlock();
+  if (!cards) return [];
+  return [...cards.querySelectorAll(':scope > ul > li')];
+}
 
-function findNextHeading(el) {
-  let preceedingEl = el.parentElement.previousElement || el.parentElement.parentElement;
-  let h = 'H2';
-  while (preceedingEl) {
-    const lastHeading = [...preceedingEl.querySelectorAll('h1, h2, h3, h4, h5, h6')].pop();
-    if (lastHeading) {
-      const level = parseInt(lastHeading.nodeName[1], 10);
-      h = level < 6 ? `H${level + 1}` : 'H6';
-      preceedingEl = false;
+function getCardData(card) {
+  const title = card.querySelector('h3')?.textContent?.trim() || '';
+  const meta = [...card.querySelectorAll('ul li')].map((li) => li.textContent.trim());
+  const type = meta.find((m) => m.startsWith('TYPE:'))?.replace('TYPE:', '').trim() || '';
+  const size = meta.find((m) => m.startsWith('SIZE:'))?.replace('SIZE:', '').trim() || '';
+  const res = meta.find((m) => m.startsWith('RES'))?.replace('RES.:', '').replace('RES.', '').trim() || '';
+  return {
+    title, type, size, res, element: card,
+  };
+}
+
+function parseSize(sizeStr) {
+  const match = sizeStr.match(/([\d,.]+)\s*(KB|MB|GB|B)/i);
+  if (!match) return 0;
+  const value = parseFloat(match[1].replace(',', ''));
+  const unit = match[2].toUpperCase();
+  const multipliers = {
+    B: 1, KB: 1024, MB: 1048576, GB: 1073741824,
+  };
+  return value * (multipliers[unit] || 1);
+}
+
+function parseResWidth(resStr) {
+  const match = resStr.match(/(\d+)\s*x\s*(\d+)/);
+  return match ? parseInt(match[1], 10) : 0;
+}
+
+function parseResHeight(resStr) {
+  const match = resStr.match(/(\d+)\s*x\s*(\d+)/);
+  return match ? parseInt(match[2], 10) : 0;
+}
+
+function updateStatistics() {
+  const statsBlock = document.querySelector('.columns-statistics');
+  if (!statsBlock) return;
+
+  const cards = getAllCards();
+  const displayed = cards.filter((c) => c.style.display !== 'none').length;
+  const total = cards.length;
+
+  const statValues = statsBlock.querySelectorAll('p:first-child');
+  if (statValues[0]) statValues[0].innerHTML = `<strong>${displayed}</strong>`;
+  if (statValues[1]) statValues[1].innerHTML = `<strong>${total}</strong>`;
+}
+
+function filterCards(query, filters) {
+  const cards = getAllCards();
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+
+  cards.forEach((card) => {
+    const data = getCardData(card);
+    let visible = true;
+
+    if (terms.length) {
+      const searchable = `${data.title} ${data.type} ${data.size}`.toLowerCase();
+      visible = terms.every((term) => searchable.includes(term));
+    }
+
+    if (visible && filters.type && filters.type.length) {
+      visible = filters.type.some((t) => data.type.toLowerCase() === t.toLowerCase());
+    }
+
+    card.style.display = visible ? '' : 'none';
+  });
+
+  updateStatistics();
+}
+
+function sortCards(field, direction) {
+  const cards = getCardsBlock();
+  if (!cards) return;
+  const ul = cards.querySelector('ul');
+  if (!ul) return;
+
+  const items = [...ul.children];
+  items.sort((a, b) => {
+    const dataA = getCardData(a);
+    const dataB = getCardData(b);
+    let valA = 0;
+    let valB = 0;
+
+    if (field === 'size') {
+      valA = parseSize(dataA.size);
+      valB = parseSize(dataB.size);
+    } else if (field === 'width') {
+      valA = parseResWidth(dataA.res);
+      valB = parseResWidth(dataB.res);
+    } else if (field === 'height') {
+      valA = parseResHeight(dataA.res);
+      valB = parseResHeight(dataB.res);
     } else {
-      preceedingEl = preceedingEl.previousElement || preceedingEl.parentElement;
-    }
-  }
-  return h;
-}
-
-function highlightTextElements(terms, elements) {
-  elements.forEach((element) => {
-    if (!element || !element.textContent) return;
-
-    const matches = [];
-    const { textContent } = element;
-    terms.forEach((term) => {
-      let start = 0;
-      let offset = textContent.toLowerCase().indexOf(term.toLowerCase(), start);
-      while (offset >= 0) {
-        matches.push({ offset, term: textContent.substring(offset, offset + term.length) });
-        start = offset + term.length;
-        offset = textContent.toLowerCase().indexOf(term.toLowerCase(), start);
-      }
-    });
-
-    if (!matches.length) {
-      return;
+      valA = dataA.title.toLowerCase();
+      valB = dataB.title.toLowerCase();
+      if (direction === 'asc') return valA < valB ? -1 : 1;
+      return valA > valB ? -1 : 1;
     }
 
-    matches.sort((a, b) => a.offset - b.offset);
-    let currentIndex = 0;
-    const fragment = matches.reduce((acc, { offset, term }) => {
-      if (offset < currentIndex) return acc;
-      const textBefore = textContent.substring(currentIndex, offset);
-      if (textBefore) {
-        acc.appendChild(document.createTextNode(textBefore));
-      }
-      const markedTerm = document.createElement('mark');
-      markedTerm.textContent = term;
-      acc.appendChild(markedTerm);
-      currentIndex = offset + term.length;
-      return acc;
-    }, document.createDocumentFragment());
-    const textAfter = textContent.substring(currentIndex);
-    if (textAfter) {
-      fragment.appendChild(document.createTextNode(textAfter));
-    }
-    element.innerHTML = '';
-    element.appendChild(fragment);
-  });
-}
-
-export async function fetchData(source) {
-  const response = await fetch(source);
-  if (!response.ok) {
-    // eslint-disable-next-line no-console
-    console.error('error loading API response', response);
-    return null;
-  }
-
-  const json = await response.json();
-  if (!json) {
-    // eslint-disable-next-line no-console
-    console.error('empty API response', source);
-    return null;
-  }
-
-  return json.data;
-}
-
-function renderResult(result, searchTerms, titleTag) {
-  const li = document.createElement('li');
-  const a = document.createElement('a');
-  a.href = result.path;
-  if (result.image) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'search-asset-result-image';
-    const pic = createOptimizedPicture(result.image, '', false, [{ width: '375' }]);
-    wrapper.append(pic);
-    a.append(wrapper);
-  }
-  if (result.title) {
-    const title = document.createElement(titleTag);
-    title.className = 'search-asset-result-title';
-    const link = document.createElement('a');
-    link.href = result.path;
-    link.textContent = result.title;
-    highlightTextElements(searchTerms, [link]);
-    title.append(link);
-    a.append(title);
-  }
-  if (result.description) {
-    const description = document.createElement('p');
-    description.textContent = result.description;
-    highlightTextElements(searchTerms, [description]);
-    a.append(description);
-  }
-  li.append(a);
-  return li;
-}
-
-function clearSearchResults(block) {
-  const searchResults = block.querySelector('.search-asset-results');
-  searchResults.innerHTML = '';
-}
-
-function clearSearch(block) {
-  clearSearchResults(block);
-  if (window.history.replaceState) {
-    const url = new URL(window.location.href);
-    url.search = '';
-    searchParams.delete('q');
-    window.history.replaceState({}, '', url.toString());
-  }
-}
-
-async function renderResults(block, config, filteredData, searchTerms) {
-  clearSearchResults(block);
-  const searchResults = block.querySelector('.search-asset-results');
-  const headingTag = searchResults.dataset.h;
-
-  if (filteredData.length) {
-    searchResults.classList.remove('no-results');
-    filteredData.forEach((result) => {
-      const li = renderResult(result, searchTerms, headingTag);
-      searchResults.append(li);
-    });
-  } else {
-    const noResultsMessage = document.createElement('li');
-    searchResults.classList.add('no-results');
-    noResultsMessage.textContent = config.placeholders.searchNoResults || 'No results found.';
-    searchResults.append(noResultsMessage);
-  }
-}
-
-function compareFound(hit1, hit2) {
-  return hit1.minIdx - hit2.minIdx;
-}
-
-function filterData(searchTerms, data) {
-  const foundInHeader = [];
-  const foundInMeta = [];
-
-  data.forEach((result) => {
-    let minIdx = -1;
-
-    searchTerms.forEach((term) => {
-      const idx = (result.header || result.title).toLowerCase().indexOf(term);
-      if (idx < 0) return;
-      if (minIdx < idx) minIdx = idx;
-    });
-
-    if (minIdx >= 0) {
-      foundInHeader.push({ minIdx, result });
-      return;
-    }
-
-    const metaContents = `${result.title} ${result.description} ${result.path.split('/').pop()}`.toLowerCase();
-    searchTerms.forEach((term) => {
-      const idx = metaContents.indexOf(term);
-      if (idx < 0) return;
-      if (minIdx < idx) minIdx = idx;
-    });
-
-    if (minIdx >= 0) {
-      foundInMeta.push({ minIdx, result });
-    }
+    return direction === 'asc' ? valA - valB : valB - valA;
   });
 
-  return [
-    ...foundInHeader.sort(compareFound),
-    ...foundInMeta.sort(compareFound),
-  ].map((item) => item.result);
+  items.forEach((item) => ul.appendChild(item));
 }
 
-async function handleSearch(e, block, config) {
-  const searchValue = e.target.value;
-  searchParams.set('q', searchValue);
-  if (window.history.replaceState) {
-    const url = new URL(window.location.href);
-    url.search = searchParams.toString();
-    window.history.replaceState({}, '', url.toString());
-  }
+function createSearchInput(onSearch) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'search-asset-input-wrapper';
 
-  if (searchValue.length < 3) {
-    clearSearch(block);
-    return;
-  }
-  const searchTerms = searchValue.toLowerCase().split(/\s+/).filter((term) => !!term);
-
-  const data = await fetchData(config.source);
-  const filteredData = filterData(searchTerms, data);
-  await renderResults(block, config, filteredData, searchTerms);
-}
-
-function searchResultsContainer(block) {
-  const results = document.createElement('ul');
-  results.className = 'search-asset-results';
-  results.dataset.h = findNextHeading(block);
-  return results;
-}
-
-function searchInput(block, config) {
-  const input = document.createElement('input');
-  input.setAttribute('type', 'search');
-  input.className = 'search-asset-input';
-
-  const searchPlaceholder = config.placeholders.searchPlaceholder || 'Search...';
-  input.placeholder = searchPlaceholder;
-  input.setAttribute('aria-label', searchPlaceholder);
-
-  input.addEventListener('input', (e) => {
-    handleSearch(e, block, config);
-  });
-
-  input.addEventListener('keyup', (e) => { if (e.code === 'Escape') { clearSearch(block); } });
-
-  return input;
-}
-
-function searchIcon() {
   const icon = document.createElement('span');
-  icon.classList.add('icon', 'icon-search');
-  return icon;
+  icon.className = 'search-asset-icon';
+  icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>';
+
+  const input = document.createElement('input');
+  input.type = 'search';
+  input.placeholder = 'What are you looking for?';
+  input.className = 'search-asset-input';
+  input.setAttribute('aria-label', 'Search assets');
+
+  const button = document.createElement('button');
+  button.className = 'search-asset-button';
+  button.textContent = 'Search';
+
+  let debounceTimer;
+  const handleSearch = () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => onSearch(input.value), 200);
+  };
+
+  input.addEventListener('input', handleSearch);
+  input.addEventListener('keyup', (e) => {
+    if (e.code === 'Enter') onSearch(input.value);
+  });
+  button.addEventListener('click', () => onSearch(input.value));
+
+  wrapper.append(icon, input, button);
+  return wrapper;
 }
 
-function searchBox(block, config) {
-  const box = document.createElement('div');
-  box.classList.add('search-asset-box');
-  box.append(
-    searchIcon(),
-    searchInput(block, config),
-  );
+function createViewToggles() {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'search-asset-view-toggles';
 
-  return box;
+  const gridBtn = document.createElement('button');
+  gridBtn.className = 'search-asset-toggle active';
+  gridBtn.setAttribute('aria-label', 'Grid view');
+  gridBtn.title = 'Card Toggle';
+  gridBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/></svg>';
+
+  const listBtn = document.createElement('button');
+  listBtn.className = 'search-asset-toggle';
+  listBtn.setAttribute('aria-label', 'List view');
+  listBtn.title = 'List Toggle';
+  listBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></svg>';
+
+  gridBtn.addEventListener('click', () => {
+    gridBtn.classList.add('active');
+    listBtn.classList.remove('active');
+    const cards = getCardsBlock();
+    if (cards) cards.classList.remove('list-view');
+  });
+
+  listBtn.addEventListener('click', () => {
+    listBtn.classList.add('active');
+    gridBtn.classList.remove('active');
+    const cards = getCardsBlock();
+    if (cards) cards.classList.add('list-view');
+  });
+
+  wrapper.append(gridBtn, listBtn);
+  return wrapper;
+}
+
+function createSortControls(onSort) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'search-asset-sort';
+
+  const fieldSelect = document.createElement('select');
+  fieldSelect.className = 'search-asset-sort-field';
+  fieldSelect.setAttribute('aria-label', 'Sort by');
+  const fields = [
+    { value: 'title', label: 'Last Modified' },
+    { value: 'size', label: 'Size' },
+    { value: 'width', label: 'Width' },
+    { value: 'height', label: 'Length' },
+  ];
+  fields.forEach(({ value, label }) => {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = label;
+    fieldSelect.appendChild(opt);
+  });
+
+  const dirSelect = document.createElement('select');
+  dirSelect.className = 'search-asset-sort-dir';
+  dirSelect.setAttribute('aria-label', 'Sort direction');
+  const dirs = [
+    { value: 'desc', label: 'DESC' },
+    { value: 'asc', label: 'ASC' },
+  ];
+  dirs.forEach(({ value, label }) => {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = label;
+    dirSelect.appendChild(opt);
+  });
+
+  const handleSort = () => onSort(fieldSelect.value, dirSelect.value);
+  fieldSelect.addEventListener('change', handleSort);
+  dirSelect.addEventListener('change', handleSort);
+
+  wrapper.append(fieldSelect, dirSelect);
+  return wrapper;
+}
+
+function setupFilterIntegration(onFilter) {
+  document.addEventListener('asc-filter-update', (e) => {
+    onFilter(e.detail.filters);
+  });
 }
 
 export default async function decorate(block) {
-  const placeholders = await fetchPlaceholders();
-  const source = block.querySelector('a[href]')?.href || `${window.hlx.codeBasePath}/query-index.json`;
   block.innerHTML = '';
-  block.append(
-    searchBox(block, { source, placeholders }),
-    searchResultsContainer(block),
-  );
 
-  if (searchParams.get('q')) {
-    const input = block.querySelector('input');
-    input.value = searchParams.get('q');
-    input.dispatchEvent(new Event('input'));
-  }
+  let currentQuery = '';
+  let currentFilters = {};
+
+  const runFilter = () => filterCards(currentQuery, currentFilters);
+
+  const searchInput = createSearchInput((query) => {
+    currentQuery = query;
+    runFilter();
+  });
+
+  const viewToggles = createViewToggles();
+
+  const sortControls = createSortControls((field, dir) => {
+    sortCards(field, dir);
+  });
+
+  const toolbar = document.createElement('div');
+  toolbar.className = 'search-asset-toolbar';
+  toolbar.append(searchInput, viewToggles, sortControls);
+
+  block.append(toolbar);
+
+  setupFilterIntegration((filters) => {
+    currentFilters = filters;
+    runFilter();
+  });
 
   decorateIcons(block);
 }

@@ -387,6 +387,20 @@ var CustomImportScript = (() => {
       const hr = document.createElement("hr");
       main.appendChild(hr);
       WebImporter.rules.createMetadata(main, document);
+      const pageUrl = new URL(params.originalURL);
+      const pagePath = pageUrl.pathname;
+      const isDark = pagePath.includes("/dark");
+      const themeBase = isDark ? "/content/asset-share-commons/en/dark" : "/content/asset-share-commons/en/light";
+      const tables = main.querySelectorAll("table");
+      const metadataTable = tables[tables.length - 1];
+      if (metadataTable) {
+        const navRow = document.createElement("tr");
+        navRow.innerHTML = `<td>nav</td><td>${themeBase}/nav</td>`;
+        const footerRow = document.createElement("tr");
+        footerRow.innerHTML = `<td>footer</td><td>${themeBase}/footer</td>`;
+        metadataTable.appendChild(navRow);
+        metadataTable.appendChild(footerRow);
+      }
       WebImporter.rules.transformBackgroundImages(main, document);
       WebImporter.rules.adjustImageUrls(main, url, params.originalURL);
       const path = WebImporter.FileUtils.sanitizePath(

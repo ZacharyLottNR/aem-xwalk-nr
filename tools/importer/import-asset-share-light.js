@@ -127,6 +127,26 @@ export default {
     const hr = document.createElement('hr');
     main.appendChild(hr);
     WebImporter.rules.createMetadata(main, document);
+
+    // Inject nav and footer into the metadata block
+    const pageUrl = new URL(params.originalURL);
+    const pagePath = pageUrl.pathname;
+    const isDark = pagePath.includes('/dark');
+    const themeBase = isDark ? '/content/asset-share-commons/en/dark' : '/content/asset-share-commons/en/light';
+
+    // createMetadata creates a table with header row "Metadata" and key/value rows
+    // Find the last table in main (the metadata table created by createMetadata)
+    const tables = main.querySelectorAll('table');
+    const metadataTable = tables[tables.length - 1];
+    if (metadataTable) {
+      const navRow = document.createElement('tr');
+      navRow.innerHTML = `<td>nav</td><td>${themeBase}/nav</td>`;
+      const footerRow = document.createElement('tr');
+      footerRow.innerHTML = `<td>footer</td><td>${themeBase}/footer</td>`;
+      metadataTable.appendChild(navRow);
+      metadataTable.appendChild(footerRow);
+    }
+
     WebImporter.rules.transformBackgroundImages(main, document);
     WebImporter.rules.adjustImageUrls(main, url, params.originalURL);
 
