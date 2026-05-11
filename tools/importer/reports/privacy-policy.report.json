@@ -1,0 +1,27 @@
+{
+  "status": "success",
+  "url": "https://www.nextrow.com/privacy-policy",
+  "path": "privacy-policy",
+  "timestamp": "2026-05-11T09:07:57.659Z",
+  "title": "Privacy Policy - NextRow",
+  "template": "standard-page",
+  "blocks": [
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "form",
+    "form"
+  ]
+}

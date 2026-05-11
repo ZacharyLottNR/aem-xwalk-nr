@@ -1,0 +1,14 @@
+{
+  "status": "success",
+  "url": "https://www.nextrow.com/ai-services",
+  "path": "ai-services",
+  "timestamp": "2026-05-11T08:46:48.480Z",
+  "title": "AI Services - NextRow",
+  "template": "service-page",
+  "blocks": [
+    "hero-service",
+    "cards-accelerator",
+    "columns-casestudy",
+    "embed-calendar"
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "metadata": {
+    "projectType": "xwalk"
+  },
+  "templates": [
+    {
+      "name": "homepage",
+      "urls": ["https://www.nextrow.com/"],
+      "description": "Main landing page with hero, services overview, partner logos, and call-to-action sections",
+      "blocks": [
+        {
+          "name": "hero-ai",
+          "instances": ["section.elementor-element-245e5dd9.home_top_section"]
+        },
+        {
+          "name": "columns-logos",
+          "instances": ["section.elementor-element-76a4861"]
+        },
+        {
+          "name": "cards-service",
+          "instances": ["section.elementor-element-46285e5.section-categories", "section.elementor-element-3d0d5d8.section-categories"]
+        },
+        {
+          "name": "columns-casestudy",
+          "instances": ["section.elementor-element-ccfcd7f"]
+        },
+        {
+          "name": "cards-blog",
+          "instances": [".gt3_module_blog"]
+        },
+        {
+          "name": "form",
+          "instances": ["#request-consultation"]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1-hero",
+          "name": "Hero",
+          "selector": "section.elementor-element-245e5dd9.home_top_section",
+          "style": null,
+          "blocks": ["hero-ai"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2-logos",
+          "name": "Client Logos",
+          "selector": "section.elementor-element-76a4861",
+          "style": null,
+          "blocks": ["columns-logos"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-3-services-heading",
+          "name": "Services Heading",
+          "selector": "section.elementor-element-6cdae88.services-heading",
+          "style": null,
+          "blocks": [],
+          "defaultContent": ["section.elementor-element-6cdae88.services-heading h2", "section.elementor-element-6cdae88.services-heading .elementor-widget-text-editor"]
+        },
+        {
+          "id": "section-4-services-grid",
+          "name": "Services Grid",
+          "selector": ["section.elementor-element-46285e5.section-categories", "section.elementor-element-3d0d5d8.section-categories"],
+          "style": null,
+          "blocks": ["cards-service"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-5-casestudy",
+          "name": "Case Study",
+          "selector": "section.elementor-element-ccfcd7f",
+          "style": null,
+          "blocks": ["columns-casestudy"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-6-blog",
+          "name": "Insights Blog",
+          "selector": "section.elementor-element-a9093b8",
+          "style": "grey",
+          "blocks": ["cards-blog"],
+          "defaultContent": ["section.elementor-element-a9093b8 .elementor-element-26595b92"]
+        },
+        {
+          "id": "section-7-contact",
+          "name": "Contact Form",
+          "selector": "#request-consultation",
+          "style": "dark",
+          "blocks": ["form"],
+          "defaultContent": [".request-consultation h2", ".request-consultation p"]
+        }
+      ]
+    },
+    {
+      "name": "service-page",
+      "urls": [
+        "https://www.nextrow.com/b2b-marketing",
+        "https://www.nextrow.com/unified-customer-experience",
+        "https://www.nextrow.com/content-supply-chain",
+        "https://www.nextrow.com/martech-services",
+        "https://www.nextrow.com/ai-services",
+        "https://www.nextrow.com/cloud-services",
+        "https://www.nextrow.com/workday-services",
+        "https://www.nextrow.com/cyber-security",
+        "https://www.nextrow.com/snowflake-services/cloud-data-analytics"
+      ],
+      "description": "Service area pages describing NextRow digital service offerings with hero, features, and contact CTA",
+      "blocks": [
+        {
+          "name": "hero-service",
+          "instances": ["section.full-width-2col-section"]
+        },
+        {
+          "name": "columns-valueprop",
+          "instances": ["section.section_result"]
+        },
+        {
+          "name": "cards-accelerator",
+          "instances": ["section.boxes"]
+        },
+        {
+          "name": "columns-casestudy",
+          "instances": ["section[id='meeting_section']"]
+        },
+        {
+          "name": "embed-calendar",
+          "instances": ["section[id='calendar_show']"]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1-hero",
+          "name": "Hero",
+          "selector": "section.full-width-2col-section",
+          "style": null,
+          "blocks": ["hero-service"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2-valueprop",
+          "name": "Value Props",
+          "selector": "section.section_result",
+          "style": null,
+          "blocks": ["columns-valueprop"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-3-accelerators",
+          "name": "Accelerators",
+          "selector": "section.boxes",
+          "style": null,
+          "blocks": ["cards-accelerator"],
+          "defaultContent": ["section.boxes h2", "section.boxes .elementor-widget-text-editor"]
+        },
+        {
+          "id": "section-4-cta",
+          "name": "CTA Section",
+          "selector": "section.elementor-element-6c9fbbe2",
+          "style": null,
+          "blocks": [],
+          "defaultContent": ["section.elementor-element-6c9fbbe2 h2", "section.elementor-element-6c9fbbe2 .elementor-widget-text-editor", "section.elementor-element-6c9fbbe2 .elementor-widget-image", "section.elementor-element-6c9fbbe2 .elementor-widget-gt3-core-button"]
+        },
+        {
+          "id": "section-5-partnership",
+          "name": "Partnership",
+          "selector": "section[id='meeting_section']",
+          "style": null,
+          "blocks": ["columns-casestudy"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-6-calendar",
+          "name": "Calendar",
+          "selector": "section[id='calendar_show']",
+          "style": null,
+          "blocks": ["embed-calendar"],
+          "defaultContent": []
+        }
+      ]
+    },
+    {
+      "name": "product-page",
+      "urls": [
+        "https://www.nextrow.com/quiptag",
+        "https://www.nextrow.com/koru"
+      ],
+      "description": "Product pages showcasing NextRow proprietary products with features and benefits",
+      "blocks": []
+    },
+    {
+      "name": "standard-page",
+      "urls": [
+        "https://www.nextrow.com/partners",
+        "https://www.nextrow.com/contact-us",
+        "https://www.nextrow.com/blog",
+        "https://www.nextrow.com/training",
+        "https://www.nextrow.com/privacy-policy"
+      ],
+      "description": "General utility pages including partners, contact form, blog listing, training, and legal content",
+      "blocks": []
+    }
+  ]
+}

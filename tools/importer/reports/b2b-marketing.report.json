@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "url": "https://www.nextrow.com/b2b-marketing",
+  "path": "b2b-marketing",
+  "timestamp": "2026-05-11T08:46:20.685Z",
+  "title": "B2B Marketing - NextRow",
+  "template": "service-page",
+  "blocks": [
+    "hero-service",
+    "columns-valueprop",
+    "cards-accelerator",
+    "columns-casestudy",
+    "embed-calendar"
+  ]
+}

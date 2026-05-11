@@ -1,0 +1,27 @@
+{
+  "status": "success",
+  "url": "https://www.nextrow.com/training",
+  "path": "training",
+  "timestamp": "2026-05-11T09:07:51.660Z",
+  "title": "AEM Training | Adobe Analytics Training | NextRow Digital",
+  "template": "standard-page",
+  "blocks": [
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "form",
+    "form"
+  ]
+}

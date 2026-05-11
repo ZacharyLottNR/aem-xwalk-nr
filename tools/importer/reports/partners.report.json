@@ -1,0 +1,25 @@
+{
+  "status": "success",
+  "url": "https://www.nextrow.com/partners",
+  "path": "partners",
+  "timestamp": "2026-05-11T09:07:31.026Z",
+  "title": "Partners - NextRow",
+  "template": "standard-page",
+  "blocks": [
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner",
+    "cards-partner"
+  ]
+}

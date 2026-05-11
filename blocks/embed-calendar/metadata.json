@@ -1,0 +1,40 @@
+{
+  "variantName": "embed-calendar",
+  "baseBlock": "embed",
+  "version": "1.0.0",
+  "created": "2026-05-11T08:38:08.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.nextrow.com/b2b-marketing",
+    "originPage": "B2B Marketing service page",
+    "blockPosition": "bottom"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "meeting-scheduler",
+    "imagePattern": "noimg"
+  },
+  "contentPattern": {
+    "structure": "iframe embed URL",
+    "buttonCount": 0,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "HubSpot meeting scheduler embeds",
+      "calendar booking widgets",
+      "appointment scheduling iframes",
+      "any embedded external meeting tool"
+    ],
+    "notSuitableFor": [
+      "video embeds (use embed-video)",
+      "social media embeds",
+      "map embeds"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/b2b-marketing", "/quiptag"],
+    "reuseCount": 2,
+    "lastUsed": "2026-05-11T08:50:33.000Z"
+  }
+}

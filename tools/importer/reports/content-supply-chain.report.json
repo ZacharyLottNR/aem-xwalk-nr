@@ -1,0 +1,14 @@
+{
+  "status": "success",
+  "url": "https://www.nextrow.com/content-supply-chain",
+  "path": "content-supply-chain",
+  "timestamp": "2026-05-11T08:46:34.909Z",
+  "title": "Content Supply Chain - NextRow",
+  "template": "service-page",
+  "blocks": [
+    "hero-service",
+    "cards-accelerator",
+    "columns-casestudy",
+    "embed-calendar"
+  ]
+}

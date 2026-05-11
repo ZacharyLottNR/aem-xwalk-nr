@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "url": "https://www.nextrow.com/quiptag",
+  "path": "quiptag",
+  "timestamp": "2026-05-11T08:57:32.564Z",
+  "title": "QuipTag: Accelerate Your Content Velocity - NextRow",
+  "template": "product-page",
+  "blocks": [
+    "hero-product",
+    "columns-casestudy",
+    "embed-video",
+    "columns-stats",
+    "embed-calendar"
+  ]
+}

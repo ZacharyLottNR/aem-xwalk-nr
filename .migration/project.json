@@ -1,0 +1,11 @@
+{
+  "type": "xwalk",
+  "libraryUrl": "https://main--sta-xwalk-boilerplate--aemysites.aem.page/tools/sidekick/library.json",
+  "contentHostUrl": "author-p63260-e524717.adobeaemcloud.com",
+  "previewOrg": "ZacharyLottNR",
+  "previewSite": "aem-xwalk-nr",
+  "aemSitePath": "/content/aem-boilerplate-nr",
+  "aemAssetsFolderPath": "/content/dam/aem-boilerplate-nr",
+  "aemSiteName": "aem-boilerplate-nr",
+  "aemSiteTitle": "NextRow Digital"
+}

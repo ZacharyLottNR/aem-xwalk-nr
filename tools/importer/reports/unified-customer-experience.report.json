@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "url": "https://www.nextrow.com/unified-customer-experience",
+  "path": "unified-customer-experience",
+  "timestamp": "2026-05-11T08:46:28.641Z",
+  "title": "Unified Customer Experience - NextRow",
+  "template": "service-page",
+  "blocks": [
+    "hero-service",
+    "columns-valueprop",
+    "cards-accelerator",
+    "columns-casestudy",
+    "embed-calendar"
+  ]
+}

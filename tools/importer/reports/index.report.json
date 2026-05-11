@@ -1,0 +1,17 @@
+{
+  "status": "success",
+  "url": "https://www.nextrow.com/",
+  "path": "index",
+  "timestamp": "2026-05-11T08:31:19.694Z",
+  "title": "NextRow Digital: Driving Business Growth Effectively - NextRow",
+  "template": "homepage",
+  "blocks": [
+    "hero-ai",
+    "columns-logos",
+    "cards-service",
+    "cards-service",
+    "columns-casestudy",
+    "cards-blog",
+    "form"
+  ]
+}
