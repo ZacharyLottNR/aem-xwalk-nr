@@ -117,7 +117,14 @@ export default async function decorate(block) {
   block.textContent = '';
   const nav = document.createElement('nav');
   nav.id = 'nav';
-  while (fragment.firstElementChild) nav.append(fragment.firstElementChild);
+
+  // Extract content sections from the fragment's default-content-wrapper
+  const navContent = fragment.querySelector('.default-content-wrapper');
+  if (navContent) {
+    while (navContent.firstElementChild) nav.append(navContent.firstElementChild);
+  } else {
+    while (fragment.firstElementChild) nav.append(fragment.firstElementChild);
+  }
 
   const classes = ['brand', 'sections', 'tools'];
   classes.forEach((c, i) => {

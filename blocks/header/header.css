@@ -60,6 +60,7 @@ header nav a:any-link {
   font-weight: 500;
   font-size: var(--body-font-size-s);
   transition: color 0.3s ease;
+  text-transform: uppercase;
 }
 
 header nav a:hover {
@@ -157,7 +158,9 @@ header .nav-brand {
 }
 
 header nav .nav-brand img {
-  width: 128px;
+  width: auto;
+  max-width: 128px;
+  max-height: 48px;
   height: auto;
 }
 

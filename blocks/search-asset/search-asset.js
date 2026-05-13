@@ -1,4 +1,8 @@
 import { decorateIcons } from '../../scripts/aem.js';
+import { searchAssets, DEFAULT_LIMIT } from '../../scripts/asset-search-api.js';
+import { renderCards, appendCards } from '../cards-asset/cards-asset.js';
+
+let apiAvailable = null;
 
 function getCardsBlock() {
   return document.querySelector('.cards-asset');
@@ -12,13 +16,10 @@ function getAllCards() {
 
 function getCardData(card) {
   const title = card.querySelector('h3')?.textContent?.trim() || '';
-  const meta = [...card.querySelectorAll('ul li')].map((li) => li.textContent.trim());
+  const meta = [...card.querySelectorAll('.cards-asset-card-body ul li')].map((li) => li.textContent.trim());
   const type = meta.find((m) => m.startsWith('TYPE:'))?.replace('TYPE:', '').trim() || '';
   const size = meta.find((m) => m.startsWith('SIZE:'))?.replace('SIZE:', '').trim() || '';
-  const res = meta.find((m) => m.startsWith('RES'))?.replace('RES.:', '').replace('RES.', '').trim() || '';
-  return {
-    title, type, size, res, element: card,
-  };
+  return { title, type, size, element: card };
 }
 
 function parseSize(sizeStr) {
@@ -26,36 +27,20 @@ function parseSize(sizeStr) {
   if (!match) return 0;
   const value = parseFloat(match[1].replace(',', ''));
   const unit = match[2].toUpperCase();
-  const multipliers = {
-    B: 1, KB: 1024, MB: 1048576, GB: 1073741824,
-  };
+  const multipliers = { B: 1, KB: 1024, MB: 1048576, GB: 1073741824 };
   return value * (multipliers[unit] || 1);
 }
 
-function parseResWidth(resStr) {
-  const match = resStr.match(/(\d+)\s*x\s*(\d+)/);
-  return match ? parseInt(match[1], 10) : 0;
-}
-
-function parseResHeight(resStr) {
-  const match = resStr.match(/(\d+)\s*x\s*(\d+)/);
-  return match ? parseInt(match[2], 10) : 0;
-}
-
-function updateStatistics() {
+function updateStatistics(displayed, total, ms) {
   const statsBlock = document.querySelector('.columns-statistics');
   if (!statsBlock) return;
-
-  const cards = getAllCards();
-  const displayed = cards.filter((c) => c.style.display !== 'none').length;
-  const total = cards.length;
-
   const statValues = statsBlock.querySelectorAll('p:first-child');
   if (statValues[0]) statValues[0].innerHTML = `<strong>${displayed}</strong>`;
   if (statValues[1]) statValues[1].innerHTML = `<strong>${total}</strong>`;
+  if (statValues[2] && ms !== undefined) statValues[2].innerHTML = `<strong>${ms}</strong>`;
 }
 
-function filterCards(query, filters) {
+function filterCardsLocal(query, filters) {
   const cards = getAllCards();
   const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
 
@@ -75,10 +60,11 @@ function filterCards(query, filters) {
     card.style.display = visible ? '' : 'none';
   });
 
-  updateStatistics();
+  const displayed = cards.filter((c) => c.style.display !== 'none').length;
+  updateStatistics(displayed, cards.length);
 }
 
-function sortCards(field, direction) {
+function sortCardsLocal(field, direction) {
   const cards = getCardsBlock();
   if (!cards) return;
   const ul = cards.querySelector('ul');
@@ -88,26 +74,16 @@ function sortCards(field, direction) {
   items.sort((a, b) => {
     const dataA = getCardData(a);
     const dataB = getCardData(b);
-    let valA = 0;
-    let valB = 0;
 
     if (field === 'size') {
-      valA = parseSize(dataA.size);
-      valB = parseSize(dataB.size);
-    } else if (field === 'width') {
-      valA = parseResWidth(dataA.res);
-      valB = parseResWidth(dataB.res);
-    } else if (field === 'height') {
-      valA = parseResHeight(dataA.res);
-      valB = parseResHeight(dataB.res);
-    } else {
-      valA = dataA.title.toLowerCase();
-      valB = dataB.title.toLowerCase();
-      if (direction === 'asc') return valA < valB ? -1 : 1;
-      return valA > valB ? -1 : 1;
+      const diff = parseSize(dataA.size) - parseSize(dataB.size);
+      return direction === 'asc' ? diff : -diff;
     }
 
-    return direction === 'asc' ? valA - valB : valB - valA;
+    const valA = dataA.title.toLowerCase();
+    const valB = dataB.title.toLowerCase();
+    if (direction === 'asc') return valA < valB ? -1 : 1;
+    return valA > valB ? -1 : 1;
   });
 
   items.forEach((item) => ul.appendChild(item));
@@ -134,14 +110,20 @@ function createSearchInput(onSearch) {
   let debounceTimer;
   const handleSearch = () => {
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => onSearch(input.value), 200);
+    debounceTimer = setTimeout(() => onSearch(input.value), 300);
   };
 
   input.addEventListener('input', handleSearch);
   input.addEventListener('keyup', (e) => {
-    if (e.code === 'Enter') onSearch(input.value);
+    if (e.code === 'Enter') {
+      clearTimeout(debounceTimer);
+      onSearch(input.value);
+    }
   });
-  button.addEventListener('click', () => onSearch(input.value));
+  button.addEventListener('click', () => {
+    clearTimeout(debounceTimer);
+    onSearch(input.value);
+  });
 
   wrapper.append(icon, input, button);
   return wrapper;
@@ -188,13 +170,13 @@ function createSortControls(onSort) {
   const fieldSelect = document.createElement('select');
   fieldSelect.className = 'search-asset-sort-field';
   fieldSelect.setAttribute('aria-label', 'Sort by');
-  const fields = [
-    { value: 'title', label: 'Last Modified' },
+  [
+    { value: 'modified', label: 'Last Modified' },
+    { value: 'title', label: 'Title' },
     { value: 'size', label: 'Size' },
     { value: 'width', label: 'Width' },
     { value: 'height', label: 'Length' },
-  ];
-  fields.forEach(({ value, label }) => {
+  ].forEach(({ value, label }) => {
     const opt = document.createElement('option');
     opt.value = value;
     opt.textContent = label;
@@ -204,11 +186,10 @@ function createSortControls(onSort) {
   const dirSelect = document.createElement('select');
   dirSelect.className = 'search-asset-sort-dir';
   dirSelect.setAttribute('aria-label', 'Sort direction');
-  const dirs = [
+  [
     { value: 'desc', label: 'DESC' },
     { value: 'asc', label: 'ASC' },
-  ];
-  dirs.forEach(({ value, label }) => {
+  ].forEach(({ value, label }) => {
     const opt = document.createElement('option');
     opt.value = value;
     opt.textContent = label;
@@ -223,10 +204,23 @@ function createSortControls(onSort) {
   return wrapper;
 }
 
-function setupFilterIntegration(onFilter) {
-  document.addEventListener('asc-filter-update', (e) => {
-    onFilter(e.detail.filters);
-  });
+function createLoadMore(onClick) {
+  const btn = document.createElement('button');
+  btn.className = 'search-asset-load-more';
+  btn.textContent = 'Load more';
+  btn.addEventListener('click', onClick);
+  return btn;
+}
+
+async function probeApi() {
+  if (apiAvailable !== null) return apiAvailable;
+  try {
+    const result = await searchAssets({ limit: 1 });
+    apiAvailable = result && Array.isArray(result.hits);
+  } catch {
+    apiAvailable = false;
+  }
+  return apiAvailable;
 }
 
 export default async function decorate(block) {
@@ -234,30 +228,123 @@ export default async function decorate(block) {
 
   let currentQuery = '';
   let currentFilters = {};
+  let currentOrderBy = 'modified';
+  let currentDirection = 'desc';
+  let currentOffset = 0;
+  let totalResults = 0;
+  let searching = false;
+  let useApi = false;
 
-  const runFilter = () => filterCards(currentQuery, currentFilters);
+  async function executeSearchApi(append = false) {
+    const cards = getCardsBlock();
+    if (!cards) return;
+
+    if (!append) {
+      currentOffset = 0;
+      cards.classList.add('loading');
+    }
+
+    const start = performance.now();
+
+    try {
+      const types = currentFilters.type || [];
+      const results = await searchAssets({
+        fulltext: currentQuery,
+        types,
+        offset: currentOffset,
+        limit: DEFAULT_LIMIT,
+        orderBy: currentOrderBy,
+        orderDirection: currentDirection,
+      });
+
+      const elapsed = Math.round(performance.now() - start);
+      totalResults = results.total;
+
+      if (append) {
+        appendCards(results.hits, cards);
+      } else {
+        renderCards(results.hits, cards);
+      }
+
+      currentOffset += results.hits.length;
+      const displayed = cards.querySelectorAll(':scope > ul > li').length;
+      updateStatistics(displayed, totalResults, elapsed);
+
+      const loadMoreBtn = block.querySelector('.search-asset-load-more');
+      if (loadMoreBtn) {
+        loadMoreBtn.style.display = results.hasMore ? '' : 'none';
+      }
+    } finally {
+      cards.classList.remove('loading');
+    }
+  }
+
+  function executeSearchLocal() {
+    filterCardsLocal(currentQuery, currentFilters);
+    const loadMoreBtn = block.querySelector('.search-asset-load-more');
+    if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+  }
+
+  async function executeSearch(append = false) {
+    if (searching) return;
+    searching = true;
+
+    try {
+      if (useApi) {
+        await executeSearchApi(append);
+      } else {
+        executeSearchLocal();
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('API search failed, using client-side filtering:', err.message);
+      useApi = false;
+      executeSearchLocal();
+    } finally {
+      searching = false;
+    }
+  }
 
   const searchInput = createSearchInput((query) => {
     currentQuery = query;
-    runFilter();
+    executeSearch();
   });
 
   const viewToggles = createViewToggles();
 
   const sortControls = createSortControls((field, dir) => {
-    sortCards(field, dir);
+    currentOrderBy = field;
+    currentDirection = dir;
+    if (useApi) {
+      executeSearch();
+    } else {
+      sortCardsLocal(field, dir);
+    }
   });
+
+  const loadMoreBtn = createLoadMore(() => executeSearch(true));
 
   const toolbar = document.createElement('div');
   toolbar.className = 'search-asset-toolbar';
   toolbar.append(searchInput, viewToggles, sortControls);
 
-  block.append(toolbar);
+  block.append(toolbar, loadMoreBtn);
 
-  setupFilterIntegration((filters) => {
-    currentFilters = filters;
-    runFilter();
+  document.addEventListener('asc-filter-update', (e) => {
+    currentFilters = e.detail.filters;
+    executeSearch();
   });
 
   decorateIcons(block);
+
+  // Probe the API to determine if dynamic search is available
+  useApi = await probeApi();
+  if (useApi) {
+    await executeSearch();
+  } else {
+    // API not available — use authored cards with client-side filtering
+    loadMoreBtn.style.display = 'none';
+    const cards = getAllCards();
+    updateStatistics(cards.length, cards.length);
+  }
 }

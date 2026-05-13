@@ -122,6 +122,34 @@
   border-color: var(--asc-text-muted, rgb(0 0 0 / 40%));
 }
 
+/* Load more button */
+.search-asset .search-asset-load-more {
+  display: block;
+  margin: 16px auto 0;
+  padding: 12px 32px;
+  border: 1px solid var(--asc-border, rgb(34 36 38 / 15%));
+  border-radius: 4px;
+  background-color: var(--asc-input-bg, #fff);
+  color: var(--asc-text, rgb(80 80 80));
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--body-font-family);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.search-asset .search-asset-load-more:hover {
+  background-color: var(--asc-accent, rgb(47 204 156));
+  color: #fff;
+  border-color: var(--asc-accent, rgb(47 204 156));
+}
+
+/* Loading state */
+.cards-asset.loading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 /* List view support for cards-asset */
 .cards-asset.list-view > ul {
   grid-template-columns: 1fr;
