@@ -1,10 +1,12 @@
 {
   "mappings": [
-    "/content/aem-boilerplate-nr/:/"
-    "/content/aem-boilerplate-nr/configuration:/.helix/config.json"
-    "/content/aem-boilerplate-nr/metadata:/metadata.json"
+    "/content/aem-boilerplate-nr/:/",
+    "/content/aem-boilerplate-nr/configuration:/.helix/config.json",
+    "/content/aem-boilerplate-nr/metadata:/metadata.json",
+    "/content/asset-share-commons/:/asset-share-commons/"
   ],
   "includes": [
-    "/content/aem-boilerplate-nr/"
+    "/content/aem-boilerplate-nr/",
+    "/content/asset-share-commons/"
   ]
 }
