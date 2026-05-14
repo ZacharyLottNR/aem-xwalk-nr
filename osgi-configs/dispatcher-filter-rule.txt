@@ -1,0 +1,10 @@
+# Add this rule to your Cloud Manager project's dispatcher configuration:
+#
+#   dispatcher/src/conf.dispatcher.d/filters/filters.any
+#
+# Place it AFTER the default deny rules but BEFORE the final deny-all.
+# It allows .json requests only for the specific DAM path used by the
+# asset search edge function.
+
+# Allow JSON export for Asset Share Commons DAM content
+/0200 { /type "allow" /method "GET" /url "/content/dam/asset-share-commons/en/public/*.json" }

@@ -35,6 +35,24 @@ Create `ui.apps/src/main/content/jcr_root/apps/<your-project>/config.publish/org
 }
 ```
 
+### Dispatcher Filter (Required)
+
+The OSGi config alone is not enough — AEM Cloud Service's dispatcher blocks
+`.json` requests by default. Add this rule to your dispatcher configuration:
+
+**File:** `dispatcher/src/conf.dispatcher.d/filters/filters.any`
+
+```
+# Allow JSON export for Asset Share Commons DAM content
+/0200 { /type "allow" /method "GET" /url "/content/dam/asset-share-commons/en/public/*.json" }
+```
+
+Add this AFTER the default deny rules. The rule number (`/0200`) should be
+higher than existing rules — check your `filters.any` and pick the next
+available number.
+
+Then redeploy via Cloud Manager.
+
 ### After Deployment
 
 1. Deploy via Cloud Manager pipeline
