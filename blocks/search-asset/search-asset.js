@@ -342,9 +342,16 @@ export default async function decorate(block) {
   if (useApi) {
     await executeSearch();
   } else {
-    // API not available — use authored cards with client-side filtering
     loadMoreBtn.style.display = 'none';
-    const cards = getAllCards();
-    updateStatistics(cards.length, cards.length);
+    // Defer stats until cards block is decorated
+    const waitForCards = () => {
+      const cards = getAllCards();
+      if (cards.length) {
+        updateStatistics(cards.length, cards.length);
+      } else {
+        requestAnimationFrame(waitForCards);
+      }
+    };
+    waitForCards();
   }
 }
