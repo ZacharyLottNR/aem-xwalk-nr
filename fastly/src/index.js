@@ -4,7 +4,7 @@ import { env } from "fastly:env";
 
 const PUBLISH_HOST = 'publish-p63260-e524717.adobeaemcloud.com';
 const DAM_ROOT = '/content/dam/asset-share-commons/en/public';
-const API_PATH = '/api/assets/asset-share-commons/en/public';
+const DAM_SUBFOLDERS = ['pictures', 'featured', 'logos'];
 const DEFAULT_LIMIT = 24;
 
 const CORS_HEADERS = {
@@ -46,58 +46,45 @@ function formatSize(bytes) {
   return `${(num / 1073741824).toFixed(1)} GB`;
 }
 
-function normalizeEntity(entity) {
-  const props = entity.properties || {};
-  const metadata = props.metadata || props['metadata'] || {};
-  const path = props['dam:relativePath']
-    ? `${DAM_ROOT}/${props['dam:relativePath']}`
-    : entity.links?.[0]?.href?.replace(/\/api\/assets/, '/content/dam') || '';
-  const name = props.name || path.split('/').pop() || '';
-  const title = metadata['dc:title'] || props['dc:title'] || name;
-  const format = metadata['dc:format'] || props['dc:format'] || '';
-  const size = metadata['dam:size'] || props['dam:size'] || 0;
-  const width = metadata['tiff:ImageWidth'] || 0;
-  const height = metadata['tiff:ImageLength'] || 0;
-  const type = getAssetType(format);
+function extractAssetsFromJson(data, folderPath) {
+  const assets = [];
+  for (const [name, node] of Object.entries(data)) {
+    if (name.startsWith('jcr:') || name.startsWith('rep:') || typeof node !== 'object') continue;
+    const jcrContent = node['jcr:content'];
+    if (!jcrContent) continue;
+    const primaryType = jcrContent['jcr:primaryType'] || node['jcr:primaryType'] || '';
+    if (primaryType === 'dam:AssetContent' || jcrContent.metadata) {
+      const metadata = jcrContent.metadata || {};
+      const path = `${folderPath}/${name}`;
+      const title = metadata['dc:title'] || name;
+      const format = metadata['dc:format'] || '';
+      const size = metadata['dam:size'] || jcrContent['dam:size'] || 0;
+      const width = metadata['tiff:ImageWidth'] || 0;
+      const height = metadata['tiff:ImageLength'] || 0;
+      const type = getAssetType(format);
+      const modified = jcrContent['jcr:lastModified'] || jcrContent['cq:lastModified'] || metadata['dam:whenLastModified'] || '';
 
-  return {
-    path,
-    title,
-    type,
-    format,
-    size: formatSize(size),
-    sizeBytes: Number(size),
-    width: Number(width),
-    height: Number(height),
-    resolution: width && height ? `${width} x ${height}` : '',
-    renditionUrl: `https://${PUBLISH_HOST}${path}.renditions/card/asset.rendition`,
-    detailPath: path,
-  };
+      assets.push({
+        path,
+        title,
+        type,
+        format,
+        size: formatSize(size),
+        sizeBytes: Number(size),
+        width: Number(width),
+        height: Number(height),
+        resolution: width && height ? `${width} x ${height}` : '',
+        renditionUrl: `https://${PUBLISH_HOST}${path}.renditions/card/asset.rendition`,
+        detailPath: path,
+        modified,
+      });
+    }
+  }
+  return assets;
 }
 
-function matchesType(entity, types) {
-  if (!types.length) return true;
-  const props = entity.properties || {};
-  const metadata = props.metadata || {};
-  const format = (metadata['dc:format'] || props['dc:format'] || '').toLowerCase();
-  return types.some((t) => {
-    const mime = MIME_TYPE_MAP[t.toLowerCase()];
-    return mime && format.startsWith(mime);
-  });
-}
-
-function matchesFulltext(entity, terms) {
-  if (!terms.length) return true;
-  const props = entity.properties || {};
-  const metadata = props.metadata || {};
-  const title = (metadata['dc:title'] || props['dc:title'] || props.name || '').toLowerCase();
-  const desc = (metadata['dc:description'] || '').toLowerCase();
-  const searchable = `${title} ${desc}`;
-  return terms.every((term) => searchable.includes(term));
-}
-
-async function fetchFolder(folderPath, allEntities) {
-  const url = `https://${PUBLISH_HOST}${folderPath}.json?limit=1000`;
+async function fetchFolderAssets(folderPath) {
+  const url = `https://${PUBLISH_HOST}${folderPath}.3.json`;
   console.log(`Fetching: ${url}`);
 
   const resp = await fetch(url, {
@@ -106,25 +93,27 @@ async function fetchFolder(folderPath, allEntities) {
   });
 
   if (!resp.ok) {
-    console.warn(`Failed to fetch ${folderPath}: ${resp.status}`);
-    return;
+    console.warn(`Failed to fetch ${folderPath}.3.json: ${resp.status}`);
+    return [];
   }
 
   const data = await resp.json();
-  const entities = data.entities || [];
+  return extractAssetsFromJson(data, folderPath);
+}
 
-  for (const entity of entities) {
-    const classes = entity.class || [];
-    if (classes.includes('assets/asset')) {
-      allEntities.push(entity);
-    } else if (classes.includes('assets/folder')) {
-      const folderLink = entity.links?.find((l) => l.rel?.includes('self'));
-      if (folderLink) {
-        const subPath = new URL(folderLink.href, `https://${PUBLISH_HOST}`).pathname;
-        await fetchFolder(subPath, allEntities);
-      }
-    }
-  }
+function matchesType(asset, types) {
+  if (!types.length) return true;
+  const format = (asset.format || '').toLowerCase();
+  return types.some((t) => {
+    const mime = MIME_TYPE_MAP[t.toLowerCase()];
+    return mime && format.startsWith(mime);
+  });
+}
+
+function matchesFulltext(asset, terms) {
+  if (!terms.length) return true;
+  const searchable = `${asset.title} ${asset.path}`.toLowerCase();
+  return terms.every((term) => searchable.includes(term));
 }
 
 async function handleAssetSearch(req) {
@@ -138,44 +127,42 @@ async function handleAssetSearch(req) {
   const orderDirection = url.searchParams.get('orderDirection') || 'desc';
   const terms = fulltext.toLowerCase().split(/\s+/).filter(Boolean);
 
-  const allEntities = [];
-  await fetchFolder(API_PATH, allEntities);
-  console.log(`Found ${allEntities.length} total assets`);
+  const fetchPromises = DAM_SUBFOLDERS.map((sub) => fetchFolderAssets(`${DAM_ROOT}/${sub}`));
+  const results = await Promise.all(fetchPromises);
+  const allAssets = results.flat();
+  console.log(`Found ${allAssets.length} total assets across ${DAM_SUBFOLDERS.length} folders`);
 
-  let filtered = allEntities
-    .filter((e) => matchesType(e, types))
-    .filter((e) => matchesFulltext(e, terms));
+  let filtered = allAssets
+    .filter((a) => matchesType(a, types))
+    .filter((a) => matchesFulltext(a, terms));
 
   filtered.sort((a, b) => {
-    const propsA = a.properties || {};
-    const propsB = b.properties || {};
-    const metaA = propsA.metadata || {};
-    const metaB = propsB.metadata || {};
-    let valA, valB;
-
     if (orderBy === 'title') {
-      valA = (metaA['dc:title'] || propsA.name || '').toLowerCase();
-      valB = (metaB['dc:title'] || propsB.name || '').toLowerCase();
-      if (valA < valB) return orderDirection === 'asc' ? -1 : 1;
-      if (valA > valB) return orderDirection === 'asc' ? 1 : -1;
+      const vA = a.title.toLowerCase();
+      const vB = b.title.toLowerCase();
+      if (vA < vB) return orderDirection === 'asc' ? -1 : 1;
+      if (vA > vB) return orderDirection === 'asc' ? 1 : -1;
       return 0;
     }
     if (orderBy === 'size') {
-      valA = Number(metaA['dam:size'] || propsA['dam:size'] || 0);
-      valB = Number(metaB['dam:size'] || propsB['dam:size'] || 0);
-    } else {
-      valA = new Date(propsA['jcr:lastModified'] || propsA.created || 0).getTime();
-      valB = new Date(propsB['jcr:lastModified'] || propsB.created || 0).getTime();
+      return orderDirection === 'asc' ? a.sizeBytes - b.sizeBytes : b.sizeBytes - a.sizeBytes;
     }
-    return orderDirection === 'asc' ? valA - valB : valB - valA;
+    if (orderBy === 'width') {
+      return orderDirection === 'asc' ? a.width - b.width : b.width - a.width;
+    }
+    if (orderBy === 'height') {
+      return orderDirection === 'asc' ? a.height - b.height : b.height - a.height;
+    }
+    const mA = new Date(a.modified || 0).getTime();
+    const mB = new Date(b.modified || 0).getTime();
+    return orderDirection === 'asc' ? mA - mB : mB - mA;
   });
 
   const total = filtered.length;
   const paged = filtered.slice(offset, offset + limit);
-  const hits = paged.map(normalizeEntity);
   const hasMore = offset + paged.length < total;
 
-  return jsonResponse({ hits, total, offset, hasMore });
+  return jsonResponse({ hits: paged, total, offset, hasMore });
 }
 
 addEventListener("fetch", (event) => event.respondWith(handleRequest(event)));
