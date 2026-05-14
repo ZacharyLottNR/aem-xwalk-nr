@@ -20,6 +20,20 @@
         "name": "keywords",
         "multi": true,
         "label": "Keywords"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "nav",
+        "label": "Navigation",
+        "description": "Path to navigation fragment (e.g. /asset-share-commons/en/dark/nav)"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "footer",
+        "label": "Footer",
+        "description": "Path to footer fragment (e.g. /asset-share-commons/en/dark/footer)"
       }
     ]
   },
