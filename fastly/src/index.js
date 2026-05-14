@@ -4,6 +4,7 @@ import { env } from "fastly:env";
 
 const PUBLISH_HOST = 'publish-p63260-e524717.adobeaemcloud.com';
 const DAM_ROOT = '/content/dam/asset-share-commons/en/public';
+const API_PATH = '/api/assets/asset-share-commons/en/public';
 const DEFAULT_LIMIT = 24;
 
 const CORS_HEADERS = {
@@ -13,18 +14,10 @@ const CORS_HEADERS = {
 };
 
 const MIME_TYPE_MAP = {
-  image: 'image',
+  image: 'image/',
   document: 'application/pdf',
-  video: 'video',
+  video: 'video/',
   presentation: 'application/vnd.ms-powerpoint',
-};
-
-const ORDERBY_MAP = {
-  title: '@jcr:content/metadata/dc:title',
-  size: '@jcr:content/jcr:data/@jcr:size',
-  width: '@jcr:content/metadata/tiff:ImageWidth',
-  height: '@jcr:content/metadata/tiff:ImageLength',
-  modified: '@jcr:content/jcr:lastModified',
 };
 
 function jsonResponse(data, status = 200) {
@@ -32,62 +25,6 @@ function jsonResponse(data, status = 200) {
     status,
     headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
   });
-}
-
-function buildQueryParams(searchParams) {
-  const fulltext = searchParams.get('fulltext') || '';
-  const typesRaw = searchParams.get('types') || '';
-  const types = typesRaw ? typesRaw.split(',').filter(Boolean) : [];
-  const offset = parseInt(searchParams.get('offset'), 10) || 0;
-  const limit = Math.min(parseInt(searchParams.get('limit'), 10) || DEFAULT_LIMIT, 100);
-  const orderBy = searchParams.get('orderBy') || 'modified';
-  const orderDirection = searchParams.get('orderDirection') || 'desc';
-
-  const params = new URLSearchParams();
-  params.set('type', 'dam:Asset');
-  params.set('path', DAM_ROOT);
-  params.set('p.offset', offset);
-  params.set('p.limit', limit);
-  params.set('p.guessTotal', '250');
-  params.set('p.hits', 'selective');
-  params.set('p.properties', [
-    'jcr:path',
-    'jcr:content/metadata/dc:title',
-    'jcr:content/metadata/dc:format',
-    'jcr:content/metadata/dam:size',
-    'jcr:content/metadata/tiff:ImageWidth',
-    'jcr:content/metadata/tiff:ImageLength',
-  ].join(' '));
-
-  if (fulltext) {
-    params.set('fulltext', fulltext);
-    params.set('fulltext.relPath', 'jcr:content/metadata');
-  }
-
-  if (types.length === 1) {
-    const mime = MIME_TYPE_MAP[types[0].toLowerCase()];
-    if (mime) {
-      params.set('1_property', 'jcr:content/metadata/dc:format');
-      params.set('1_property.operation', 'like');
-      params.set('1_property.value', `${mime}%`);
-    }
-  } else if (types.length > 1) {
-    params.set('group.p.or', 'true');
-    types.forEach((type, i) => {
-      const mime = MIME_TYPE_MAP[type.toLowerCase()];
-      if (mime) {
-        params.set(`group.${i + 1}_property`, 'jcr:content/metadata/dc:format');
-        params.set(`group.${i + 1}_property.operation`, 'like');
-        params.set(`group.${i + 1}_property.value`, `${mime}%`);
-      }
-    });
-  }
-
-  const sortProp = ORDERBY_MAP[orderBy] || ORDERBY_MAP.modified;
-  params.set('orderby', sortProp);
-  params.set('orderby.sort', orderDirection);
-
-  return { params, offset, limit };
 }
 
 function getAssetType(format) {
@@ -109,12 +46,16 @@ function formatSize(bytes) {
   return `${(num / 1073741824).toFixed(1)} GB`;
 }
 
-function normalizeHit(hit) {
-  const path = hit['jcr:path'] || hit.path || '';
-  const metadata = hit['jcr:content']?.metadata || {};
-  const title = metadata['dc:title'] || path.split('/').pop();
-  const format = metadata['dc:format'] || '';
-  const size = metadata['dam:size'] || 0;
+function normalizeEntity(entity) {
+  const props = entity.properties || {};
+  const metadata = props.metadata || props['metadata'] || {};
+  const path = props['dam:relativePath']
+    ? `${DAM_ROOT}/${props['dam:relativePath']}`
+    : entity.links?.[0]?.href?.replace(/\/api\/assets/, '/content/dam') || '';
+  const name = props.name || path.split('/').pop() || '';
+  const title = metadata['dc:title'] || props['dc:title'] || name;
+  const format = metadata['dc:format'] || props['dc:format'] || '';
+  const size = metadata['dam:size'] || props['dam:size'] || 0;
   const width = metadata['tiff:ImageWidth'] || 0;
   const height = metadata['tiff:ImageLength'] || 0;
   const type = getAssetType(format);
@@ -134,27 +75,105 @@ function normalizeHit(hit) {
   };
 }
 
-async function handleAssetSearch(req) {
-  const url = new URL(req.url);
-  const { params, offset } = buildQueryParams(url.searchParams);
+function matchesType(entity, types) {
+  if (!types.length) return true;
+  const props = entity.properties || {};
+  const metadata = props.metadata || {};
+  const format = (metadata['dc:format'] || props['dc:format'] || '').toLowerCase();
+  return types.some((t) => {
+    const mime = MIME_TYPE_MAP[t.toLowerCase()];
+    return mime && format.startsWith(mime);
+  });
+}
 
-  const queryUrl = `https://${PUBLISH_HOST}/bin/querybuilder.json?${params.toString()}`;
-  console.log(`Querying AEM: ${queryUrl}`);
+function matchesFulltext(entity, terms) {
+  if (!terms.length) return true;
+  const props = entity.properties || {};
+  const metadata = props.metadata || {};
+  const title = (metadata['dc:title'] || props['dc:title'] || props.name || '').toLowerCase();
+  const desc = (metadata['dc:description'] || '').toLowerCase();
+  const searchable = `${title} ${desc}`;
+  return terms.every((term) => searchable.includes(term));
+}
 
-  const aemResp = await fetch(queryUrl, {
+async function fetchFolder(folderPath, allEntities) {
+  const url = `https://${PUBLISH_HOST}${folderPath}.json?limit=1000`;
+  console.log(`Fetching: ${url}`);
+
+  const resp = await fetch(url, {
     backend: 'aem_publish',
-    headers: { 'Accept': 'application/json' },
+    headers: { Accept: 'application/json' },
   });
 
-  if (!aemResp.ok) {
-    console.error(`AEM QueryBuilder returned ${aemResp.status}`);
-    return jsonResponse({ error: `AEM search failed: ${aemResp.status}` }, 502);
+  if (!resp.ok) {
+    console.warn(`Failed to fetch ${folderPath}: ${resp.status}`);
+    return;
   }
 
-  const data = await aemResp.json();
-  const hits = (data.hits || []).map(normalizeHit);
-  const total = data.total || data.results || hits.length;
-  const hasMore = offset + hits.length < total;
+  const data = await resp.json();
+  const entities = data.entities || [];
+
+  for (const entity of entities) {
+    const classes = entity.class || [];
+    if (classes.includes('assets/asset')) {
+      allEntities.push(entity);
+    } else if (classes.includes('assets/folder')) {
+      const folderLink = entity.links?.find((l) => l.rel?.includes('self'));
+      if (folderLink) {
+        const subPath = new URL(folderLink.href, `https://${PUBLISH_HOST}`).pathname;
+        await fetchFolder(subPath, allEntities);
+      }
+    }
+  }
+}
+
+async function handleAssetSearch(req) {
+  const url = new URL(req.url);
+  const fulltext = url.searchParams.get('fulltext') || '';
+  const typesRaw = url.searchParams.get('types') || '';
+  const types = typesRaw ? typesRaw.split(',').filter(Boolean) : [];
+  const offset = parseInt(url.searchParams.get('offset'), 10) || 0;
+  const limit = Math.min(parseInt(url.searchParams.get('limit'), 10) || DEFAULT_LIMIT, 100);
+  const orderBy = url.searchParams.get('orderBy') || 'modified';
+  const orderDirection = url.searchParams.get('orderDirection') || 'desc';
+  const terms = fulltext.toLowerCase().split(/\s+/).filter(Boolean);
+
+  const allEntities = [];
+  await fetchFolder(API_PATH, allEntities);
+  console.log(`Found ${allEntities.length} total assets`);
+
+  let filtered = allEntities
+    .filter((e) => matchesType(e, types))
+    .filter((e) => matchesFulltext(e, terms));
+
+  filtered.sort((a, b) => {
+    const propsA = a.properties || {};
+    const propsB = b.properties || {};
+    const metaA = propsA.metadata || {};
+    const metaB = propsB.metadata || {};
+    let valA, valB;
+
+    if (orderBy === 'title') {
+      valA = (metaA['dc:title'] || propsA.name || '').toLowerCase();
+      valB = (metaB['dc:title'] || propsB.name || '').toLowerCase();
+      if (valA < valB) return orderDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return orderDirection === 'asc' ? 1 : -1;
+      return 0;
+    }
+    if (orderBy === 'size') {
+      valA = Number(metaA['dam:size'] || propsA['dam:size'] || 0);
+      valB = Number(metaB['dam:size'] || propsB['dam:size'] || 0);
+    } else {
+      valA = new Date(propsA['jcr:lastModified'] || propsA.created || 0).getTime();
+      valB = new Date(propsB['jcr:lastModified'] || propsB.created || 0).getTime();
+    }
+    return orderDirection === 'asc' ? valA - valB : valB - valA;
+  });
+
+  const total = filtered.length;
+  const paged = filtered.slice(offset, offset + limit);
+  const hits = paged.map(normalizeEntity);
+  const hasMore = offset + paged.length < total;
 
   return jsonResponse({ hits, total, offset, hasMore });
 }
@@ -167,7 +186,6 @@ async function handleRequest(event) {
   const req = event.request;
   const url = new URL(req.url);
 
-  // CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
