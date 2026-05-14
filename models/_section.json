@@ -50,7 +50,11 @@
         "hero",
         "cards",
         "columns",
-        "fragment"
+        "fragment",
+        "search-asset",
+        "cards-asset",
+        "accordion-filter",
+        "columns-statistics"
       ]
     }
   ]
