@@ -19,7 +19,7 @@ const parsers = {
 const PAGE_TEMPLATE = {
   name: 'asset-share-light',
   urls: [
-    'https://publish-p63260-e524717.adobeaemcloud.com/content/asset-share-commons/en/light.html',
+    'https://publish-p63260-e524717.adobeaemcloud.com/asset-share-commons/en/light.html',
   ],
   description: 'Asset Share Commons light theme page with asset browsing and search functionality',
   blocks: [
@@ -132,7 +132,7 @@ export default {
     const pageUrl = new URL(params.originalURL);
     const pagePath = pageUrl.pathname;
     const isDark = pagePath.includes('/dark');
-    const themeBase = isDark ? '/content/asset-share-commons/en/dark' : '/content/asset-share-commons/en/light';
+    const themeBase = isDark ? '/asset-share-commons/en/dark' : '/asset-share-commons/en/light';
 
     // createMetadata creates a table with header row "Metadata" and key/value rows
     // Find the last table in main (the metadata table created by createMetadata)
@@ -150,8 +150,9 @@ export default {
     WebImporter.rules.transformBackgroundImages(main, document);
     WebImporter.rules.adjustImageUrls(main, url, params.originalURL);
 
+    const rawPath = new URL(params.originalURL).pathname.replace(/\/$/, '').replace(/\.html$/, '');
     const path = WebImporter.FileUtils.sanitizePath(
-      new URL(params.originalURL).pathname.replace(/\/$/, '').replace(/\.html$/, '')
+      rawPath.replace(/^\/content\/asset-share-commons/, '/asset-share-commons')
     );
 
     return [{
