@@ -1,0 +1,8 @@
+{
+  "json.maximumresults": 1000,
+  "enable.json": true,
+  "json.maximumresults.override": true,
+  "aliases": [
+    "json"
+  ]
+}
