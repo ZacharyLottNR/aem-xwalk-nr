@@ -3,14 +3,17 @@
 
 authors = ["zac.lott@nextrow.com"]
 cloned_from = "https://github.com/fastly/compute-starter-kit-javascript-default"
-description = "A Test Setup"
+description = "AEM Asset Search Edge Function"
 language = "javascript"
 manifest_version = 3
-name = "fastly"
+name = "aem-asset-search"
 service_id = ""
-
-[local_server]
 
 [scripts]
   build = "npm run build"
   post_init = "npm install"
+
+[local_server]
+  [local_server.backends]
+    [local_server.backends.aem_publish]
+      url = "https://publish-p63260-e524717.adobeaemcloud.com"
