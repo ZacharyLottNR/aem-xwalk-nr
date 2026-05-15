@@ -54,7 +54,8 @@
         "search-asset",
         "cards-asset",
         "accordion-filter",
-        "columns-statistics"
+        "columns-statistics",
+        "asset-detail"
       ]
     }
   ]

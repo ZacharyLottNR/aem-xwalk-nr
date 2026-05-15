@@ -175,6 +175,18 @@
     ]
   },
   {
+    "id": "asset-detail",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "placeholder",
+        "label": "Placeholder",
+        "description": "Asset detail is populated dynamically from the URL path parameter"
+      }
+    ]
+  },
+  {
     "id": "card",
     "fields": [
       {
