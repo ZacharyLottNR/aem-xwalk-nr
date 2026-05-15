@@ -328,7 +328,18 @@ export default async function decorate(block) {
   toolbar.className = 'search-asset-toolbar';
   toolbar.append(searchInput, viewToggles, sortControls);
 
-  block.append(toolbar, loadMoreBtn);
+  block.append(toolbar);
+
+  // Place Load More after the cards-asset block
+  const placeLoadMore = () => {
+    const cards = getCardsBlock();
+    if (cards) {
+      cards.parentElement.insertBefore(loadMoreBtn, cards.nextSibling);
+    } else {
+      block.append(loadMoreBtn);
+    }
+  };
+  requestAnimationFrame(placeLoadMore);
 
   document.addEventListener('asc-filter-update', (e) => {
     currentFilters = e.detail.filters;

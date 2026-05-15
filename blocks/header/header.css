@@ -186,10 +186,14 @@ header nav .nav-sections ul {
 }
 
 header nav .nav-sections > ul,
-header nav .nav-sections > div > ul {
+header nav .nav-sections > div > ul,
+header nav .nav-sections div ul {
   list-style: none;
   padding-left: 0;
   margin: 0;
+  display: flex;
+  gap: 24px;
+  justify-content: flex-end;
 }
 
 header nav .nav-sections ul > li {
