@@ -74,8 +74,8 @@ function extractAssetsFromJson(data, folderPath) {
         width: Number(width),
         height: Number(height),
         resolution: width && height ? `${width} x ${height}` : '',
-        renditionUrl: `https://absolutely-cool-toucan.edgecompute.app/api/asset-image?path=${encodeURIComponent(path)}`,
-        thumbnailUrl: `https://absolutely-cool-toucan.edgecompute.app/api/asset-image?path=${encodeURIComponent(path)}`,
+        renditionUrl: `https://${PUBLISH_HOST}${path}/_jcr_content/renditions/original`,
+        thumbnailUrl: `https://${PUBLISH_HOST}${path}/_jcr_content/renditions/original`,
         detailPath: path,
         modified,
       });
@@ -219,7 +219,7 @@ async function handleAssetDetail(req) {
     created,
     modified,
     tags: Array.isArray(tags) ? tags : [tags].filter(Boolean),
-    imageUrl: `https://absolutely-cool-toucan.edgecompute.app/api/asset-image?path=${encodeURIComponent(assetPath)}`,
+    imageUrl: `https://${PUBLISH_HOST}${assetPath}/_jcr_content/renditions/original`,
     renditions,
   });
 }
@@ -231,7 +231,8 @@ async function handleAssetImage(req) {
     return new Response('Bad request', { status: 400 });
   }
 
-  const aemUrl = `https://${PUBLISH_HOST}${assetPath}`;
+  const aemUrl = `https://${PUBLISH_HOST}${assetPath}/_jcr_content/renditions/original`;
+  console.log(`Proxying image: ${aemUrl}`);
   const resp = await fetch(aemUrl, {
     backend: 'aem_publish',
   });
