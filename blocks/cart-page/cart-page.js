@@ -30,6 +30,12 @@ function renderEmptyCart(block) {
     </div>`;
 }
 
+function updateCartCount() {
+  const count = getCart().length;
+  const countEl = document.querySelector('.cart-page-count');
+  if (countEl) countEl.textContent = `(${count})`;
+}
+
 function renderCartItem(asset) {
   const row = document.createElement('tr');
   row.dataset.path = asset.path;
@@ -75,12 +81,6 @@ function renderCartItem(asset) {
   actionsTd.append(dlBtn, shareBtn, removeBtn);
   row.append(thumbTd, infoTd, actionsTd);
   return row;
-}
-
-function updateCartCount() {
-  const count = getCart().length;
-  const countEl = document.querySelector('.cart-page-count');
-  if (countEl) countEl.textContent = `(${count})`;
 }
 
 export default async function decorate(block) {
