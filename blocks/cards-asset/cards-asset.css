@@ -107,7 +107,7 @@
   color: var(--asc-accent, #2fcc9c);
 }
 
-.cards-asset-card-actions button + button {
+.cards-asset-card-actions button:not(:first-child) {
   border-left: 1px solid var(--asc-border, #e8e8e8);
   border-radius: 0;
 }

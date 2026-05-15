@@ -1,6 +1,18 @@
 import { addToCart, removeFromCart, isInCart } from './cart.js';
 import { getPublishHost } from './asset-search-api.js';
 
+function showToast(message) {
+  let toast = document.querySelector('.asset-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.className = 'asset-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), 2500);
+}
+
 export function downloadAsset(assetPath) {
   const host = getPublishHost();
   const url = `${host}${assetPath}`;
@@ -51,16 +63,4 @@ export function toggleCart(assetPath, button) {
       showToast('Already in cart');
     }
   }
-}
-
-function showToast(message) {
-  let toast = document.querySelector('.asset-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.className = 'asset-toast';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = message;
-  toast.classList.add('visible');
-  setTimeout(() => toast.classList.remove('visible'), 2500);
 }
