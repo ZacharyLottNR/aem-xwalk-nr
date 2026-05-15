@@ -47,14 +47,10 @@ export function renderCard(asset) {
 }
 
 export function renderCards(assets, block) {
-  let ul = block.querySelector('ul');
-  if (!ul) {
-    ul = document.createElement('ul');
-    block.textContent = '';
-    block.append(ul);
-  }
-  ul.innerHTML = '';
+  block.textContent = '';
+  const ul = document.createElement('ul');
   assets.forEach((asset) => ul.append(renderCard(asset)));
+  block.append(ul);
 }
 
 export function appendCards(assets, block) {
