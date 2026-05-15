@@ -3,9 +3,11 @@ const EDGE_FUNCTION_URL = 'https://absolutely-cool-toucan.edgecompute.app/api/as
 const DEFAULT_LIMIT = 24;
 
 function buildDetailUrl(hit) {
+  const type = (hit.type || 'IMAGE').toLowerCase();
+  const detailType = type === 'video' ? 'video' : type === 'document' ? 'document' : type === 'presentation' ? 'presentation' : 'image';
   const path = hit.detailPath || hit.path || '';
   const basePath = window.location.pathname.replace(/\/[^/]*$/, '');
-  return `${basePath}/details?path=${encodeURIComponent(path)}`;
+  return `${basePath}/details/${detailType}?path=${encodeURIComponent(path)}`;
 }
 
 export async function searchAssets({
