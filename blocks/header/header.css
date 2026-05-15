@@ -181,7 +181,15 @@ header nav[aria-expanded='true'] .nav-sections {
 header nav .nav-sections ul {
   list-style: none;
   padding-left: 0;
+  margin: 0;
   font-size: var(--body-font-size-s);
+}
+
+header nav .nav-sections > ul,
+header nav .nav-sections > div > ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
 }
 
 header nav .nav-sections ul > li {

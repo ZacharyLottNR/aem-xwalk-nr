@@ -10,8 +10,11 @@ export function renderCard(asset) {
   imgLink.href = asset.detailUrl;
   imgLink.title = asset.title;
   const imgSrc = asset.thumbnailUrl || asset.renditionUrl;
-  const picture = createOptimizedPicture(imgSrc, asset.title, false, [{ width: '750' }]);
-  imgLink.append(picture);
+  const img = document.createElement('img');
+  img.src = imgSrc;
+  img.alt = asset.title;
+  img.loading = 'lazy';
+  imgLink.append(img);
   const p = document.createElement('p');
   p.append(imgLink);
   imageDiv.append(p);
