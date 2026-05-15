@@ -24,6 +24,13 @@
       {
         "component": "text",
         "valueType": "string",
+        "name": "logo",
+        "label": "Logo Image",
+        "description": "DAM path to logo image (e.g. /content/dam/asset-share-commons/en/site/Logo-light.png)"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
         "name": "nav",
         "label": "Navigation",
         "description": "Path to navigation fragment (e.g. /asset-share-commons/en/dark/nav)"

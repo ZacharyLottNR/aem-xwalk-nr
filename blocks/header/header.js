@@ -162,8 +162,12 @@ export default async function decorate(block) {
       const container = brandLink.closest('.button-container');
       if (container) container.className = '';
       if (!brandLink.querySelector('img') && !brandLink.querySelector('picture')) {
+        const logoMeta = getMetadata('logo');
+        const logoPath = logoMeta || '/content/dam/asset-share-commons/en/site/Logo-light.png';
+        const publishHost = 'https://publish-p63260-e524717.adobeaemcloud.com';
+        const logoSrc = logoPath.startsWith('http') ? logoPath : `${publishHost}${logoPath}/_jcr_content/renditions/original`;
         const logoImg = document.createElement('img');
-        logoImg.src = 'https://publish-p63260-e524717.adobeaemcloud.com/content/dam/asset-share-commons/en/site/Logo-light.png/_jcr_content/renditions/original';
+        logoImg.src = logoSrc;
         logoImg.alt = 'Home';
         logoImg.className = 'nav-brand-logo';
         brandLink.textContent = '';
