@@ -16,7 +16,7 @@ function buildDetailUrl(hit) {
   const ascMatch = loc.match(/(\/asset-share-commons\/en)/);
   let basePath;
   if (themeMatch) {
-    basePath = themeMatch[1];
+    [, basePath] = themeMatch;
   } else if (ascMatch) {
     basePath = `${ascMatch[1]}/dark`;
   } else {
