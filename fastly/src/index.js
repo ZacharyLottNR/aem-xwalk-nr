@@ -166,6 +166,64 @@ async function handleAssetSearch(req) {
   return jsonResponse({ hits: paged, total, offset, hasMore });
 }
 
+async function handleAssetDetail(req) {
+  const url = new URL(req.url);
+  const assetPath = url.searchParams.get('path');
+  if (!assetPath) return jsonResponse({ error: 'Missing path parameter' }, 400);
+
+  const jsonUrl = `https://${PUBLISH_HOST}${assetPath}/jcr:content/metadata.json`;
+  console.log(`Fetching asset detail: ${jsonUrl}`);
+
+  const resp = await fetch(jsonUrl, {
+    backend: 'aem_publish',
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!resp.ok) {
+    return jsonResponse({ error: `Asset not found: ${resp.status}` }, 404);
+  }
+
+  const metadata = await resp.json();
+  const name = assetPath.split('/').pop();
+  const title = metadata['dc:title'] || name;
+  const format = metadata['dc:format'] || '';
+  const size = metadata['dam:size'] || 0;
+  const width = metadata['tiff:ImageWidth'] || 0;
+  const height = metadata['tiff:ImageLength'] || 0;
+  const type = getAssetType(format);
+  const created = metadata['jcr:created'] || metadata['dam:assetCreated'] || '';
+  const modified = metadata['dam:assetModified'] || metadata['jcr:lastModified'] || '';
+  const description = metadata['dc:description'] || '';
+  const tags = metadata['cq:tags'] || [];
+
+  const renditions = [
+    { name: 'Original File', url: `https://${PUBLISH_HOST}${assetPath}` },
+    { name: 'Web Rendition', url: `https://${PUBLISH_HOST}${assetPath}/_jcr_content/renditions/cq5dam.web.1280.1280.${format.split('/').pop() || 'jpeg'}` },
+    { name: '48 x 48', url: `https://${PUBLISH_HOST}${assetPath}/_jcr_content/renditions/cq5dam.thumbnail.48.48.png` },
+    { name: '140 x 100', url: `https://${PUBLISH_HOST}${assetPath}/_jcr_content/renditions/cq5dam.thumbnail.140.100.png` },
+    { name: '319 x 319', url: `https://${PUBLISH_HOST}${assetPath}/_jcr_content/renditions/cq5dam.thumbnail.319.319.png` },
+  ];
+
+  return jsonResponse({
+    path: assetPath,
+    title,
+    name,
+    type,
+    format,
+    description,
+    size: formatSize(size),
+    sizeBytes: Number(size),
+    width: Number(width),
+    height: Number(height),
+    resolution: width && height ? `${width} x ${height}` : '',
+    created,
+    modified,
+    tags: Array.isArray(tags) ? tags : [tags].filter(Boolean),
+    imageUrl: `https://${PUBLISH_HOST}${assetPath}`,
+    renditions,
+  });
+}
+
 addEventListener("fetch", (event) => event.respondWith(handleRequest(event)));
 
 async function handleRequest(event) {
@@ -181,6 +239,10 @@ async function handleRequest(event) {
   try {
     if (url.pathname === '/api/asset-search' && req.method === 'GET') {
       return await handleAssetSearch(req);
+    }
+
+    if (url.pathname === '/api/asset-detail' && req.method === 'GET') {
+      return await handleAssetDetail(req);
     }
 
     return new Response("Not Found", { status: 404 });

@@ -3,11 +3,9 @@ const EDGE_FUNCTION_URL = 'https://absolutely-cool-toucan.edgecompute.app/api/as
 const DEFAULT_LIMIT = 24;
 
 function buildDetailUrl(hit) {
-  const type = (hit.type || 'IMAGE').toLowerCase();
-  const detailType = type === 'image' ? 'image' : type;
-  const theme = document.querySelector('.asset-share-dark') ? 'dark' : 'light';
   const path = hit.detailPath || hit.path || '';
-  return `${PUBLISH_HOST}/content/asset-share-commons/en/${theme}/details/${detailType}.html${path}`;
+  const basePath = window.location.pathname.replace(/\/[^/]*$/, '');
+  return `${basePath}/details?path=${encodeURIComponent(path)}`;
 }
 
 export async function searchAssets({
