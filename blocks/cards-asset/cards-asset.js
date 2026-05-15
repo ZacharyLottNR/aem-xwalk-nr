@@ -63,6 +63,7 @@ export function appendCards(assets, block) {
 }
 
 export default function decorate(block) {
+  if (block.querySelector(':scope > ul')) return;
   const ul = document.createElement('ul');
   [...block.children].forEach((row) => {
     const li = document.createElement('li');

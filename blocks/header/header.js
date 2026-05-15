@@ -128,22 +128,30 @@ export default async function decorate(block) {
   }
 
   // Identify nav children by content rather than position
-  [...nav.children].forEach((child) => {
-    if (child.querySelector('picture, img') && !child.querySelector('ul')) {
-      child.classList.add('nav-brand');
-    } else if (child.querySelector('ul')) {
+  const navChildren = [...nav.children].filter((c) => c.tagName !== 'DIV' || !c.classList.contains('nav-hamburger'));
+  navChildren.forEach((child) => {
+    if (child.tagName === 'UL' || child.querySelector(':scope > ul')) {
       child.classList.add('nav-sections');
-    } else {
+    } else if (child.querySelector('picture, img')) {
+      child.classList.add('nav-brand');
+    } else if (child.querySelector('.button') || child.querySelector('a')) {
       child.classList.add('nav-tools');
+    } else {
+      child.classList.add('nav-brand');
     }
   });
 
-  // Fallback: if no sections found, assign by index
-  if (!nav.querySelector('.nav-sections')) {
-    const classes = ['brand', 'sections', 'tools'];
-    [...nav.children].forEach((child, i) => {
-      if (classes[i]) child.classList.add(`nav-${classes[i]}`);
-    });
+  // Wrap bare <ul> nav-sections in a div for proper styling
+  const bareUl = nav.querySelector(':scope > ul.nav-sections');
+  if (bareUl) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'nav-sections';
+    bareUl.classList.remove('nav-sections');
+    bareUl.before(wrapper);
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'default-content-wrapper';
+    contentDiv.append(bareUl);
+    wrapper.append(contentDiv);
   }
 
   const navBrand = nav.querySelector('.nav-brand');
