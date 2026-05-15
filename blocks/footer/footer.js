@@ -10,6 +10,9 @@ export default async function decorate(block) {
   const footerMeta = getMetadata('footer');
   let footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : '/footer';
   footerPath = footerPath.replace(/^\/content\/aem-boilerplate-nr/, '');
+  if (footerPath.startsWith('/content/') && !footerPath.startsWith('/content/dam/')) {
+    footerPath = footerPath.replace(/^\/content/, '');
+  }
   const fragment = await loadFragment(footerPath);
 
   // decorate footer DOM

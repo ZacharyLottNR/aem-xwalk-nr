@@ -112,6 +112,9 @@ export default async function decorate(block) {
   const navMeta = getMetadata('nav');
   let navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
   navPath = navPath.replace(/^\/content\/aem-boilerplate-nr/, '');
+  if (navPath.startsWith('/content/') && !navPath.startsWith('/content/dam/')) {
+    navPath = navPath.replace(/^\/content/, '');
+  }
   const fragment = await loadFragment(navPath);
 
   // decorate nav DOM
@@ -127,17 +130,30 @@ export default async function decorate(block) {
     while (fragment.firstElementChild) nav.append(fragment.firstElementChild);
   }
 
-  // Identify nav children by content rather than position
+  // Rewrite links delivered by AEM with /content/ prefix to EDS-relative paths
+  nav.querySelectorAll('a[href]').forEach((a) => {
+    let href = a.getAttribute('href');
+    if (href) {
+      href = href.replace(/^\/content\/aem-boilerplate-nr/, '');
+      if (href.startsWith('/content/') && !href.startsWith('/content/dam/')) {
+        href = href.replace(/^\/content/, '');
+      }
+      href = href.replace(/\.html$/, '');
+      a.setAttribute('href', href);
+    }
+  });
+
+  // Identify nav children: first non-sections child is brand, rest are tools
   const navChildren = [...nav.children].filter((c) => c.tagName !== 'DIV' || !c.classList.contains('nav-hamburger'));
+  let brandFound = false;
   navChildren.forEach((child) => {
     if (child.tagName === 'UL' || child.querySelector(':scope > ul')) {
       child.classList.add('nav-sections');
-    } else if (child.querySelector('picture, img')) {
+    } else if (child.querySelector('picture, img') || !brandFound) {
       child.classList.add('nav-brand');
-    } else if (child.querySelector('.button') || child.querySelector('a')) {
-      child.classList.add('nav-tools');
+      brandFound = true;
     } else {
-      child.classList.add('nav-brand');
+      child.classList.add('nav-tools');
     }
   });
 
@@ -161,13 +177,19 @@ export default async function decorate(block) {
       brandLink.className = '';
       const container = brandLink.closest('.button-container');
       if (container) container.className = '';
-      if (!brandLink.querySelector('img') && !brandLink.querySelector('picture')) {
+      const existingImg = brandLink.querySelector('img');
+      if (existingImg) {
+        const src = existingImg.getAttribute('src') || '';
+        const publishPrefix = 'https://publish-p63260-e524717.adobeaemcloud.com';
+        if (src.startsWith(publishPrefix)) {
+          existingImg.src = src.replace(publishPrefix, '');
+        }
+        existingImg.className = 'nav-brand-logo';
+      } else {
         const logoMeta = getMetadata('logo');
         const logoPath = logoMeta || '/content/dam/asset-share-commons/en/site/Logo-light.png';
-        const publishHost = 'https://publish-p63260-e524717.adobeaemcloud.com';
-        const logoSrc = logoPath.startsWith('http') ? logoPath : `${publishHost}${logoPath}/_jcr_content/renditions/original`;
         const logoImg = document.createElement('img');
-        logoImg.src = logoSrc;
+        logoImg.src = logoPath;
         logoImg.alt = 'Home';
         logoImg.className = 'nav-brand-logo';
         brandLink.textContent = '';
