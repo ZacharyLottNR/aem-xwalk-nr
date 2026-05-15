@@ -1,5 +1,5 @@
 const PUBLISH_HOST = 'https://publish-p63260-e524717.adobeaemcloud.com';
-const EDGE_FUNCTION_PATH = '/api/asset-search';
+const EDGE_FUNCTION_URL = 'https://absolutely-cool-toucan.edgecompute.app/api/asset-search';
 const DEFAULT_LIMIT = 24;
 
 function buildDetailUrl(hit) {
@@ -26,7 +26,7 @@ export async function searchAssets({
   params.set('orderBy', orderBy);
   params.set('orderDirection', orderDirection);
 
-  const url = `${EDGE_FUNCTION_PATH}?${params.toString()}`;
+  const url = `${EDGE_FUNCTION_URL}?${params.toString()}`;
   const resp = await fetch(url);
 
   if (!resp.ok) {
