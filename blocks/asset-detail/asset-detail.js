@@ -45,8 +45,12 @@ function renderDetail(asset, block) {
 
   const backLink = document.createElement('a');
   backLink.className = 'asset-detail-back';
-  backLink.href = 'javascript:history.back()';
+  backLink.href = '#';
   backLink.textContent = '← Back';
+  backLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.history.back();
+  });
 
   const title = document.createElement('h1');
   title.textContent = asset.title;
