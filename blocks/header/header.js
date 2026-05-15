@@ -127,14 +127,27 @@ export default async function decorate(block) {
     while (fragment.firstElementChild) nav.append(fragment.firstElementChild);
   }
 
-  const classes = ['brand', 'sections', 'tools'];
-  classes.forEach((c, i) => {
-    const section = nav.children[i];
-    if (section) section.classList.add(`nav-${c}`);
+  // Identify nav children by content rather than position
+  [...nav.children].forEach((child) => {
+    if (child.querySelector('picture, img') && !child.querySelector('ul')) {
+      child.classList.add('nav-brand');
+    } else if (child.querySelector('ul')) {
+      child.classList.add('nav-sections');
+    } else {
+      child.classList.add('nav-tools');
+    }
   });
 
+  // Fallback: if no sections found, assign by index
+  if (!nav.querySelector('.nav-sections')) {
+    const classes = ['brand', 'sections', 'tools'];
+    [...nav.children].forEach((child, i) => {
+      if (classes[i]) child.classList.add(`nav-${classes[i]}`);
+    });
+  }
+
   const navBrand = nav.querySelector('.nav-brand');
-  const brandLink = navBrand.querySelector('.button');
+  const brandLink = navBrand?.querySelector('.button');
   if (brandLink) {
     brandLink.className = '';
     brandLink.closest('.button-container').className = '';
