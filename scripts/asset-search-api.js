@@ -2,9 +2,14 @@ const PUBLISH_HOST = 'https://publish-p63260-e524717.adobeaemcloud.com';
 const EDGE_FUNCTION_URL = 'https://absolutely-cool-toucan.edgecompute.app/api/asset-search';
 const DEFAULT_LIMIT = 24;
 
+function getDetailType(type) {
+  const typeMap = { video: 'video', document: 'document', presentation: 'presentation' };
+  return typeMap[type] || 'image';
+}
+
 function buildDetailUrl(hit) {
   const type = (hit.type || 'IMAGE').toLowerCase();
-  const detailType = type === 'video' ? 'video' : type === 'document' ? 'document' : type === 'presentation' ? 'presentation' : 'image';
+  const detailType = getDetailType(type);
   const path = hit.detailPath || hit.path || '';
   const basePath = window.location.pathname.replace(/\/[^/]*$/, '');
   return `${basePath}/details/${detailType}?path=${encodeURIComponent(path)}`;
