@@ -74,8 +74,8 @@ function extractAssetsFromJson(data, folderPath) {
         width: Number(width),
         height: Number(height),
         resolution: width && height ? `${width} x ${height}` : '',
-        renditionUrl: `https://${PUBLISH_HOST}${path}/_jcr_content/renditions/original`,
-        thumbnailUrl: `https://${PUBLISH_HOST}${path}/_jcr_content/renditions/original`,
+        renditionUrl: `https://absolutely-cool-toucan.edgecompute.app/api/asset-image?path=${encodeURIComponent(path)}`,
+        thumbnailUrl: `https://absolutely-cool-toucan.edgecompute.app/api/asset-image?path=${encodeURIComponent(path)}`,
         detailPath: path,
         modified,
       });
@@ -219,8 +219,34 @@ async function handleAssetDetail(req) {
     created,
     modified,
     tags: Array.isArray(tags) ? tags : [tags].filter(Boolean),
-    imageUrl: `https://${PUBLISH_HOST}${assetPath}`,
+    imageUrl: `https://absolutely-cool-toucan.edgecompute.app/api/asset-image?path=${encodeURIComponent(assetPath)}`,
     renditions,
+  });
+}
+
+async function handleAssetImage(req) {
+  const url = new URL(req.url);
+  const assetPath = url.searchParams.get('path');
+  if (!assetPath || !assetPath.startsWith('/content/dam/')) {
+    return new Response('Bad request', { status: 400 });
+  }
+
+  const aemUrl = `https://${PUBLISH_HOST}${assetPath}`;
+  const resp = await fetch(aemUrl, {
+    backend: 'aem_publish',
+  });
+
+  if (!resp.ok) {
+    return new Response('Not found', { status: 404 });
+  }
+
+  const headers = new Headers(resp.headers);
+  headers.set('Access-Control-Allow-Origin', '*');
+  headers.set('Cache-Control', 'public, max-age=86400');
+
+  return new Response(resp.body, {
+    status: 200,
+    headers,
   });
 }
 
@@ -239,6 +265,10 @@ async function handleRequest(event) {
   try {
     if (url.pathname === '/api/asset-search' && req.method === 'GET') {
       return await handleAssetSearch(req);
+    }
+
+    if (url.pathname === '/api/asset-image' && req.method === 'GET') {
+      return await handleAssetImage(req);
     }
 
     if (url.pathname === '/api/asset-detail' && req.method === 'GET') {
