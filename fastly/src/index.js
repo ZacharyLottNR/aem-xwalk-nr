@@ -74,8 +74,8 @@ function extractAssetsFromJson(data, folderPath) {
         width: Number(width),
         height: Number(height),
         resolution: width && height ? `${width} x ${height}` : '',
-        renditionUrl: `https://${PUBLISH_HOST}${path}`,
-        thumbnailUrl: `https://${PUBLISH_HOST}${path}`,
+        renditionUrl: `https://${PUBLISH_HOST}${path}/_jcr_content/renditions/original`,
+        thumbnailUrl: `https://${PUBLISH_HOST}${path}/_jcr_content/renditions/original`,
         detailPath: path,
         modified,
       });

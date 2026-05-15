@@ -11,8 +11,10 @@ function buildDetailUrl(hit) {
   const type = (hit.type || 'IMAGE').toLowerCase();
   const detailType = getDetailType(type);
   const path = hit.detailPath || hit.path || '';
-  const basePath = window.location.pathname.replace(/\/[^/]*$/, '');
-  return `${basePath}/details/${detailType}?path=${encodeURIComponent(path)}`;
+  const loc = window.location.pathname;
+  const themeMatch = loc.match(/(\/asset-share-commons\/en\/(?:dark|light))/);
+  const themePath = themeMatch ? themeMatch[1] : loc.replace(/\/[^/]*$/, '');
+  return `${themePath}/details/${detailType}?path=${encodeURIComponent(path)}`;
 }
 
 export async function searchAssets({
