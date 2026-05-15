@@ -155,10 +155,21 @@ export default async function decorate(block) {
   }
 
   const navBrand = nav.querySelector('.nav-brand');
-  const brandLink = navBrand?.querySelector('.button');
-  if (brandLink) {
-    brandLink.className = '';
-    brandLink.closest('.button-container').className = '';
+  if (navBrand) {
+    const brandLink = navBrand.querySelector('.button') || navBrand.querySelector('a');
+    if (brandLink) {
+      brandLink.className = '';
+      const container = brandLink.closest('.button-container');
+      if (container) container.className = '';
+      if (!brandLink.querySelector('img') && !brandLink.querySelector('picture')) {
+        const logoImg = document.createElement('img');
+        logoImg.src = 'https://publish-p63260-e524717.adobeaemcloud.com/content/dam/asset-share-commons/en/site/Logo-light.png/_jcr_content/renditions/original';
+        logoImg.alt = 'Home';
+        logoImg.className = 'nav-brand-logo';
+        brandLink.textContent = '';
+        brandLink.append(logoImg);
+      }
+    }
   }
 
   const navSections = nav.querySelector('.nav-sections');

@@ -301,6 +301,18 @@
     ]
   },
   {
+    "id": "cart-page",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "placeholder",
+        "label": "Placeholder",
+        "description": "Cart page content is populated dynamically from localStorage"
+      }
+    ]
+  },
+  {
     "id": "columns-casestudy",
     "fields": [
       {
