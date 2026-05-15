@@ -26,7 +26,7 @@ function renderEmptyCart(block) {
     <div class="cart-page-empty">
       <h2>Your cart is empty</h2>
       <p>Browse assets and add them to your cart to download or share.</p>
-      <a href="#" class="cart-page-browse-btn" onclick="history.back(); return false;">Browse Assets</a>
+      <a href="/asset-share-commons/en/home" class="cart-page-browse-btn">Browse Assets</a>
     </div>`;
 }
 

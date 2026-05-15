@@ -7,13 +7,15 @@ description = "AEM Asset Search Edge Function"
 language = "javascript"
 manifest_version = 3
 name = "aem-asset-search"
-service_id = ""
+service_id = "Ev0sGww6ux5SBt7fxLcvL1"
+
+[local_server]
+
+  [local_server.backends]
+
+    [local_server.backends.aem_publish]
+      url = "https://publish-p63260-e524717.adobeaemcloud.com"
 
 [scripts]
   build = "npm run build"
   post_init = "npm install"
-
-[local_server]
-  [local_server.backends]
-    [local_server.backends.aem_publish]
-      url = "https://publish-p63260-e524717.adobeaemcloud.com"
