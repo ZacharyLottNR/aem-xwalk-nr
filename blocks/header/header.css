@@ -237,8 +237,10 @@ header nav .nav-sections ul > li > ul > li {
     display: flex;
     gap: 24px;
     margin: 0;
+    justify-content: flex-end;
   }
 
+  header nav .nav-sections ul > li,
   header nav .nav-sections .default-content-wrapper > ul > li {
     flex: 0 1 auto;
     position: relative;
