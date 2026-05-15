@@ -188,6 +188,26 @@ export default async function decorate(block) {
   toggleMenu(nav, navSections, isDesktop.matches);
   isDesktop.addEventListener('change', () => toggleMenu(nav, navSections, isDesktop.matches));
 
+  // Add cart count badge to the Cart link
+  const cartLink = nav.querySelector('.nav-tools a');
+  if (cartLink && cartLink.textContent.trim().toLowerCase() === 'cart') {
+    const badge = document.createElement('span');
+    badge.className = 'cart-badge';
+    badge.textContent = '0';
+    badge.style.display = 'none';
+    cartLink.append(badge);
+
+    const updateBadge = () => {
+      import('../../scripts/cart.js').then(({ cartSize }) => {
+        const count = cartSize();
+        badge.textContent = count;
+        badge.style.display = count > 0 ? '' : 'none';
+      });
+    };
+    updateBadge();
+    document.addEventListener('cart:update', updateBadge);
+  }
+
   const navWrapper = document.createElement('div');
   navWrapper.className = 'nav-wrapper';
   navWrapper.append(nav);

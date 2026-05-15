@@ -1,8 +1,11 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
+import { downloadAsset, shareAsset, toggleCart } from '../../scripts/asset-actions.js';
+import { isInCart } from '../../scripts/cart.js';
 
 export function renderCard(asset) {
   const li = document.createElement('li');
+  li.dataset.assetPath = asset.path;
 
   const imageDiv = document.createElement('div');
   imageDiv.className = 'cards-asset-card-image';
@@ -37,9 +40,39 @@ export function renderCard(asset) {
   resLi.textContent = asset.resolution ? `RES.: ${asset.resolution}` : 'RES.';
   metaUl.append(sizeLi, typeLi, resLi);
 
-  const actions = document.createElement('p');
-  actions.innerHTML = '<strong>Download</strong> | <strong>Share</strong> | <strong>Add to Cart</strong>';
+  const actions = document.createElement('div');
+  actions.className = 'cards-asset-card-actions';
 
+  const downloadBtn = document.createElement('button');
+  downloadBtn.className = 'action-download';
+  downloadBtn.textContent = 'Download';
+  downloadBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    downloadAsset(asset.path);
+  });
+
+  const shareBtn = document.createElement('button');
+  shareBtn.className = 'action-share';
+  shareBtn.textContent = 'Share';
+  shareBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    shareAsset(asset.path, asset.title);
+  });
+
+  const cartBtn = document.createElement('button');
+  cartBtn.className = 'action-cart';
+  if (isInCart(asset.path)) {
+    cartBtn.textContent = 'Remove from Cart';
+    cartBtn.classList.add('in-cart');
+  } else {
+    cartBtn.textContent = 'Add to Cart';
+  }
+  cartBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    toggleCart(asset.path, cartBtn);
+  });
+
+  actions.append(downloadBtn, shareBtn, cartBtn);
   bodyDiv.append(h3, metaUl, actions);
   li.append(imageDiv, bodyDiv);
 
