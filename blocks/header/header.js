@@ -188,8 +188,12 @@ export default async function decorate(block) {
       } else {
         const logoMeta = getMetadata('logo');
         const logoPath = logoMeta || '/content/dam/asset-share-commons/en/site/Logo-light.png';
+        const publishHost = 'https://publish-p63260-e524717.adobeaemcloud.com';
+        const logoSrc = logoPath.startsWith('/content/dam/')
+          ? `${publishHost}${logoPath}/_jcr_content/renditions/original`
+          : logoPath;
         const logoImg = document.createElement('img');
-        logoImg.src = logoPath;
+        logoImg.src = logoSrc;
         logoImg.alt = 'Home';
         logoImg.className = 'nav-brand-logo';
         brandLink.textContent = '';
