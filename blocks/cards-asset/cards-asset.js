@@ -9,7 +9,8 @@ export function renderCard(asset) {
   const imgLink = document.createElement('a');
   imgLink.href = asset.detailUrl;
   imgLink.title = asset.title;
-  const picture = createOptimizedPicture(asset.renditionUrl, asset.title, false, [{ width: '750' }]);
+  const imgSrc = asset.thumbnailUrl || asset.renditionUrl;
+  const picture = createOptimizedPicture(imgSrc, asset.title, false, [{ width: '750' }]);
   imgLink.append(picture);
   const p = document.createElement('p');
   p.append(imgLink);
