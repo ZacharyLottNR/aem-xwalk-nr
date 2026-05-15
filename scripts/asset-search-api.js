@@ -13,8 +13,16 @@ function buildDetailUrl(hit) {
   const path = hit.detailPath || hit.path || '';
   const loc = window.location.pathname;
   const themeMatch = loc.match(/(\/asset-share-commons\/en\/(?:dark|light))/);
-  const themePath = themeMatch ? themeMatch[1] : loc.replace(/\/[^/]*$/, '');
-  return `${themePath}/details/${detailType}?path=${encodeURIComponent(path)}`;
+  const ascMatch = loc.match(/(\/asset-share-commons\/en)/);
+  let basePath;
+  if (themeMatch) {
+    basePath = themeMatch[1];
+  } else if (ascMatch) {
+    basePath = `${ascMatch[1]}/dark`;
+  } else {
+    basePath = loc.replace(/\/[^/]*$/, '');
+  }
+  return `${basePath}/details/${detailType}?path=${encodeURIComponent(path)}`;
 }
 
 export async function searchAssets({
