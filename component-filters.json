@@ -55,6 +55,10 @@
     ]
   },
   {
+    "id": "cards-recent",
+    "components": []
+  },
+  {
     "id": "cards-service",
     "components": [
       "card"
