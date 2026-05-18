@@ -428,7 +428,7 @@ body.theme-dark main h1, h2, h3, h4, h5, h6, p, div, span {
   color: rgb(250 250 250);
 }
 
-body.theme-light .button-container.nav-tools {
+body.theme-light .button-container.nav-tools a {
   padding: 15px 21px;
   border: none;
   border-radius: 0 4px 4px 0;
@@ -448,6 +448,6 @@ body.theme-light .button-container.nav-tools {
   height: 48px;
 }
 
-body.theme-light .button-container.nav-tools:hover {
+body.theme-light .button-container.nav-tools a:hover {
   opacity: 0.9;
 }
