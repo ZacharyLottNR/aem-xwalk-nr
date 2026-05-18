@@ -96,6 +96,8 @@
   cursor: pointer;
   transition: color 0.2s, background-color 0.2s;
   border-radius: 3px;
+  height: 26px;
+  max-width: 108px;
 }
 
 .cards-asset-card-actions button:hover {
@@ -105,6 +107,10 @@
 
 .cards-asset-card-actions button.in-cart {
   color: var(--asc-accent, #2fcc9c);
+  padding: 0px 4px;
+  height: 26px;
+  max-width: 108px;
+  white-space: normal;
 }
 
 .cards-asset-card-actions button:not(:first-child) {

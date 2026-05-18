@@ -431,7 +431,7 @@ body.theme-dark main h1, h2, h3, h4, h5, h6, p, div, span {
 body.theme-light .button-container.nav-tools a {
   padding: 15px 21px;
   border: none;
-  border-radius: 0 4px 4px 0;
+  border-radius: 4px;
   background-color: var(--asc-accent, rgb(47 204 156));
   color: #fff;
   font-size: 14px;
