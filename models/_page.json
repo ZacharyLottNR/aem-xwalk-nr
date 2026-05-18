@@ -23,13 +23,6 @@
           "label": "Keywords"
         },
         {
-          "component": "text",
-          "valueType": "string",
-          "name": "logo",
-          "label": "Logo Image",
-          "description": "DAM path to logo image (e.g. /content/dam/asset-share-commons/en/site/Logo-light.png)"
-        },
-        {
           "component": "select",
           "valueType": "string",
           "name": "theme",
@@ -38,6 +31,13 @@
             { "name": "Light", "value": "light" },
             { "name": "Dark", "value": "dark" }
           ]
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "logo",
+          "label": "Logo Image",
+          "description": "DAM path to logo image (e.g. /content/dam/asset-share-commons/en/site/Logo-light.png)"
         },
         {
           "component": "text",
