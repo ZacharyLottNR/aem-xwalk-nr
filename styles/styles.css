@@ -381,7 +381,7 @@ main .section.hero-banner p {
 }
 
 /* Asset Share Commons - Light Theme */
-.asset-share-light {
+body.theme-light {
   --asc-background: #f9f9f9;
   --asc-surface: #fff;
   --asc-text: rgb(80 80 80);
@@ -398,7 +398,7 @@ main .section.hero-banner p {
 }
 
 /* Asset Share Commons - Dark Theme */
-.asset-share-dark {
+body.theme-dark {
   --asc-background: rgb(60 60 60);
   --asc-surface: rgb(52 52 52);
   --asc-text: rgb(208 208 208);
