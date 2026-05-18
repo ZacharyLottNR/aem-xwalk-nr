@@ -12,7 +12,7 @@ function buildDetailUrl(hit) {
   const detailType = getDetailType(type);
   const path = hit.detailPath || hit.path || '';
   const loc = window.location.pathname;
-  const themeMatch = loc.match(/(\/asset-share-commons\/en\/(?:dark|light))/);
+  let themeMatch = loc.match(/(\/asset-share-commons\/en\/(?:dark|light))/);
   if(themeMatch == null) {
     themeMatch = 'light';
   }
