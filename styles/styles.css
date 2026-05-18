@@ -427,3 +427,27 @@ body.theme-dark header nav a:any-link {
 body.theme-dark main h1, h2, h3, h4, h5, h6, p, div, span {
   color: rgb(250 250 250);
 }
+
+body.theme-light .button-container.nav-tools {
+  padding: 15px 21px;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  background-color: var(--asc-accent, rgb(47 204 156));
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--body-font-family);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition: background-color 0.2s;
+  margin: 0;
+  text-transform: none;
+  letter-spacing: normal;
+  min-width: fit-content
+  height: 48px;
+}
+
+body.theme-light .button-container.nav-tools:hover {
+  opacity: 0.9;
+}
