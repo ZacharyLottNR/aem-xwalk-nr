@@ -13,12 +13,15 @@ function buildDetailUrl(hit) {
   const path = hit.detailPath || hit.path || '';
   const loc = window.location.pathname;
   const themeMatch = loc.match(/(\/asset-share-commons\/en\/(?:dark|light))/);
+  if(themeMatch == null) {
+    themeMatch = 'light';
+  }
   const ascMatch = loc.match(/(\/asset-share-commons\/en)/);
   let basePath;
   if (themeMatch) {
     [, basePath] = themeMatch;
   } else if (ascMatch) {
-    basePath = `${ascMatch[1]}/dark`;
+    basePath = `${ascMatch[1]}/light`;
   } else {
     basePath = loc.replace(/\/[^/]*$/, '');
   }
