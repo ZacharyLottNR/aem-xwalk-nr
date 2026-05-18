@@ -367,8 +367,8 @@ function decorateTemplateAndTheme() {
   };
   const template = getMetadata('template');
   if (template) addClasses(document.body, template);
-  const theme = getMetadata('theme');
-  if (theme) addClasses(document.body, theme);
+  const theme = getMetadata('theme') || 'light';
+  document.body.classList.add(`theme-${toClassName(theme)}`);
 }
 
 /**
