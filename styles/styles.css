@@ -395,6 +395,7 @@ body.theme-light {
   --asc-input-text: rgb(80 80 80);
   --asc-button-bg: rgb(224 225 226);
   --asc-button-text: rgb(0 0 0 / 60%);
+  background-color: rgb(250 250 250);
 }
 
 /* Asset Share Commons - Dark Theme */
@@ -412,4 +413,13 @@ body.theme-dark {
   --asc-input-text: rgb(224 224 224);
   --asc-button-bg: rgb(52 52 52);
   --asc-button-text: rgb(208 208 208);
+  background-color: rgb(10 10 10);
+  color: background-color: rgb(250 250 250);
+}
+body.theme-dark header .nav-wrapper {
+  background-color: rgb(10 10 10);
+}
+
+body.theme-dark header nav a:any-link {
+  color: rgb(250 250 250);
 }
