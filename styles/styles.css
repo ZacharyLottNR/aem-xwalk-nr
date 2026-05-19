@@ -451,3 +451,24 @@ body.theme-light .button-container.nav-tools a {
 body.theme-light .button-container.nav-tools a:hover {
   opacity: 0.9;
 }
+
+/* Text alignment utilities - section and block level */
+.section.text-left,
+.text-left {
+  text-align: left;
+}
+
+.section.text-center,
+.text-center {
+  text-align: center;
+}
+
+.section.text-right,
+.text-right {
+  text-align: right;
+}
+
+.section.text-justify,
+.text-justify {
+  text-align: justify;
+}

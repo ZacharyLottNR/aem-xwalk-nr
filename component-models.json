@@ -77,6 +77,40 @@
     ]
   },
   {
+    "id": "text",
+    "fields": [
+      {
+        "component": "richtext",
+        "name": "text",
+        "label": "Text",
+        "valueType": "string"
+      },
+      {
+        "component": "select",
+        "name": "classes",
+        "label": "Alignment",
+        "options": [
+          {
+            "name": "Left",
+            "value": "text-left"
+          },
+          {
+            "name": "Center",
+            "value": "text-center"
+          },
+          {
+            "name": "Right",
+            "value": "text-right"
+          },
+          {
+            "name": "Justify",
+            "value": "text-justify"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "title",
     "fields": [
       {
@@ -173,6 +207,22 @@
           {
             "name": "Highlight",
             "value": "highlight"
+          },
+          {
+            "name": "Text Left",
+            "value": "text-left"
+          },
+          {
+            "name": "Text Center",
+            "value": "text-center"
+          },
+          {
+            "name": "Text Right",
+            "value": "text-right"
+          },
+          {
+            "name": "Text Justify",
+            "value": "text-justify"
           }
         ]
       }

@@ -15,24 +15,7 @@
               }
             }
           },
-          "richTextConfig": {
-            "toolbar": [
-              "bold",
-              "italic",
-              "underline",
-              "strikethrough",
-              "link",
-              "unlink",
-              "list-ol",
-              "list-ul",
-              "outdent",
-              "indent",
-              "align-left",
-              "align-center",
-              "align-right",
-              "align-justify"
-            ]
-          }
+          "model": "text"
         },
         {
           "title": "Title",
