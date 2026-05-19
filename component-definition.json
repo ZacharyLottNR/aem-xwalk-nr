@@ -15,6 +15,18 @@
               }
             }
           },
+          "richTextConfig": {
+            "toolbar": [
+              "bold",
+              "italic",
+              "underline",
+              "strikethrough",
+              "link",
+              "unlink",
+              "list-ol",
+              "list-ul"
+            ]
+          },
           "model": "text"
         },
         {
