@@ -27,12 +27,6 @@
     ]
   },
   {
-    "id": "super-text",
-    "components": [
-      "super-text-item"
-    ]
-  },
-  {
     "id": "accordion-filter",
     "components": [
       "accordion-filter-item"

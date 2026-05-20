@@ -77,7 +77,7 @@
     ]
   },
   {
-    "id": "super-text-item",
+    "id": "super-text",
     "fields": [
       {
         "component": "richtext",
