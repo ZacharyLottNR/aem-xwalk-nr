@@ -23,7 +23,10 @@
       "asset-detail",
       "cart-page",
       "cards-recent",
-      "super-text"
+      "super-text",
+      "video-detail",
+      "document-detail",
+      "presentation-detail"
     ]
   },
   {

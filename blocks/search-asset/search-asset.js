@@ -19,7 +19,9 @@ function getCardData(card) {
   const meta = [...card.querySelectorAll('.cards-asset-card-body ul li')].map((li) => li.textContent.trim());
   const type = meta.find((m) => m.startsWith('TYPE:'))?.replace('TYPE:', '').trim() || '';
   const size = meta.find((m) => m.startsWith('SIZE:'))?.replace('SIZE:', '').trim() || '';
-  return { title, type, size, element: card };
+  return {
+    title, type, size, element: card,
+  };
 }
 
 function parseSize(sizeStr) {
@@ -27,7 +29,9 @@ function parseSize(sizeStr) {
   if (!match) return 0;
   const value = parseFloat(match[1].replace(',', ''));
   const unit = match[2].toUpperCase();
-  const multipliers = { B: 1, KB: 1024, MB: 1048576, GB: 1073741824 };
+  const multipliers = {
+    B: 1, KB: 1024, MB: 1048576, GB: 1073741824,
+  };
   return value * (multipliers[unit] || 1);
 }
 
@@ -212,6 +216,111 @@ function createLoadMore(onClick) {
   return btn;
 }
 
+function createFilterGroup(title, options) {
+  const details = document.createElement('details');
+  details.className = 'filter-group';
+
+  const summary = document.createElement('summary');
+  summary.className = 'filter-group-title';
+  summary.textContent = title;
+  details.append(summary);
+
+  const list = document.createElement('ul');
+  list.className = 'filter-group-options';
+  options.forEach(({ label, value }) => {
+    const li = document.createElement('li');
+    li.dataset.value = value;
+    li.textContent = label;
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', 'false');
+    li.addEventListener('click', () => {
+      li.classList.toggle('selected');
+      li.setAttribute('aria-selected', li.classList.contains('selected'));
+    });
+    list.append(li);
+  });
+  details.append(list);
+  return details;
+}
+
+function createFilterSidebar(onApply, onReset) {
+  const sidebar = document.createElement('aside');
+  sidebar.className = 'search-asset-filters';
+
+  const actions = document.createElement('div');
+  actions.className = 'filter-actions';
+  const applyBtn = document.createElement('button');
+  applyBtn.className = 'filter-apply';
+  applyBtn.textContent = 'Apply';
+  applyBtn.addEventListener('click', onApply);
+  const resetBtn = document.createElement('button');
+  resetBtn.className = 'filter-reset';
+  resetBtn.textContent = 'Reset';
+  resetBtn.addEventListener('click', onReset);
+  actions.append(applyBtn, resetBtn);
+  sidebar.append(actions);
+
+  const typeFilter = createFilterGroup('Type', [
+    { label: 'Image', value: 'image' },
+    { label: 'Video', value: 'video' },
+    { label: 'Document', value: 'document' },
+    { label: 'Presentation', value: 'presentation' },
+  ]);
+
+  const modifiedFilter = createFilterGroup('Last Modified', [
+    { label: 'Last 24 hours', value: '1' },
+    { label: 'Last 7 days', value: '7' },
+    { label: 'Last 30 days', value: '30' },
+    { label: 'Last 90 days', value: '90' },
+    { label: 'Last year', value: '365' },
+  ]);
+
+  const createdFilter = createFilterGroup('Created', [
+    { label: 'Last 24 hours', value: '1' },
+    { label: 'Last 7 days', value: '7' },
+    { label: 'Last 30 days', value: '30' },
+    { label: 'Last 90 days', value: '90' },
+    { label: 'Last year', value: '365' },
+  ]);
+
+  const styleFilter = createFilterGroup('Style', [
+    { label: 'Photography', value: 'photography' },
+    { label: 'Illustration', value: 'illustration' },
+    { label: 'Vector', value: 'vector' },
+  ]);
+
+  const orientationFilter = createFilterGroup('Orientation', [
+    { label: 'Landscape', value: 'landscape' },
+    { label: 'Portrait', value: 'portrait' },
+    { label: 'Square', value: 'square' },
+  ]);
+
+  const drmFilter = createFilterGroup('DRM', [
+    { label: 'Royalty Free', value: 'royalty-free' },
+    { label: 'Rights Managed', value: 'rights-managed' },
+  ]);
+
+  sidebar.append(
+    typeFilter,
+    modifiedFilter,
+    createdFilter,
+    styleFilter,
+    orientationFilter,
+    drmFilter,
+  );
+  return sidebar;
+}
+
+function getSelectedFilters(sidebar) {
+  const filters = {};
+  sidebar.querySelectorAll('.filter-group').forEach((group) => {
+    const title = group.querySelector('summary').textContent.trim().toLowerCase();
+    const selected = [...group.querySelectorAll('li.selected')].map((li) => li.dataset.value);
+    if (selected.length) filters[title] = selected;
+  });
+  return filters;
+}
+
 async function probeApi() {
   if (apiAvailable !== null) return apiAvailable;
   try {
@@ -324,11 +433,38 @@ export default async function decorate(block) {
 
   const loadMoreBtn = createLoadMore(() => executeSearch(true));
 
+  const filterToggle = document.createElement('button');
+  filterToggle.className = 'search-asset-filter-toggle';
+  filterToggle.setAttribute('aria-label', 'Toggle filters');
+  filterToggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>';
+
+  const filterSidebar = createFilterSidebar(
+    () => {
+      currentFilters = getSelectedFilters(filterSidebar);
+      executeSearch();
+    },
+    () => {
+      filterSidebar.querySelectorAll('li.selected').forEach((li) => {
+        li.classList.remove('selected');
+        li.setAttribute('aria-selected', 'false');
+      });
+      currentFilters = {};
+      executeSearch();
+    },
+  );
+  filterSidebar.hidden = true;
+
+  filterToggle.addEventListener('click', () => {
+    const isOpen = !filterSidebar.hidden;
+    filterSidebar.hidden = isOpen;
+    filterToggle.classList.toggle('active', !isOpen);
+  });
+
   const toolbar = document.createElement('div');
   toolbar.className = 'search-asset-toolbar';
-  toolbar.append(searchInput, viewToggles, sortControls);
+  toolbar.append(searchInput, viewToggles, sortControls, filterToggle);
 
-  block.append(toolbar);
+  block.append(toolbar, filterSidebar);
 
   // Place Load More after the cards-asset block
   const placeLoadMore = () => {
