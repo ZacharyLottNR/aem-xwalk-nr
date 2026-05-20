@@ -65,6 +65,7 @@ header nav a:any-link {
 
 header nav a:hover {
   color: var(--brand-accent);
+  border-bottom: 2px solid var(--brand-accent);
 }
 
 /* hamburger */
@@ -73,6 +74,10 @@ header nav .nav-hamburger {
   height: 22px;
   display: flex;
   align-items: center;
+}
+
+header nav .nav-hamburger a:hover {
+  border-bottom: 2px solid transparent;
 }
 
 header nav .nav-hamburger button {
