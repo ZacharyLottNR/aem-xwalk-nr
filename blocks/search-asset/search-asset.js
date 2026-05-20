@@ -212,6 +212,104 @@ function createLoadMore(onClick) {
   return btn;
 }
 
+function createFilterGroup(title, options) {
+  const details = document.createElement('details');
+  details.className = 'filter-group';
+
+  const summary = document.createElement('summary');
+  summary.className = 'filter-group-title';
+  summary.textContent = title;
+  details.append(summary);
+
+  const list = document.createElement('ul');
+  list.className = 'filter-group-options';
+  options.forEach(({ label, value }) => {
+    const li = document.createElement('li');
+    li.dataset.value = value;
+    li.textContent = label;
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', 'false');
+    li.addEventListener('click', () => {
+      li.classList.toggle('selected');
+      li.setAttribute('aria-selected', li.classList.contains('selected'));
+    });
+    list.append(li);
+  });
+  details.append(list);
+  return details;
+}
+
+function createFilterSidebar(onApply, onReset) {
+  const sidebar = document.createElement('aside');
+  sidebar.className = 'search-asset-filters';
+
+  const actions = document.createElement('div');
+  actions.className = 'filter-actions';
+  const applyBtn = document.createElement('button');
+  applyBtn.className = 'filter-apply';
+  applyBtn.textContent = 'Apply';
+  applyBtn.addEventListener('click', onApply);
+  const resetBtn = document.createElement('button');
+  resetBtn.className = 'filter-reset';
+  resetBtn.textContent = 'Reset';
+  resetBtn.addEventListener('click', onReset);
+  actions.append(applyBtn, resetBtn);
+  sidebar.append(actions);
+
+  const typeFilter = createFilterGroup('Type', [
+    { label: 'Image', value: 'image' },
+    { label: 'Video', value: 'video' },
+    { label: 'Document', value: 'document' },
+    { label: 'Presentation', value: 'presentation' },
+  ]);
+
+  const modifiedFilter = createFilterGroup('Last Modified', [
+    { label: 'Last 24 hours', value: '1' },
+    { label: 'Last 7 days', value: '7' },
+    { label: 'Last 30 days', value: '30' },
+    { label: 'Last 90 days', value: '90' },
+    { label: 'Last year', value: '365' },
+  ]);
+
+  const createdFilter = createFilterGroup('Created', [
+    { label: 'Last 24 hours', value: '1' },
+    { label: 'Last 7 days', value: '7' },
+    { label: 'Last 30 days', value: '30' },
+    { label: 'Last 90 days', value: '90' },
+    { label: 'Last year', value: '365' },
+  ]);
+
+  const styleFilter = createFilterGroup('Style', [
+    { label: 'Photography', value: 'photography' },
+    { label: 'Illustration', value: 'illustration' },
+    { label: 'Vector', value: 'vector' },
+  ]);
+
+  const orientationFilter = createFilterGroup('Orientation', [
+    { label: 'Landscape', value: 'landscape' },
+    { label: 'Portrait', value: 'portrait' },
+    { label: 'Square', value: 'square' },
+  ]);
+
+  const drmFilter = createFilterGroup('DRM', [
+    { label: 'Royalty Free', value: 'royalty-free' },
+    { label: 'Rights Managed', value: 'rights-managed' },
+  ]);
+
+  sidebar.append(typeFilter, modifiedFilter, createdFilter, styleFilter, orientationFilter, drmFilter);
+  return sidebar;
+}
+
+function getSelectedFilters(sidebar) {
+  const filters = {};
+  sidebar.querySelectorAll('.filter-group').forEach((group) => {
+    const title = group.querySelector('summary').textContent.trim().toLowerCase();
+    const selected = [...group.querySelectorAll('li.selected')].map((li) => li.dataset.value);
+    if (selected.length) filters[title] = selected;
+  });
+  return filters;
+}
+
 async function probeApi() {
   if (apiAvailable !== null) return apiAvailable;
   try {
@@ -328,7 +426,26 @@ export default async function decorate(block) {
   toolbar.className = 'search-asset-toolbar';
   toolbar.append(searchInput, viewToggles, sortControls);
 
-  block.append(toolbar);
+  const filterSidebar = createFilterSidebar(
+    () => {
+      currentFilters = getSelectedFilters(filterSidebar);
+      executeSearch();
+    },
+    () => {
+      filterSidebar.querySelectorAll('li.selected').forEach((li) => {
+        li.classList.remove('selected');
+        li.setAttribute('aria-selected', 'false');
+      });
+      currentFilters = {};
+      executeSearch();
+    },
+  );
+
+  const mainContent = document.createElement('div');
+  mainContent.className = 'search-asset-main';
+  mainContent.append(toolbar);
+
+  block.append(mainContent, filterSidebar);
 
   // Place Load More after the cards-asset block
   const placeLoadMore = () => {
