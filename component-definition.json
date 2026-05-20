@@ -285,7 +285,11 @@
                 "resourceType": "core/franklin/components/block/v1/block/item",
                 "template": {
                   "name": "Super Text Item",
-                  "model": "super-text-item"
+                  "model": "super-text-item",
+                  "text": "<p>Enter text here</p>",
+                  "alignment": "left",
+                  "margin": "",
+                  "xDentAmount": 0
                 }
               }
             }
