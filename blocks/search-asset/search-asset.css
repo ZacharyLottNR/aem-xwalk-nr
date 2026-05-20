@@ -169,6 +169,11 @@
 .cards-asset.list-view > ul > li .cards-asset-card-image {
   width: 120px;
   flex-shrink: 0;
+  background: white;
+}
+
+.cards-asset.list-view > ul > li .cards-asset-card-image p {
+  margin: 0px;
 }
 
 .cards-asset.list-view > ul > li img {
@@ -316,6 +321,7 @@
   background: var(--brand-primary, #3b3663);
   color: #fff;
 }
+
 /* stylelint-enable no-descending-specificity */
 
 @media (width < 900px) {

@@ -383,14 +383,14 @@ main .section.hero-banner p {
 /* Asset Share Commons - Light Theme */
 body.theme-light {
   --asc-background: #f9f9f9;
-  --asc-surface: #fff;
+  --asc-surface: #BDBDBD;
   --asc-text: rgb(80 80 80);
   --asc-text-strong: rgb(0 0 0 / 85%);
   --asc-text-muted: rgb(0 0 0 / 40%);
   --asc-text-subtle: rgb(0 0 0 / 60%);
   --asc-accent: rgb(47 204 156);
-  --asc-border: rgb(34 36 38 / 15%);
-  --asc-card-border: #f9f9f9;
+  --asc-border: rgb(3 3 3 / 100%);
+  --asc-card-border: rgb(60 60 60);
   --asc-input-bg: #fff;
   --asc-input-text: rgb(80 80 80);
   --asc-button-bg: rgb(224 225 226);
