@@ -445,7 +445,7 @@ body.theme-light .button-container.nav-tools a {
   text-transform: none;
   letter-spacing: normal;
   min-width: fit-content;
-  height: 48px;
+  max-height: 48px;
 }
 
 body.theme-light .button-container.nav-tools a:hover {
