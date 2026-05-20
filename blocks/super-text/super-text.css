@@ -1,0 +1,54 @@
+.super-text .super-text-item {
+  margin-bottom: 0.5em;
+}
+
+.super-text .super-text-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Alignment */
+.super-text .align-center {
+  text-align: center;
+}
+
+.super-text .align-right {
+  text-align: right;
+}
+
+.super-text .align-justify {
+  text-align: justify;
+}
+
+/* Indent (margin-left) */
+.super-text .indent-1 {
+  margin-left: 1rem;
+}
+
+.super-text .indent-2 {
+  margin-left: 2rem;
+}
+
+.super-text .indent-3 {
+  margin-left: 3rem;
+}
+
+.super-text .indent-4 {
+  margin-left: 4rem;
+}
+
+/* Outdent (margin-left, negative context - pulls left relative to container) */
+.super-text .outdent-1 {
+  margin-left: -1rem;
+}
+
+.super-text .outdent-2 {
+  margin-left: -2rem;
+}
+
+.super-text .outdent-3 {
+  margin-left: -3rem;
+}
+
+.super-text .outdent-4 {
+  margin-left: -4rem;
+}

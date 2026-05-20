@@ -22,7 +22,14 @@
       "columns-statistics",
       "asset-detail",
       "cart-page",
-      "cards-recent"
+      "cards-recent",
+      "super-text"
+    ]
+  },
+  {
+    "id": "super-text",
+    "components": [
+      "super-text-item"
     ]
   },
   {

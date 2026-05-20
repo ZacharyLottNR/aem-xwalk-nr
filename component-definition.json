@@ -262,6 +262,36 @@
           }
         },
         {
+          "title": "Super Text",
+          "id": "super-text",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Super Text",
+                  "filter": "super-text"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Super Text Item",
+          "id": "super-text-item",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Super Text Item",
+                  "model": "super-text-item"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Cards Recent",
           "id": "cards-recent",
           "plugins": {

@@ -77,6 +77,53 @@
     ]
   },
   {
+    "id": "super-text-item",
+    "fields": [
+      {
+        "component": "richtext",
+        "name": "text",
+        "label": "Text",
+        "valueType": "string"
+      },
+      {
+        "component": "select",
+        "name": "alignment",
+        "label": "Alignment",
+        "valueType": "string",
+        "options": [
+          { "name": "Left", "value": "left" },
+          { "name": "Center", "value": "center" },
+          { "name": "Right", "value": "right" },
+          { "name": "Justify", "value": "justify" }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "margin",
+        "label": "Margin",
+        "valueType": "string",
+        "options": [
+          { "name": "None", "value": "" },
+          { "name": "Indent", "value": "indent" },
+          { "name": "Outdent", "value": "outdent" }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "xDentAmount",
+        "label": "X-Dent Amount",
+        "valueType": "number",
+        "options": [
+          { "name": "0", "value": 0 },
+          { "name": "1", "value": 1 },
+          { "name": "2", "value": 2 },
+          { "name": "3", "value": 3 },
+          { "name": "4", "value": 4 }
+        ]
+      }
+    ]
+  },
+  {
     "id": "text",
     "fields": [
       {
