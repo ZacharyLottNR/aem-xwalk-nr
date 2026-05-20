@@ -48,3 +48,16 @@
 .super-text.outdent-4 {
   margin-left: -4rem;
 }
+
+/* Max-width */
+.super-text.max-w-narrow {
+  max-width: 600px;
+}
+
+.super-text.max-w-medium {
+  max-width: 800px;
+}
+
+.super-text.max-w-full {
+  max-width: 100%;
+}

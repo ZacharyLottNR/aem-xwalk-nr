@@ -101,7 +101,10 @@
           { "name": "Outdent 1", "value": "outdent-1" },
           { "name": "Outdent 2", "value": "outdent-2" },
           { "name": "Outdent 3", "value": "outdent-3" },
-          { "name": "Outdent 4", "value": "outdent-4" }
+          { "name": "Outdent 4", "value": "outdent-4" },
+          { "name": "Max-Width Narrow (600px)", "value": "max-w-narrow" },
+          { "name": "Max-Width Medium (800px)", "value": "max-w-medium" },
+          { "name": "Max-Width Full", "value": "max-w-full" }
         ]
       }
     ]
