@@ -22,13 +22,6 @@
         "label": "Keywords"
       },
       {
-        "component": "text",
-        "valueType": "string",
-        "name": "logo",
-        "label": "Logo Image",
-        "description": "DAM path to logo image (e.g. /content/dam/asset-share-commons/en/site/Logo-light.png)"
-      },
-      {
         "component": "select",
         "valueType": "string",
         "name": "theme",
@@ -43,6 +36,13 @@
             "value": "dark"
           }
         ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "logo",
+        "label": "Logo Image",
+        "description": "DAM path to logo image (e.g. /content/dam/asset-share-commons/en/site/Logo-light.png)"
       },
       {
         "component": "text",
@@ -73,73 +73,6 @@
         "component": "text",
         "name": "imageAlt",
         "label": "Alt Text"
-      }
-    ]
-  },
-  {
-    "id": "super-text",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "content",
-        "label": "Text",
-        "valueType": "string"
-      },
-      {
-        "component": "multiselect",
-        "name": "classes",
-        "label": "Additional Formatting",
-        "options": [
-          { "name": "Align Left", "value": "align-left" },
-          { "name": "Align Center", "value": "align-center" },
-          { "name": "Align Right", "value": "align-right" },
-          { "name": "Align Justify", "value": "align-justify" },
-          { "name": "Indent 1", "value": "indent-1" },
-          { "name": "Indent 2", "value": "indent-2" },
-          { "name": "Indent 3", "value": "indent-3" },
-          { "name": "Indent 4", "value": "indent-4" },
-          { "name": "Outdent 1", "value": "outdent-1" },
-          { "name": "Outdent 2", "value": "outdent-2" },
-          { "name": "Outdent 3", "value": "outdent-3" },
-          { "name": "Outdent 4", "value": "outdent-4" },
-          { "name": "Max-Width Narrow (600px)", "value": "max-w-narrow" },
-          { "name": "Max-Width Medium (800px)", "value": "max-w-medium" },
-          { "name": "Max-Width Full", "value": "max-w-full" }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "text",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "text",
-        "label": "Text",
-        "valueType": "string"
-      },
-      {
-        "component": "select",
-        "name": "classes",
-        "label": "Alignment",
-        "options": [
-          {
-            "name": "Left",
-            "value": "text-left"
-          },
-          {
-            "name": "Center",
-            "value": "text-center"
-          },
-          {
-            "name": "Right",
-            "value": "text-right"
-          },
-          {
-            "name": "Justify",
-            "value": "text-justify"
-          }
-        ]
       }
     ]
   },
@@ -240,22 +173,6 @@
           {
             "name": "Highlight",
             "value": "highlight"
-          },
-          {
-            "name": "Text Left",
-            "value": "text-left"
-          },
-          {
-            "name": "Text Center",
-            "value": "text-center"
-          },
-          {
-            "name": "Text Right",
-            "value": "text-right"
-          },
-          {
-            "name": "Text Justify",
-            "value": "text-justify"
           }
         ]
       }
@@ -5428,6 +5345,162 @@
                 "value": "minimal"
               }
             ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "super-text",
+    "fields": [
+      {
+        "component": "richtext",
+        "name": "content",
+        "label": "Text",
+        "valueType": "string"
+      },
+      {
+        "component": "multiselect",
+        "name": "classes",
+        "label": "Additional Formatting",
+        "options": [
+          {
+            "name": "Align Left",
+            "value": "align-left"
+          },
+          {
+            "name": "Align Center",
+            "value": "align-center"
+          },
+          {
+            "name": "Align Right",
+            "value": "align-right"
+          },
+          {
+            "name": "Align Justify",
+            "value": "align-justify"
+          },
+          {
+            "name": "Indent 1",
+            "value": "indent-1"
+          },
+          {
+            "name": "Indent 2",
+            "value": "indent-2"
+          },
+          {
+            "name": "Indent 3",
+            "value": "indent-3"
+          },
+          {
+            "name": "Indent 4",
+            "value": "indent-4"
+          },
+          {
+            "name": "Outdent 1",
+            "value": "outdent-1"
+          },
+          {
+            "name": "Outdent 2",
+            "value": "outdent-2"
+          },
+          {
+            "name": "Outdent 3",
+            "value": "outdent-3"
+          },
+          {
+            "name": "Outdent 4",
+            "value": "outdent-4"
+          },
+          {
+            "name": "Max-Width Narrow (600px)",
+            "value": "max-w-narrow"
+          },
+          {
+            "name": "Max-Width Medium (800px)",
+            "value": "max-w-medium"
+          },
+          {
+            "name": "Max-Width Full",
+            "value": "max-w-full"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "super-text",
+    "fields": [
+      {
+        "component": "richtext",
+        "name": "content",
+        "label": "Text",
+        "valueType": "string"
+      },
+      {
+        "component": "multiselect",
+        "name": "classes",
+        "label": "Additional Formatting",
+        "options": [
+          {
+            "name": "Align Left",
+            "value": "align-left"
+          },
+          {
+            "name": "Align Center",
+            "value": "align-center"
+          },
+          {
+            "name": "Align Right",
+            "value": "align-right"
+          },
+          {
+            "name": "Align Justify",
+            "value": "align-justify"
+          },
+          {
+            "name": "Indent 1",
+            "value": "indent-1"
+          },
+          {
+            "name": "Indent 2",
+            "value": "indent-2"
+          },
+          {
+            "name": "Indent 3",
+            "value": "indent-3"
+          },
+          {
+            "name": "Indent 4",
+            "value": "indent-4"
+          },
+          {
+            "name": "Outdent 1",
+            "value": "outdent-1"
+          },
+          {
+            "name": "Outdent 2",
+            "value": "outdent-2"
+          },
+          {
+            "name": "Outdent 3",
+            "value": "outdent-3"
+          },
+          {
+            "name": "Outdent 4",
+            "value": "outdent-4"
+          },
+          {
+            "name": "Max-Width Narrow (600px)",
+            "value": "max-w-narrow"
+          },
+          {
+            "name": "Max-Width Medium (800px)",
+            "value": "max-w-medium"
+          },
+          {
+            "name": "Max-Width Full",
+            "value": "max-w-full"
           }
         ]
       }
