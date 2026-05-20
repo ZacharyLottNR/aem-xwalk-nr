@@ -40,3 +40,20 @@ npm run lint
 1. Install the [AEM CLI](https://github.com/adobe/helix-cli): `npm install -g @adobe/aem-cli`
 1. Start AEM Proxy: `aem up` (opens your browser at `http://localhost:3000`)
 1. Open the `{repo}` directory in your favorite IDE and start coding :)
+
+## How to add shared formatting to another block:
+
+1. Create blocks/my-block/_my-block.src.json:
+```
+{
+    "models": [{
+        "id": "my-block",
+        "fields": [
+            { "component": "richtext", "name": "content", "label": "Text", "valueType": "string" },
+            { "$include": "models/_shared/formatting.json" }
+        ]
+    }]
+}
+```
+2. Run npm run build:resolve && npm run build:json
+3. Commit both .src.json and .json
