@@ -86,39 +86,22 @@
         "valueType": "string"
       },
       {
-        "component": "select",
-        "name": "alignment",
-        "label": "Alignment",
-        "valueType": "string",
+        "component": "multiselect",
+        "name": "classes",
+        "label": "Formatting",
         "options": [
-          { "name": "Left", "value": "left" },
-          { "name": "Center", "value": "center" },
-          { "name": "Right", "value": "right" },
-          { "name": "Justify", "value": "justify" }
-        ]
-      },
-      {
-        "component": "select",
-        "name": "margin",
-        "label": "Margin",
-        "valueType": "string",
-        "options": [
-          { "name": "None", "value": "" },
-          { "name": "Indent", "value": "indent" },
-          { "name": "Outdent", "value": "outdent" }
-        ]
-      },
-      {
-        "component": "select",
-        "name": "xDentAmount",
-        "label": "X-Dent Amount",
-        "valueType": "string",
-        "options": [
-          { "name": "0", "value": "0" },
-          { "name": "1", "value": "1" },
-          { "name": "2", "value": "2" },
-          { "name": "3", "value": "3" },
-          { "name": "4", "value": "4" }
+          { "name": "Align Left", "value": "align-left" },
+          { "name": "Align Center", "value": "align-center" },
+          { "name": "Align Right", "value": "align-right" },
+          { "name": "Align Justify", "value": "align-justify" },
+          { "name": "Indent 1", "value": "indent-1" },
+          { "name": "Indent 2", "value": "indent-2" },
+          { "name": "Indent 3", "value": "indent-3" },
+          { "name": "Indent 4", "value": "indent-4" },
+          { "name": "Outdent 1", "value": "outdent-1" },
+          { "name": "Outdent 2", "value": "outdent-2" },
+          { "name": "Outdent 3", "value": "outdent-3" },
+          { "name": "Outdent 4", "value": "outdent-4" }
         ]
       }
     ]
