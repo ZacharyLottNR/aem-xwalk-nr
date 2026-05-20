@@ -19,7 +19,9 @@ function getCardData(card) {
   const meta = [...card.querySelectorAll('.cards-asset-card-body ul li')].map((li) => li.textContent.trim());
   const type = meta.find((m) => m.startsWith('TYPE:'))?.replace('TYPE:', '').trim() || '';
   const size = meta.find((m) => m.startsWith('SIZE:'))?.replace('SIZE:', '').trim() || '';
-  return { title, type, size, element: card };
+  return {
+    title, type, size, element: card,
+  };
 }
 
 function parseSize(sizeStr) {
@@ -27,7 +29,9 @@ function parseSize(sizeStr) {
   if (!match) return 0;
   const value = parseFloat(match[1].replace(',', ''));
   const unit = match[2].toUpperCase();
-  const multipliers = { B: 1, KB: 1024, MB: 1048576, GB: 1073741824 };
+  const multipliers = {
+    B: 1, KB: 1024, MB: 1048576, GB: 1073741824,
+  };
   return value * (multipliers[unit] || 1);
 }
 
@@ -296,7 +300,14 @@ function createFilterSidebar(onApply, onReset) {
     { label: 'Rights Managed', value: 'rights-managed' },
   ]);
 
-  sidebar.append(typeFilter, modifiedFilter, createdFilter, styleFilter, orientationFilter, drmFilter);
+  sidebar.append(
+    typeFilter,
+    modifiedFilter,
+    createdFilter,
+    styleFilter,
+    orientationFilter,
+    drmFilter,
+  );
   return sidebar;
 }
 
@@ -422,9 +433,10 @@ export default async function decorate(block) {
 
   const loadMoreBtn = createLoadMore(() => executeSearch(true));
 
-  const toolbar = document.createElement('div');
-  toolbar.className = 'search-asset-toolbar';
-  toolbar.append(searchInput, viewToggles, sortControls);
+  const filterToggle = document.createElement('button');
+  filterToggle.className = 'search-asset-filter-toggle';
+  filterToggle.setAttribute('aria-label', 'Toggle filters');
+  filterToggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>';
 
   const filterSidebar = createFilterSidebar(
     () => {
@@ -440,12 +452,19 @@ export default async function decorate(block) {
       executeSearch();
     },
   );
+  filterSidebar.hidden = true;
 
-  const mainContent = document.createElement('div');
-  mainContent.className = 'search-asset-main';
-  mainContent.append(toolbar);
+  filterToggle.addEventListener('click', () => {
+    const isOpen = !filterSidebar.hidden;
+    filterSidebar.hidden = isOpen;
+    filterToggle.classList.toggle('active', !isOpen);
+  });
 
-  block.append(mainContent, filterSidebar);
+  const toolbar = document.createElement('div');
+  toolbar.className = 'search-asset-toolbar';
+  toolbar.append(searchInput, viewToggles, sortControls, filterToggle);
+
+  block.append(toolbar, filterSidebar);
 
   // Place Load More after the cards-asset block
   const placeLoadMore = () => {
