@@ -286,11 +286,10 @@
                 "template": {
                   "name": "Super Text Item",
                   "model": "super-text-item",
-                  "modelFields": "[text,alignment,margin,xDentAmount]",
                   "text": "<p>Enter text here</p>",
                   "alignment": "left",
                   "margin": "",
-                  "xDentAmount": 0
+                  "xDentAmount": "0"
                 }
               }
             }
