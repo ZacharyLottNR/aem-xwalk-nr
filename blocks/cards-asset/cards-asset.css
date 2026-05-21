@@ -131,13 +131,13 @@
   border-radius: 0;
 }
 
-.cards-asset-card-actions button(:first-child) {
+.cards-asset-card-actions button:first-child {
   border-left: 0px solid var(--asc-border, #e8e8e8);
   border-right: 0px solid var(--asc-border, #e8e8e8);
   border-radius: 3px 0px 0px 3px;
 }
 
-.cards-asset-card-actions button(:last-child) {
+.cards-asset-card-actions button:last-child {
   border-left: 0px solid var(--asc-border, #e8e8e8);
   border-right: 0px solid var(--asc-border, #e8e8e8);
   border-radius: 0px 3px 3px 0px;
