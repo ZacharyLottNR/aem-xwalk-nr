@@ -126,10 +126,11 @@
   text-transform: uppercase;
   cursor: pointer;
   transition: color 0.2s, background-color 0.2s;
-  height: 26px;
+  height: 36px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-bottom: 0px;
 }
 
 .cards-asset-card-actions button:hover {
@@ -149,7 +150,6 @@ body.theme-dark .cards-asset-card-actions button {
 .cards-asset-card-actions button.in-cart {
   color: var(--asc-accent, #2fcc9c);
   padding: 0 4px;
-  height: 26px;
   white-space: normal;
 }
 
