@@ -148,6 +148,9 @@ body.theme-dark .cards-asset-card-actions button {
 
 .cards-asset-card-actions button.in-cart {
   color: var(--asc-accent, #2fcc9c);
+  padding: 0 4px;
+  height: 26px;
+  white-space: normal;
 }
 
 .cards-asset-card-actions button.in-cart:hover {
