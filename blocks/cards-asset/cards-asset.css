@@ -26,7 +26,7 @@
 }
 
 .cards-asset-card-image p {
-  margin: 0px;
+  margin: 0;
   background-color: white;
 }
 
@@ -91,7 +91,7 @@
 /* Action buttons */
 .cards-asset-card-actions {
   display: flex;
-  gap: 4px;
+  gap: 0;
   margin-top: auto;
   padding-top: 8px;
   border-top: 1px solid var(--asc-border, #e8e8e8);
@@ -101,6 +101,9 @@
   flex: 1;
   padding: 6px 4px;
   border: none;
+  border-left: 1px solid var(--asc-border, #e8e8e8);
+  border-right: 1px solid var(--asc-border, #e8e8e8);
+  border-radius: 0;
   background: none;
   color: var(--asc-text-subtle, #999);
   font-size: 11px;
@@ -109,7 +112,6 @@
   text-transform: uppercase;
   cursor: pointer;
   transition: color 0.2s, background-color 0.2s;
-  border-radius: 3px;
   height: 26px;
   max-width: 114px;
 }
@@ -119,12 +121,9 @@
   background-color: var(--asc-card-border, rgb(47 204 156));
 }
 
-.cards-asset-card-actions {
-  gap: 0;
-}
-
 .cards-asset-card-actions button.in-cart {
-  padding: 0px 4px;
+  color: var(--asc-accent, #2fcc9c);
+  padding: 0 4px;
   height: 26px;
   max-width: 108px;
   white-space: normal;
@@ -134,22 +133,16 @@
   color: var(--asc-text-subtle, #999);
 }
 
-.cards-asset-card-actions button {
-  border-left: 1px solid var(--asc-border, #e8e8e8);
-  border-right: 1px solid var(--asc-border, #e8e8e8);
-  border-radius: 0;
-}
-
 .cards-asset-card-actions button:first-child {
-  border-left: 0px solid var(--asc-border, #e8e8e8);
-  border-right: 0px solid var(--asc-border, #e8e8e8);
-  border-radius: 3px 0px 0px 3px;
+  border-left: 0 solid var(--asc-border, #e8e8e8);
+  border-right: 0 solid var(--asc-border, #e8e8e8);
+  border-radius: 3px 0 0 3px;
 }
 
 .cards-asset-card-actions button:last-child {
-  border-left: 0px solid var(--asc-border, #e8e8e8);
-  border-right: 0px solid var(--asc-border, #e8e8e8);
-  border-radius: 0px 3px 3px 0px;
+  border-left: 0 solid var(--asc-border, #e8e8e8);
+  border-right: 0 solid var(--asc-border, #e8e8e8);
+  border-radius: 0 3px 3px 0;
 }
 
 /* Toast notification */
