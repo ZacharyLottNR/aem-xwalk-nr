@@ -234,8 +234,8 @@
 }
 
 body.theme-dark .search-asset-filter-toggle.active {
-  background: #000;
-  color: #fff;
+  background: #fff;
+  color: #000;
 }
 
 /* Filter panel (dropdown below toolbar) */
