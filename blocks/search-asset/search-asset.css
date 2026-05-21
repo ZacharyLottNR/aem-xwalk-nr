@@ -228,7 +228,11 @@
 .search-asset-filter-toggle.active {
   color: var(--brand-primary, #3b3663);
   border-color: var(--brand-primary, #3b3663);
-  background: var(--asc-card-border, #f5f5f5);
+  background: var(--light-color, #f5f5f5);
+}
+
+body.theme-dark .search-asset-filter-toggle.active {
+  background: var(--asc-background, #f5f5f5);
 }
 
 /* Filter panel (dropdown below toolbar) */
@@ -237,10 +241,14 @@
   border-radius: 4px;
   padding: 20px 24px;
   margin-bottom: var(--spacing-s, 16px);
-  background: var(--asc-card-border, #f9f9f9);
+  background: var(--light-color, #f9f9f9);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
+}
+
+body.theme-dark .search-asset-filters {
+  background: var(--asc-background, #f5f5f5);
 }
 
 .search-asset-filters[hidden] {
