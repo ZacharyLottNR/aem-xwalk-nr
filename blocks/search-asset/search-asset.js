@@ -371,6 +371,8 @@ export default async function decorate(block) {
 
       if (append) {
         appendCards(results.hits, cards);
+      } else if (results.hits.length === 0) {
+        cards.innerHTML = '<p class="search-asset-no-results">No results found. Try adjusting your search or filters.</p>';
       } else {
         renderCards(results.hits, cards);
       }
@@ -406,9 +408,11 @@ export default async function decorate(block) {
       }
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.warn('API search failed, using client-side filtering:', err.message);
-      useApi = false;
-      executeSearchLocal();
+      console.warn('API search failed:', err.message);
+      const cards = getCardsBlock();
+      if (cards) {
+        cards.innerHTML = '<p class="search-asset-error">Unable to load assets. Please try again later.</p>';
+      }
     } finally {
       searching = false;
     }
