@@ -389,8 +389,8 @@ body.theme-light {
   --asc-text-muted: rgb(0 0 0 / 40%);
   --asc-text-subtle: rgb(0 0 0 / 60%);
   --asc-accent: rgb(47 204 156);
-  --asc-border: rgb(3 3 3 / 100%);
-  --asc-card-border: rgb(60 60 60);
+  --asc-border: rgb(3 3 3 / 50%);
+  --asc-card-border: rgb(60 60 60 / 50%);
   --asc-input-bg: #fff;
   --asc-input-text: rgb(80 80 80);
   --asc-button-bg: rgb(224 225 226);
