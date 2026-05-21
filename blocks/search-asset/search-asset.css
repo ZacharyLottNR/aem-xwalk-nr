@@ -226,8 +226,8 @@
 }
 
 .search-asset-filter-toggle.active {
-  color: var(--brand-primary, #3b3663);
-  border-color: var(--brand-primary, #3b3663);
+  color: var(--asc-accent, rgb(47 204 156));
+  border-color: var(--asc-accent, rgb(47 204 156));
   background: var(--light-color, #f5f5f5);
 }
 
@@ -286,9 +286,17 @@ body.theme-dark .search-asset-filters {
   border: 1px solid var(--asc-border, #ddd);
 }
 
-.filter-apply:hover,
+.filter-apply:hover {
+  opacity: 0.85;
+  background: var(--asc-accent, rgb(47 204 156));
+  border-color: var(--asc-accent, rgb(47 204 156));
+}
+
 .filter-reset:hover {
   opacity: 0.85;
+  background: var(--asc-card-border, #f5f5f5);
+  border-color: var(--asc-border, #ddd);
+  color: var(--asc-text, #555);
 }
 
 .filter-group {
