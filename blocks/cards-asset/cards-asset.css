@@ -18,7 +18,7 @@
 }
 
 .cards-asset > ul > li:hover {
-    border-color: var(--asc-card-border, #f9f9f9);
+  border-color: var(--asc-accent, rgb(47 204 156));
 }
 
 .cards-asset > ul > li .cards-asset-card-image {
