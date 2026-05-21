@@ -5,6 +5,7 @@ header .nav-wrapper {
   z-index: 2;
   position: fixed;
   box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+  top: 0;
 }
 
 header nav {
@@ -29,6 +30,7 @@ header nav[aria-expanded='true'] {
     'tools tools' var(--nav-height) / auto 1fr;
   overflow-y: auto;
   min-height: 100dvh;
+  background-color: var(--background-color);
 }
 
 @media (width >= 900px) {
@@ -195,6 +197,17 @@ header nav[aria-expanded='true'] .nav-sections {
   display: block;
   visibility: visible;
   align-self: start;
+  padding: 16px 0;
+}
+
+header nav[aria-expanded='true'] .nav-sections ul {
+  flex-direction: column;
+  gap: 0;
+}
+
+header nav[aria-expanded='true'] .nav-sections ul > li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--asc-border, rgb(0 0 0 / 10%));
 }
 
 header nav .nav-sections ul {
@@ -322,10 +335,10 @@ header nav .nav-tools a.button:any-link {
 }
 
 body.theme-dark nav {
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid var(--asc-border, rgb(52 52 52));
 }
 
 body.theme-dark header nav .nav-hamburger button {
-  background-color: black;
-  color: white;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
