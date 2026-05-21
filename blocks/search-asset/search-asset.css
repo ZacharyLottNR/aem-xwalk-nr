@@ -186,7 +186,7 @@
 }
 
 .cards-asset.list-view > ul > li .cards-asset-card-image p {
-  margin: 0px;
+  margin: 0;
 }
 
 .cards-asset.list-view > ul > li img {
@@ -275,9 +275,9 @@ body.theme-dark .search-asset-filters {
 }
 
 .filter-apply {
-  background: var(--brand-primary, #3b3663);
+  background: var(--asc-accent, rgb(47 204 156));
   color: #fff;
-  border: 1px solid var(--brand-primary, #3b3663);
+  border: 1px solid var(--asc-accent, rgb(47 204 156));
 }
 
 .filter-reset {
@@ -339,7 +339,7 @@ body.theme-dark .search-asset-filters {
 }
 
 .search-asset-filters .filter-group-options li.selected {
-  background: var(--brand-primary, #3b3663);
+  background: var(--asc-accent, rgb(47 204 156));
   color: #fff;
 }
 
