@@ -216,6 +216,16 @@ body.theme-dark .search-asset .search-asset-input::-webkit-search-cancel-button 
   gap: 16px;
 }
 
+.cards-asset.list-view .cards-asset-card-actions {
+  border-top: none;
+  padding-top: 0;
+}
+
+.cards-asset.list-view .cards-asset-card-actions button {
+  max-width: none;
+  white-space: nowrap;
+}
+
 /* Filter toggle button */
 .search-asset-filter-toggle {
   display: flex;
