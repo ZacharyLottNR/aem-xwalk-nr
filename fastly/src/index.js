@@ -4,7 +4,7 @@ import { env } from "fastly:env";
 
 const PUBLISH_HOST = 'publish-p63260-e524717.adobeaemcloud.com';
 const DAM_ROOT = '/content/dam/asset-share-commons/en/public';
-const DAM_SUBFOLDERS = ['pictures', 'featured', 'logos'];
+const DAM_SUBFOLDERS = ['pictures', 'featured', 'logos', 'media', 'documents'];
 const DEFAULT_LIMIT = 24;
 
 const CORS_HEADERS = {
