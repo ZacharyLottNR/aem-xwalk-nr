@@ -222,9 +222,11 @@ body.theme-dark .search-asset .search-asset-input::-webkit-search-cancel-button 
   margin-left: auto;
 }
 
-.cards-asset.list-view .cards-asset-card-actions button {
+.cards-asset.list-view > ul > li .cards-asset-card-actions button {
   max-width: none;
   white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
 }
 
 /* Filter toggle button */
