@@ -223,7 +223,7 @@ body.theme-dark .search-asset .search-asset-input::-webkit-search-cancel-button 
 }
 
 .cards-asset.list-view > ul > li .cards-asset-card-actions button {
-  max-width: none;
+  flex: 0 0 auto;
   white-space: nowrap;
   overflow: visible;
   text-overflow: unset;

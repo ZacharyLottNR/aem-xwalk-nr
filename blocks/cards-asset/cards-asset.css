@@ -112,7 +112,7 @@
 }
 
 .cards-asset-card-actions button {
-  flex: 1;
+  flex: 1 1 0;
   padding: 6px 4px;
   border: none;
   border-left: 1px solid var(--asc-border, #e8e8e8);
@@ -127,7 +127,9 @@
   cursor: pointer;
   transition: color 0.2s, background-color 0.2s;
   height: 26px;
-  max-width: 114px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cards-asset-card-actions button:hover {
@@ -146,10 +148,6 @@ body.theme-dark .cards-asset-card-actions button {
 
 .cards-asset-card-actions button.in-cart {
   color: var(--asc-accent, #2fcc9c);
-  padding: 0 4px;
-  height: 26px;
-  max-width: 108px;
-  white-space: normal;
 }
 
 .cards-asset-card-actions button.in-cart:hover {
