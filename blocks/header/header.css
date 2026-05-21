@@ -320,3 +320,7 @@ header nav .nav-tools a.button:any-link {
   font-size: 12px;
   margin: 0;
 }
+
+body.theme-dark nav {
+  border-bottom: 1px solid white;
+}
