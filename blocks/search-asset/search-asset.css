@@ -233,6 +233,11 @@
   color: #fff;
 }
 
+body.theme-dark .search-asset-filter-toggle.active {
+  background: #fff;
+  color: #000;
+}
+
 /* Filter panel (dropdown below toolbar) */
 .search-asset-filters {
   border: 1px solid var(--asc-border, #eee);
