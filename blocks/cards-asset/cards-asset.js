@@ -31,6 +31,9 @@ export function renderCard(asset) {
   titleLink.textContent = asset.title;
   h3.append(titleLink);
 
+  const metaLink = document.createElement('a');
+  metaLink.href = asset.detailUrl;
+  metaLink.className = 'cards-asset-card-meta-link';
   const metaUl = document.createElement('ul');
   const sizeLi = document.createElement('li');
   sizeLi.textContent = `SIZE: ${asset.size}`;
@@ -39,6 +42,7 @@ export function renderCard(asset) {
   const resLi = document.createElement('li');
   resLi.textContent = asset.resolution ? `RES.: ${asset.resolution}` : 'RES.';
   metaUl.append(sizeLi, typeLi, resLi);
+  metaLink.append(metaUl);
 
   const actions = document.createElement('div');
   actions.className = 'cards-asset-card-actions';
@@ -73,7 +77,7 @@ export function renderCard(asset) {
   });
 
   actions.append(downloadBtn, shareBtn, cartBtn);
-  bodyDiv.append(h3, metaUl, actions);
+  bodyDiv.append(h3, metaLink, actions);
   li.append(imageDiv, bodyDiv);
 
   return li;

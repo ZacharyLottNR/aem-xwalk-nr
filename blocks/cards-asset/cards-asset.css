@@ -61,6 +61,11 @@
   color: var(--asc-text-strong);
 }
 
+.cards-asset > ul > li .cards-asset-card-meta-link {
+  color: inherit;
+  text-decoration: none;
+}
+
 .cards-asset > ul > li .cards-asset-card-body ul {
   list-style: none;
   padding: 0;
