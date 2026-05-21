@@ -135,6 +135,15 @@
   background-color: var(--asc-card-border, rgb(47 204 156));
 }
 
+body.theme-dark .cards-asset-card-actions {
+  border-top: 1px solid var(--brand-light-gray, #e8e8e8);
+}
+
+body.theme-dark .cards-asset-card-actions button {
+  border-left: 1px solid var(--brand-light-gray, #e8e8e8);
+  border-right: 1px solid var(--brand-light-gray, #e8e8e8);
+}
+
 .cards-asset-card-actions button.in-cart {
   color: var(--asc-accent, #2fcc9c);
   padding: 0 4px;
