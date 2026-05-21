@@ -51,7 +51,6 @@
 }
 
 .search-asset .search-asset-input::-webkit-search-cancel-button {
-  -webkit-appearance: none;
   appearance: none;
   width: 16px;
   height: 16px;
