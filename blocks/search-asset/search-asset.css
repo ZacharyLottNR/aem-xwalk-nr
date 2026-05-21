@@ -219,6 +219,7 @@ body.theme-dark .search-asset .search-asset-input::-webkit-search-cancel-button 
 .cards-asset.list-view .cards-asset-card-actions {
   border-top: none;
   padding-top: 0;
+  margin-left: auto;
 }
 
 .cards-asset.list-view .cards-asset-card-actions button {
