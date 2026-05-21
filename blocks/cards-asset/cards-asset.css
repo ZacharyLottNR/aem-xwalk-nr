@@ -37,6 +37,20 @@
   display: block;
 }
 
+.cards-asset-card-fallback {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--asc-surface, #e8e8e8);
+}
+
+.cards-asset-card-fallback .fallback-icon {
+  font-size: 48px;
+  line-height: 1;
+}
+
 .cards-asset > ul > li .cards-asset-card-body {
   padding: 14px;
   flex: 1;

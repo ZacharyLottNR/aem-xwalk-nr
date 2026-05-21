@@ -7,6 +7,13 @@ export function renderCard(asset) {
   const li = document.createElement('li');
   li.dataset.assetPath = asset.path;
 
+  const typeIcons = {
+    VIDEO: '🎬',
+    DOCUMENT: '📄',
+    PRESENTATION: '📊',
+    IMAGE: '🖼️',
+  };
+
   const imageDiv = document.createElement('div');
   imageDiv.className = 'cards-asset-card-image';
   const imgLink = document.createElement('a');
@@ -17,6 +24,12 @@ export function renderCard(asset) {
   img.src = imgSrc;
   img.alt = asset.title;
   img.loading = 'lazy';
+  img.addEventListener('error', () => {
+    const fallback = document.createElement('div');
+    fallback.className = 'cards-asset-card-fallback';
+    fallback.innerHTML = `<span class="fallback-icon">${typeIcons[asset.type] || typeIcons.IMAGE}</span>`;
+    img.replaceWith(fallback);
+  });
   imgLink.append(img);
   const p = document.createElement('p');
   p.append(imgLink);
