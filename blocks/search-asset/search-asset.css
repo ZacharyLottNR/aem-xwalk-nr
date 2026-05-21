@@ -208,31 +208,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   padding: 0;
   margin: 0;
-  border: 1px solid var(--asc-border, rgb(34 36 38 / 15%));
+  border: none;
   border-radius: 4px;
-  background: transparent;
-  color: var(--asc-text-muted, rgb(0 0 0 / 40%));
+  background: var(--asc-accent, rgb(47 204 156));
+  color: #fff;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
+  transition: opacity 0.2s;
 }
 
 .search-asset-filter-toggle:hover {
-  color: var(--asc-text, rgb(80 80 80));
-  border-color: var(--asc-text-muted, rgb(0 0 0 / 40%));
+  opacity: 0.9;
+  background: var(--asc-accent, rgb(47 204 156));
+  color: #fff;
 }
 
 .search-asset-filter-toggle.active {
-  color: var(--asc-accent, rgb(47 204 156));
-  border-color: var(--asc-accent, rgb(47 204 156));
-  background: var(--light-color, #f5f5f5);
-}
-
-body.theme-dark .search-asset-filter-toggle.active {
-  background: var(--asc-background, #f5f5f5);
+  background: var(--asc-text-strong, #333);
+  color: #fff;
 }
 
 /* Filter panel (dropdown below toolbar) */
