@@ -324,3 +324,8 @@ header nav .nav-tools a.button:any-link {
 body.theme-dark nav {
   border-bottom: 1px solid white;
 }
+
+body.theme-dark header nav .nav-hamburger button {
+  background-color: black;
+  color: white;
+}
