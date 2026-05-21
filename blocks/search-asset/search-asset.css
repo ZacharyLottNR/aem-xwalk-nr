@@ -220,9 +220,11 @@
   transition: opacity 0.2s;
 }
 
-.search-asset-filter-toggle:hover {
+.search-asset-filter-toggle:hover,
+.search-asset-filter-toggle:focus {
   opacity: 0.9;
   background: var(--asc-accent, rgb(47 204 156));
+  border-color: var(--asc-accent, rgb(47 204 156));
   color: #fff;
 }
 
