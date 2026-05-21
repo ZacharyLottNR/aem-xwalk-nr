@@ -1,0 +1,33 @@
+name: Deploy Fastly Compute
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'fastly/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fastly
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Fastly CLI
+        run: |
+          curl -sL https://github.com/fastly/cli/releases/latest/download/fastly_linux-amd64.tar.gz | tar xz
+          sudo mv fastly /usr/local/bin/
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and deploy
+        run: fastly compute publish --token=${{ secrets.FASTLY_API_TOKEN }} --service-id=${{ secrets.FASTLY_SERVICE_ID }} --non-interactive
