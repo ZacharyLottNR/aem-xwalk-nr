@@ -63,7 +63,7 @@ header nav a:any-link {
   text-transform: uppercase;
 }
 
-header nav a:hover {
+header nav div:not(:first-child) a:hover {
   color: var(--brand-accent);
   border-bottom: 2px solid var(--brand-accent);
 }
@@ -74,10 +74,6 @@ header nav .nav-hamburger {
   height: 22px;
   display: flex;
   align-items: center;
-}
-
-header nav .nav-hamburger a:hover {
-  border-bottom: 2px solid transparent;
 }
 
 header nav .nav-hamburger button {
