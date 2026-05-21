@@ -110,8 +110,8 @@
 }
 
 .cards-asset-card-actions button:hover {
-  color: var(--brand-primary, #3b3663);
-  background-color: rgb(47 204 156);
+  color: var(--asc-text-subtle, #999);
+  background-color: var(--asc-card-border, rgb(47 204 156));
 }
 
 .cards-asset-card-actions {
@@ -119,11 +119,14 @@
 }
 
 .cards-asset-card-actions button.in-cart {
-  color: var(--asc-accent, #2fcc9c);
   padding: 0px 4px;
   height: 26px;
   max-width: 108px;
   white-space: normal;
+}
+
+.cards-asset-card-actions button.in-cart:hover {
+  color: var(--asc-text-subtle, #999);
 }
 
 .cards-asset-card-actions button {

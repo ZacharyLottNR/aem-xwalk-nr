@@ -408,11 +408,12 @@ body.theme-dark {
   --asc-text-subtle: rgb(208 208 208);
   --asc-accent: rgb(237 28 37);
   --asc-border: rgb(52 52 52);
-  --asc-card-border: rgb(60 60 60);
+  --asc-card-border: rgb(237 28 37);
   --asc-input-bg: rgb(52 52 52);
   --asc-input-text: rgb(224 224 224);
   --asc-button-bg: rgb(52 52 52);
   --asc-button-text: rgb(208 208 208);
+  --brand-primary: rgb(237 28 37);
   background-color: rgb(10 10 10);
   color: rgb(250 250 250);
 }
