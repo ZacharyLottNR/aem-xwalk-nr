@@ -4,11 +4,8 @@ export default function decorate(block) {
   let darkUrl = '';
 
   rows.forEach((row) => {
-    const cells = [...row.children];
-    const label = (cells[0]?.textContent || '').trim().toLowerCase();
-    const url = cells[1]?.querySelector('a')?.href || cells[1]?.textContent?.trim() || '';
-    if (label === 'light') lightUrl = url;
-    if (label === 'dark') darkUrl = url;
+    lightUrl = window.location.href.replace('/home', '/light');
+    darkUrl = window.location.href.replace('/home', '/dark');
   });
 
   block.textContent = '';
