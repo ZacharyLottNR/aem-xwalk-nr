@@ -22,9 +22,7 @@ jobs:
           node-version: '20'
 
       - name: Install Fastly CLI
-        run: |
-          curl -sL https://github.com/fastly/cli/releases/latest/download/fastly_linux-amd64.tar.gz | tar xz
-          sudo mv fastly /usr/local/bin/
+        uses: fastly/compute-actions/setup@v5
 
       - name: Install dependencies
         run: npm ci
