@@ -34,17 +34,7 @@
   {
     "id": "layout",
     "components": [
-      "layout-column"
-    ]
-  },
-  {
-    "id": "layout-column",
-    "components": [
-      "text",
-      "image",
-      "button",
-      "title",
-      "super-text"
+      "column"
     ]
   },
   {

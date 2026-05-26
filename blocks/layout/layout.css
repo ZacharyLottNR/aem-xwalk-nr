@@ -1,50 +1,50 @@
-.layout {
+.layout > div {
   display: grid;
   gap: 24px;
   align-items: start;
 }
 
 /* 1 column - 100% */
-.layout[data-layout="1-col"],
-.layout:not([data-layout]) {
+.layout.layout-1-col > div {
   grid-template-columns: 1fr;
 }
 
-/* 2 columns - 50/50 */
-.layout[data-layout="2-col-50-50"] {
+/* 2 columns - 50/50 (default) */
+.layout > div,
+.layout.layout-2-col-50-50 > div {
   grid-template-columns: 1fr 1fr;
 }
 
 /* 2 columns - 75/25 */
-.layout[data-layout="2-col-75-25"] {
+.layout.layout-2-col-75-25 > div {
   grid-template-columns: 3fr 1fr;
 }
 
 /* 2 columns - 66/33 */
-.layout[data-layout="2-col-66-33"] {
+.layout.layout-2-col-66-33 > div {
   grid-template-columns: 2fr 1fr;
 }
 
 /* 3 columns - 33/33/33 */
-.layout[data-layout="3-col"] {
+.layout.layout-3-col > div {
   grid-template-columns: 1fr 1fr 1fr;
 }
 
 /* 4 columns - 25/25/25/25 */
-.layout[data-layout="4-col"] {
+.layout.layout-4-col > div {
   grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
 /* Responsive: stack on mobile */
 @media (width < 600px) {
-  .layout {
+  .layout > div {
     grid-template-columns: 1fr;
   }
 }
 
 @media (width >= 600px) and (width < 900px) {
-  .layout[data-layout="3-col"],
-  .layout[data-layout="4-col"] {
+  .layout.layout-3-col > div,
+  .layout.layout-4-col > div {
     grid-template-columns: 1fr 1fr;
   }
 }
