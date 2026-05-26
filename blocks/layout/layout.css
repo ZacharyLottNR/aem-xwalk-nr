@@ -10,7 +10,6 @@
 }
 
 /* 2 columns - 50/50 (default) */
-.layout > div,
 .layout.layout-2-col-50-50 > div {
   grid-template-columns: 1fr 1fr;
 }
