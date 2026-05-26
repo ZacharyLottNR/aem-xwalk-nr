@@ -27,7 +27,24 @@
       "video-detail",
       "document-detail",
       "presentation-detail",
-      "theme-redirect"
+      "theme-redirect",
+      "layout"
+    ]
+  },
+  {
+    "id": "layout",
+    "components": [
+      "layout-column"
+    ]
+  },
+  {
+    "id": "layout-column",
+    "components": [
+      "text",
+      "image",
+      "button",
+      "title",
+      "super-text"
     ]
   },
   {
