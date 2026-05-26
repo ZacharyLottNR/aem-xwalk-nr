@@ -80,20 +80,6 @@
     "id": "layout",
     "fields": [
       {
-        "component": "text",
-        "valueType": "number",
-        "name": "columns",
-        "value": "2",
-        "label": "Columns"
-      },
-      {
-        "component": "text",
-        "valueType": "number",
-        "name": "rows",
-        "value": "1",
-        "label": "Rows"
-      },
-      {
         "component": "select",
         "name": "classes",
         "label": "Layout",

@@ -135,6 +135,7 @@
               "page": {
                 "resourceType": "core/franklin/components/columns/v1/columns",
                 "template": {
+                  "name": "Layout",
                   "columns": "2",
                   "rows": "1",
                   "model": "layout"
