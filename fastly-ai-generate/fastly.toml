@@ -1,0 +1,31 @@
+# Fastly Compute service for AI content generation
+# https://www.fastly.com/documentation/reference/compute/fastly-toml
+
+authors = []
+description = "Edge function proxy for Anthropic Claude API"
+language = "javascript"
+manifest_version = 3
+name = "AI Generate Service"
+
+[local_server]
+
+  [local_server.backends]
+
+    [local_server.backends.anthropic_api]
+      url = "https://api.anthropic.com"
+
+[setup]
+
+  [setup.backends]
+
+    [setup.backends.anthropic_api]
+      address = "api.anthropic.com"
+      port = 443
+
+  [setup.secret_stores.ai_secrets]
+    [setup.secret_stores.ai_secrets.entries.anthropic_api_key]
+      value = "YOUR_API_KEY_HERE"
+
+[scripts]
+  build = "npm run build"
+  post_init = "npm install"

@@ -77,6 +77,27 @@
     ]
   },
   {
+    "id": "ai-generate",
+    "fields": [
+      {
+        "component": "richtext",
+        "name": "prompt",
+        "label": "Prompt",
+        "valueType": "string"
+      },
+      {
+        "component": "select",
+        "name": "format",
+        "label": "Output Format",
+        "valueType": "string",
+        "options": [
+          { "name": "Plain Text", "value": "text" },
+          { "name": "HTML", "value": "html" }
+        ]
+      }
+    ]
+  },
+  {
     "id": "layout",
     "fields": [
       {

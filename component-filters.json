@@ -28,7 +28,8 @@
       "document-detail",
       "presentation-detail",
       "theme-redirect",
-      "layout"
+      "layout",
+      "ai-generate"
     ]
   },
   {

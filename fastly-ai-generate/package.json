@@ -1,0 +1,12 @@
+{
+  "name": "fastly-ai-generate",
+  "version": "1.0.0",
+  "description": "Edge function proxy for Anthropic Claude AI generation",
+  "type": "module",
+  "scripts": {
+    "build": "js-compute-runtime ./src/index.js ./bin/main.wasm"
+  },
+  "devDependencies": {
+    "@fastly/js-compute": "^3.0.0"
+  }
+}
