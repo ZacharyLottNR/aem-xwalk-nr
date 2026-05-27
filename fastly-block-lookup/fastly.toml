@@ -1,0 +1,27 @@
+# This file describes a Fastly Compute package.
+# https://www.fastly.com/documentation/reference/compute/fastly-toml
+
+authors = []
+description = "Edge function to look up AEM block JCR paths by property matching"
+language = "javascript"
+manifest_version = 3
+name = "Block Lookup Service"
+
+[local_server]
+
+  [local_server.backends]
+
+    [local_server.backends.aem_publish]
+      url = "https://publish-p63260-e524717.adobeaemcloud.com"
+
+[setup]
+
+  [setup.backends]
+
+    [setup.backends.aem_publish]
+      address = "publish-p63260-e524717.adobeaemcloud.com"
+      port = 443
+
+[scripts]
+  build = "npm run build"
+  post_init = "npm install"

@@ -1,0 +1,13 @@
+{
+  "name": "fastly-block-lookup",
+  "version": "1.0.0",
+  "description": "Edge function to look up block JCR paths by matching cell values",
+  "type": "module",
+  "scripts": {
+    "build": "js-compute-runtime ./src/index.js ./bin/main.wasm"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "latest",
+    "@fastly/js-compute": "^3.0.0"
+  }
+}
