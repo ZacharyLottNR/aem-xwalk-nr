@@ -1,0 +1,21 @@
+Here's the AI Generate block:
+
+Authoring:
+
+Add "AI Generate" block to a section
+Prompt — write your instructions (e.g., "Create a comparison table of cloud providers")
+Output Format — "Plain Text" or "HTML"
+How it works:
+
+Block JS reads the prompt and format from the authored content
+Calls the edge function at POST /api/generate
+Edge function proxies to Claude (Sonnet 4.6) with a system prompt that varies by format:
+Text mode: "Return only plain text, no formatting"
+HTML mode: "Return only semantic HTML, no explanation"
+Response is rendered in the block (text as <p>, HTML injected into a div)
+To deploy the edge function:
+
+Create a new Fastly Compute service from fastly-ai-generate/
+Add backend anthropic_api → api.anthropic.com:443
+Create a Secret Store named ai_secrets with entry anthropic_api_key = your Anthropic API key
+Update AI_GENERATE_URL in blocks/ai-generate/ai-generate.js with the deployed service URL
