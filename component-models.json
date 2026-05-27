@@ -81,6 +81,18 @@
     "fields": [
       {
         "component": "select",
+        "name": "columns",
+        "label": "Columns",
+        "valueType": "number",
+        "options": [
+          { "name": "1", "value": 1 },
+          { "name": "2", "value": 2 },
+          { "name": "3", "value": 3 },
+          { "name": "4", "value": 4 }
+        ]
+      },
+      {
+        "component": "select",
         "name": "classes",
         "label": "Layout",
         "valueType": "string",
