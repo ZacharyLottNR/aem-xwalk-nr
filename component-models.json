@@ -98,6 +98,28 @@
     ]
   },
   {
+    "id": "experience-fragment",
+    "fields": [
+      {
+        "component": "aem-content",
+        "name": "xfPath",
+        "label": "Experience Fragment",
+        "valueType": "string"
+      },
+      {
+        "component": "select",
+        "name": "variation",
+        "label": "Variation",
+        "valueType": "string",
+        "options": [
+          { "name": "Master", "value": "master" },
+          { "name": "Web", "value": "web" },
+          { "name": "Mobile", "value": "mobile" }
+        ]
+      }
+    ]
+  },
+  {
     "id": "layout",
     "fields": [
       {

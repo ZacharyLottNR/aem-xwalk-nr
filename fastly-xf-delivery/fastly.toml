@@ -1,0 +1,31 @@
+# Fastly Compute service for multi-channel Experience Fragment delivery
+# https://www.fastly.com/documentation/reference/compute/fastly-toml
+
+authors = []
+description = "Multi-channel AEM Experience Fragment delivery (HTML, JSON, embed, email)"
+language = "javascript"
+manifest_version = 3
+name = "XF Delivery Service"
+
+[local_server]
+
+  [local_server.backends]
+
+    [local_server.backends.aem_publish]
+      url = "https://publish-p63260-e524717.adobeaemcloud.com"
+
+[setup]
+
+  [setup.backends]
+
+    [setup.backends.aem_publish]
+      address = "publish-p63260-e524717.adobeaemcloud.com"
+      port = 443
+
+  [setup.secret_stores.xf_secrets]
+    [setup.secret_stores.xf_secrets.entries.api_keys]
+      value = "eds-internal-key,mobile-app-key,partner-key"
+
+[scripts]
+  build = "npm run build"
+  post_init = "npm install"

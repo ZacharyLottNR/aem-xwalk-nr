@@ -1,0 +1,27 @@
+.experience-fragment .xf-loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--asc-text-muted, #999);
+  font-size: 16px;
+  font-style: italic;
+}
+
+.experience-fragment .xf-error {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--brand-red, #df433a);
+  font-size: 16px;
+}
+
+.experience-fragment .xf-placeholder {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--asc-text-muted, #999);
+  font-size: 14px;
+  border: 2px dashed var(--asc-border, #ddd);
+  border-radius: 4px;
+}
+
+.experience-fragment .xf-content {
+  line-height: 1.6;
+}
