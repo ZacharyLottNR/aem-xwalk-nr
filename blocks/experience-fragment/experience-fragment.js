@@ -1,4 +1,4 @@
-const XF_DELIVERY_URL = 'https://YOUR-XF-SERVICE.edgecompute.app/api/xf/html';
+const XF_DELIVERY_URL = 'https://secretly-legible-sawfly.edgecompute.app/api/xf/html';
 
 export default async function decorate(block) {
   const rows = [...block.children];
