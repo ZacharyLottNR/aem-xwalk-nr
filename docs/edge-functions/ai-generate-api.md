@@ -53,7 +53,7 @@ Uses Claude Sonnet 4.6 (`claude-sonnet-4-6-20250514`) with max 2048 tokens.
 
 ## Setup
 
-1. Deploy `fastly-ai-generate/` to Fastly Compute
+1. Deploy `docs/fastly/fastly-ai-generate/` to Fastly Compute
 2. Configure `anthropic_api` backend → `api.anthropic.com:443`
 3. Create Secret Store `ai_secrets` with `anthropic_api_key`
 4. Update `AI_GENERATE_URL` in `blocks/ai-generate/ai-generate.js`

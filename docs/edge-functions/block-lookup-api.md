@@ -10,7 +10,7 @@ Resolves a block's JCR path by matching its rendered cell values against the pag
 https://YOUR-BLOCK-LOOKUP-SERVICE.edgecompute.app
 ```
 
-(Deploy from `fastly-block-lookup/` — note: this service was merged into the XF delivery service repo)
+(Deploy from `docs/fastly/fastly-xf-delivery/` — note: this service was merged into the XF delivery service repo)
 
 ## Endpoints
 

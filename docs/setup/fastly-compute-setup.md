@@ -26,7 +26,7 @@ Enter your Fastly API token (generate at https://manage.fastly.com/account/perso
 ## Deploy a New Service
 
 ```bash
-cd fastly-xf-delivery  # or any edge function directory
+cd docs/fastly/fastly-xf-delivery  # or any edge function directory
 npm install
 fastly compute publish
 ```

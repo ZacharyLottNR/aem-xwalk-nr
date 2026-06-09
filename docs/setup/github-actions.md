@@ -2,7 +2,7 @@
 
 ## Overview
 
-A GitHub Action deploys Fastly Compute services automatically when changes are pushed to the `fastly/` directory on main.
+A GitHub Action deploys Fastly Compute services automatically when changes are pushed to the `docs/fastly/fastly-search/` directory on main.
 
 ## Workflow File
 
@@ -15,7 +15,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'fastly/**'
+      - 'docs/fastly/fastly-search/**'
   workflow_dispatch:
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: fastly
+        working-directory: docs/fastly/fastly-search
 
     steps:
       - uses: actions/checkout@v4

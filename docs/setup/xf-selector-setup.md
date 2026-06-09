@@ -9,8 +9,8 @@ The XF Selector lets authors embed AEM Experience Fragments into EDS pages. It a
 | Component | Location | Purpose |
 |-----------|----------|---------|
 | EDS Block | `blocks/experience-fragment/` | Renders XF inline on the page |
-| Edge Function | `fastly-xf-delivery/` | Fetches XF from AEM, serves in 4 formats |
-| AEM Config | `aem-config/` | Dispatcher + CORS rules |
+| Edge Function | `docs/fastly/fastly-xf-delivery/` | Fetches XF from AEM, serves in 4 formats |
+| AEM Config | `docs/aem-config/` | Dispatcher + CORS rules |
 
 ---
 
@@ -29,7 +29,7 @@ If this returns HTML, you're good. If it returns 404 or empty, the XF isn't publ
 ## Step 2: Deploy the Edge Function
 
 ```bash
-cd fastly-xf-delivery
+cd docs/fastly/fastly-xf-delivery
 npm install
 fastly compute publish
 ```
@@ -59,7 +59,7 @@ Replace `YOUR-SERVICE` with your deployed service subdomain. Commit and push.
 
 ## Step 4: Configure AEM Dispatcher
 
-Copy the rules from `aem-config/dispatcher/filter.any.snippet` into your AEM Cloud Manager dispatcher config:
+Copy the rules from `docs/aem-config/dispatcher/filter.any.snippet` into your AEM Cloud Manager dispatcher config:
 
 ```
 /0200 { /type "allow" /method "GET" /url "/content/experience-fragments/*.content.html" }
@@ -71,7 +71,7 @@ Deploy via Cloud Manager pipeline. See [dispatcher-rules.md](dispatcher-rules.md
 
 ## Step 5: (Optional) Configure CORS
 
-If clients fetch XF content directly from AEM publish (not via the edge function), deploy the CORS OSGi config from `aem-config/osgi/`. Not required when all access goes through the edge function (which sets its own CORS headers).
+If clients fetch XF content directly from AEM publish (not via the edge function), deploy the CORS OSGi config from `docs/aem-config/osgi/`. Not required when all access goes through the edge function (which sets its own CORS headers).
 
 ---
 
