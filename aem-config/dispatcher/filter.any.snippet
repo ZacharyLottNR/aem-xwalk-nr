@@ -1,0 +1,14 @@
+# Experience Fragment content access
+# Add these rules to your dispatcher filter.any file
+# Place after existing deny rules (use higher rule numbers)
+
+# Allow XF content HTML (used by edge function)
+/0200 { /type "allow" /method "GET" /url "/content/experience-fragments/*.content.html" }
+/0201 { /type "allow" /method "GET" /url "/content/experience-fragments/*.plain.html" }
+/0202 { /type "allow" /method "GET" /url "/content/experience-fragments/*.html" }
+
+# Allow JCR JSON for block lookup (restrict to specific paths in production)
+# /0210 { /type "allow" /method "GET" /url "/content/aem-boilerplate-nr/*/jcr:content.infinity.json" }
+
+# Allow DAM asset JSON for asset search
+/0220 { /type "allow" /method "GET" /url "/content/dam/asset-share-commons/*.json" }
