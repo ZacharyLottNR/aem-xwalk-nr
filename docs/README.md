@@ -2,6 +2,7 @@
 
 ## Setup Guides
 
+- [XF Selector Setup](setup/xf-selector-setup.md) — End-to-end Experience Fragment Selector setup
 - [Fastly Compute Setup](setup/fastly-compute-setup.md) — Creating and deploying Fastly Compute services
 - [Fastly Secrets](setup/fastly-secrets.md) — Configuring Secret Stores and API keys
 - [Fastly Backends](setup/fastly-backends.md) — Configuring backends (common gotchas)
