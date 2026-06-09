@@ -105,18 +105,7 @@
         "name": "xfPath",
         "label": "Experience Fragment Path",
         "valueType": "string",
-        "description": "Path to the XF (e.g. /content/experience-fragments/site/en/header/master)"
-      },
-      {
-        "component": "select",
-        "name": "variation",
-        "label": "Variation",
-        "valueType": "string",
-        "options": [
-          { "name": "Master", "value": "master" },
-          { "name": "Web", "value": "web" },
-          { "name": "Mobile", "value": "mobile" }
-        ]
+        "description": "Full path including variation (e.g. /content/experience-fragments/site/en/header/master)"
       }
     ]
   },
