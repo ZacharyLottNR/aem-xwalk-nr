@@ -101,11 +101,11 @@
     "id": "experience-fragment",
     "fields": [
       {
-        "component": "text",
+        "component": "aem-content",
         "name": "xfPath",
-        "label": "Experience Fragment Path",
+        "label": "Experience Fragment",
         "valueType": "string",
-        "description": "Full path including variation (e.g. /content/experience-fragments/site/en/header/master)"
+        "rootPath": "/content/experience-fragments"
       }
     ]
   },
