@@ -224,6 +224,10 @@ async function handleAssetDetail(req) {
   });
 }
 
+function encodePath(path) {
+  return path.split('/').map((seg) => encodeURIComponent(seg)).join('/');
+}
+
 async function handleAssetImage(req) {
   const url = new URL(req.url);
   const assetPath = url.searchParams.get('path');
@@ -231,7 +235,7 @@ async function handleAssetImage(req) {
     return new Response('Bad request', { status: 400 });
   }
 
-  const aemUrl = `https://${PUBLISH_HOST}${assetPath}/_jcr_content/renditions/original`;
+  const aemUrl = `https://${PUBLISH_HOST}${encodePath(assetPath)}/_jcr_content/renditions/original`;
   console.log(`Proxying image: ${aemUrl}`);
   const resp = await fetch(aemUrl, {
     backend: 'aem_publish',
@@ -258,7 +262,7 @@ async function handleAssetFile(req) {
     return new Response('Bad request', { status: 400 });
   }
 
-  const aemUrl = `https://${PUBLISH_HOST}${assetPath}`;
+  const aemUrl = `https://${PUBLISH_HOST}${encodePath(assetPath)}`;
   console.log(`Proxying file: ${aemUrl}`);
   const resp = await fetch(aemUrl, {
     backend: 'aem_publish',
