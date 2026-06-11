@@ -251,6 +251,33 @@ async function handleAssetImage(req) {
   });
 }
 
+async function handleAssetFile(req) {
+  const url = new URL(req.url);
+  const assetPath = url.searchParams.get('path');
+  if (!assetPath || !assetPath.startsWith('/content/dam/')) {
+    return new Response('Bad request', { status: 400 });
+  }
+
+  const aemUrl = `https://${PUBLISH_HOST}${assetPath}`;
+  console.log(`Proxying file: ${aemUrl}`);
+  const resp = await fetch(aemUrl, {
+    backend: 'aem_publish',
+  });
+
+  if (!resp.ok) {
+    return new Response('Not found', { status: 404 });
+  }
+
+  const headers = new Headers(resp.headers);
+  headers.set('Access-Control-Allow-Origin', '*');
+  headers.set('Cache-Control', 'public, max-age=86400');
+
+  return new Response(resp.body, {
+    status: 200,
+    headers,
+  });
+}
+
 addEventListener("fetch", (event) => event.respondWith(handleRequest(event)));
 
 async function handleRequest(event) {
@@ -270,6 +297,10 @@ async function handleRequest(event) {
 
     if (url.pathname === '/api/asset-image' && req.method === 'GET') {
       return await handleAssetImage(req);
+    }
+
+    if (url.pathname === '/api/asset-file' && req.method === 'GET') {
+      return await handleAssetFile(req);
     }
 
     if (url.pathname === '/api/asset-detail' && req.method === 'GET') {

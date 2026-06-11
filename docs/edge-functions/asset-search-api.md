@@ -68,7 +68,7 @@ curl "https://absolutely-cool-toucan.edgecompute.app/api/asset-detail?path=/cont
 
 ### GET /api/asset-image
 
-Proxy an asset image (bypasses CORS/auth on AEM publish).
+Proxy an asset image rendition (bypasses CORS/auth on AEM publish).
 
 **Parameters:**
 - `path` (required) — Full DAM path (must start with `/content/dam/`)
@@ -77,6 +77,24 @@ Proxy an asset image (bypasses CORS/auth on AEM publish).
 ```bash
 curl "https://absolutely-cool-toucan.edgecompute.app/api/asset-image?path=/content/dam/asset-share-commons/en/public/pictures/example.jpg"
 ```
+
+Returns the `/_jcr_content/renditions/original` rendition.
+
+---
+
+### GET /api/asset-file
+
+Proxy a raw DAM binary (PDF, document, etc.) from AEM publish. Unlike `/api/asset-image`, this returns the original file directly without appending a rendition path — use it for PDFs and other documents that EDS delivery (`.aem.live`) does not serve.
+
+**Parameters:**
+- `path` (required) — Full DAM path (must start with `/content/dam/`)
+
+**Example:**
+```bash
+curl -L "https://absolutely-cool-toucan.edgecompute.app/api/asset-file?path=/content/dam/abbvie-poc/Forms%20Inventory%20and%20Technical%20Details.pdf"
+```
+
+Link PDFs in content using this endpoint instead of the `.aem.live` DAM path.
 
 ## DAM Folders Scanned
 
