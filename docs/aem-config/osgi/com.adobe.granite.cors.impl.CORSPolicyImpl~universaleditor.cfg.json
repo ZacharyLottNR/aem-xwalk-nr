@@ -1,0 +1,42 @@
+{
+  "supportscredentials": true,
+  "supportedmethods": [
+    "GET",
+    "HEAD",
+    "POST",
+    "OPTIONS",
+    "PUT",
+    "DELETE",
+    "PATCH"
+  ],
+  "alloworigin": [
+    "https://experience.adobe.com"
+  ],
+  "alloworiginregexp": [
+    "https://.*\\.experience\\.adobe\\.com"
+  ],
+  "maxage:Integer": 1800,
+  "supportedheaders": [
+    "Origin",
+    "Accept",
+    "X-Requested-With",
+    "Content-Type",
+    "Access-Control-Request-Method",
+    "Access-Control-Request-Headers",
+    "Authorization",
+    "CSRF-Token"
+  ],
+  "exposedheaders": [
+    "CSRF-Token"
+  ],
+  "allowedpaths": [
+    "/content/.*",
+    "/conf/.*",
+    "/bin/.*",
+    "/libs/.*",
+    "/apps/.*",
+    "/etc/.*",
+    "/var/.*",
+    "/services/.*"
+  ]
+}

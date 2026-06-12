@@ -1,0 +1,9 @@
+{
+  "filter.methods": [
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH"
+  ],
+  "allow.referer.blank": false
+}

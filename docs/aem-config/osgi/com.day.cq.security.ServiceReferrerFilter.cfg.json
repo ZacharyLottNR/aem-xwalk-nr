@@ -1,0 +1,14 @@
+{
+  "allow.empty": false,
+  "allow.hosts": [],
+  "allow.hosts.regexp": [
+    "https://([^.]+\\.)?experience\\.adobe\\.com"
+  ],
+  "filter.methods": [
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH"
+  ],
+  "exclude.agents.regexp": []
+}
