@@ -59,3 +59,25 @@ The reference config in `docs/aem-config/osgi/` reflects this.
 ## Diagnostic Tip
 
 When only a specific operation fails with a CORS error, check the **failing request's Request Headers** for any custom `X-*` header, then confirm that header is present in `supportedheaders`. The browser preflight (`OPTIONS`) must approve every custom header the actual request sends.
+
+## If 403 Persists After the CORS Fix
+
+Once the CORS header fix is deployed, verify whether the failure is still CORS or a server-side authorization rejection:
+
+- **OPTIONS preflight returns 200/204** → CORS is fixed. The remaining 403 on the POST is a server-side rejection, NOT a CORS problem (a failed preflight blocks the request with no status code; a real 403 means the request reached the server).
+- **403 POST with an empty response body** on `/adobe/forms/fm/v1/submitActions` → almost always the **AEM Forms add-on is not provisioned** on the environment.
+
+### AEM Forms Add-On Requirement
+
+The Forms Management write API (`/adobe/forms/fm/v1/*`) is served by the AEM Forms add-on. If the add-on is not enabled on the environment:
+- Reads work (the form renders, properties dialog opens)
+- Writes (saving submit actions, thank-you config) return a bare 403
+
+This cannot be fixed via repo config or CORS — the Forms add-on must be provisioned at the program/environment level (Cloud Manager add-on provisioning, or via your Adobe sandbox entitlement contact).
+
+**Verify provisioning:**
+1. Cloud Manager → Program → Environments → check listed Solutions/Add-ons for AEM Forms.
+2. Or open `/aem/forms.html/content/dam/formsanddocuments` on author — missing/erroring console indicates Forms is not provisioned.
+3. Check the failing POST's **Response Headers** (body is empty) for a `Server-Agent` or `X-Adobe-*` header naming the rejecting service.
+
+If Forms IS provisioned but writes still 403, investigate the IMS token scope via `com.adobe.granite.auth.ims.impl.IMSAccessTokenRequestAuthenticationHandler` — the token may lack the Forms scope.
