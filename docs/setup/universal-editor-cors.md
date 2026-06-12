@@ -104,15 +104,30 @@ Cannot serve request to /content/.../jcr:content/root/section/form_XXXXXXXX/ on 
 Standard components never hit this filter because they persist through the
 UE service, not a direct author POST.
 
-### Two fixes
+### Why forms write directly (this is by design)
 
-**A. Workaround (unblocks immediately):** allow the direct form-node POST in
-the AUTHOR dispatcher filter. See
-`docs/aem-config/dispatcher/author-filters.any.snippet`. Deploy to the
-`*.author.farm` filters (not the publish `filter.any`).
+The page has a single, correct persistence connection:
 
-**B. Root cause:** make the Forms component persist via the UE service like
-other components. This is usually a Forms-component/UE version mismatch or a
-persistence-connection metadata issue. Check the page's
-`urn:adobe:aue:*` connection meta tags — if forms reference a separate
-direct-author connection, align it with the standard UE service connection.
+```html
+<meta name="urn:adobe:aue:system:aemconnection"
+      content="xwalk:https://author-p63260-e524717.adobeaemcloud.com?ref=feature-form">
+```
+
+Standard components persist through the UE service `/patch`, which reads this
+connection and writes to author server-side. The **AEM Forms "Form Properties"
+dialog is a custom UE extension** (the `ue-form-properties` micro-frontend).
+By design, it writes form configuration **directly to the author instance**
+via its own API call rather than the generic `/patch` flow.
+
+So the direct author POST is **expected** — not a misconfiguration. The
+connection metadata is correct and does not need changing.
+
+### The fix
+
+Allow the direct form-node POST in the **author** dispatcher filter. This is
+the correct, required fix for the AEM Forms UE extension on AEMaaCS — a
+default author filter does not permit these direct writes.
+
+See `docs/aem-config/dispatcher/author-filters.any.snippet`. Deploy to the
+`*.author.farm` filters (NOT the publish `filter.any`), then run the Cloud
+Manager pipeline.
