@@ -122,12 +122,49 @@ via its own API call rather than the generic `/patch` flow.
 So the direct author POST is **expected** — not a misconfiguration. The
 connection metadata is correct and does not need changing.
 
-### The fix
+### Important: the publish dispatcher does NOT front author
 
-Allow the direct form-node POST in the **author** dispatcher filter. This is
-the correct, required fix for the AEM Forms UE extension on AEMaaCS — a
-default author filter does not permit these direct writes.
+On AEM as a Cloud Service, the `conf.dispatcher.d` dispatcher config is
+deployed in front of the **publish** tier only. The **author** tier is not
+served by this dispatcher — there is no author farm to configure. So the
+`filters.any` in your repo cannot affect author request handling, and adding
+"author filter" rules there has no effect on the form-save 403.
 
-See `docs/aem-config/dispatcher/author-filters.any.snippet`. Deploy to the
-`*.author.farm` filters (NOT the publish `filter.any`), then run the Cloud
-Manager pipeline.
+The "Cannot serve request ... on this server" 403 on the **author** host
+comes from Adobe's managed author front layer (CDN/WAF), not from your repo's
+dispatcher.
+
+### Configurable layers — all ruled out
+
+| Layer | Controls author? | Blocks this POST? |
+|-------|------------------|-------------------|
+| `conf.dispatcher.d` dispatcher filters | No — publish only | N/A |
+| `cdn.yaml` traffic filters | Yes (managed CDN) | No — only OFAC block + rate limit rules present |
+
+With both configurable layers ruled out, the 403 originates from Adobe's
+**managed author front layer**, which is not reconfigurable from the repo.
+(Cloud Manager environment also shows "Author Service" without a dispatcher,
+unlike Publish/Preview which show "AEM & Dispatcher" — consistent with no
+author dispatcher existing.)
+
+### Resolution paths
+
+1. **Check Forms component / platform version compatibility (try first).** A
+   skew between the AEM Forms / EDS Forms component version and the AEM release
+   (`2026.5.26353` here) is a common cause of the Forms UE extension using a
+   write path the platform rejects. If a newer Forms component build exists,
+   updating it may switch persistence to a supported path.
+
+2. **Adobe Support (most likely).** A browser POSTing directly to an author
+   JCR node, blocked by the managed author layer with all configurable layers
+   ruled out, is a support item. Provide:
+   - The exact 403 URL and the "Cannot serve request ... on this server" body
+   - That standard UE components save fine via `universal-editor-service.adobe.io`
+     while only the Forms extension's direct author write fails
+   - AEM release `2026.5.26353`
+   - The single correct `aemconnection` meta tag (config is not the issue)
+
+NOTE: Earlier versions of this doc suggested an author dispatcher filter
+snippet and cdn.yaml edits. Both have been ruled out and removed — there is no
+author dispatcher on AEMaaCS, and cdn.yaml contains no rule that would block
+this request.
