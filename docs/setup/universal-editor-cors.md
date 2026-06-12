@@ -81,3 +81,38 @@ This cannot be fixed via repo config or CORS — the Forms add-on must be provis
 3. Check the failing POST's **Response Headers** (body is empty) for a `Server-Agent` or `X-Adobe-*` header naming the rejecting service.
 
 If Forms IS provisioned but writes still 403, investigate the IMS token scope via `com.adobe.granite.auth.ims.impl.IMSAccessTokenRequestAuthenticationHandler` — the token may lack the Forms scope.
+
+## Actual Root Cause (this environment)
+
+After ruling out CORS, CSRF, ACLs, and Forms provisioning, the Network tab
+revealed the real difference:
+
+| Component | Save POST goes to |
+|-----------|-------------------|
+| Text / Image / standard blocks | `https://universal-editor-service.adobe.io/patch` (Adobe-hosted UE service — always works) |
+| AEM Forms component | `https://author-pXXXXX-eXXXXX.adobeaemcloud.com/content/.../form_XXXXXXXX` (direct browser→author POST) |
+
+The Forms component bypasses the Universal Editor Service and writes
+**directly to the author instance**. That direct POST hits the author
+CDN/dispatcher filter, which returns:
+
+```
+Forbidden
+Cannot serve request to /content/.../jcr:content/root/section/form_XXXXXXXX/ on this server
+```
+
+Standard components never hit this filter because they persist through the
+UE service, not a direct author POST.
+
+### Two fixes
+
+**A. Workaround (unblocks immediately):** allow the direct form-node POST in
+the AUTHOR dispatcher filter. See
+`docs/aem-config/dispatcher/author-filters.any.snippet`. Deploy to the
+`*.author.farm` filters (not the publish `filter.any`).
+
+**B. Root cause:** make the Forms component persist via the UE service like
+other components. This is usually a Forms-component/UE version mismatch or a
+persistence-connection metadata issue. Check the page's
+`urn:adobe:aue:*` connection meta tags — if forms reference a separate
+direct-author connection, align it with the standard UE service connection.

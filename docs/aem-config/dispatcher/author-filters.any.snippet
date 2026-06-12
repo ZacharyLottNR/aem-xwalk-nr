@@ -1,0 +1,24 @@
+# AUTHOR-tier dispatcher filter rules
+# Deploy to: dispatcher/src/conf.dispatcher.d/filters/ referenced by the *.author.farm
+# (NOT the publish filter.any — this is the author farm)
+#
+# Symptom this fixes:
+#   "Forbidden — Cannot serve request to
+#    /content/.../jcr:content/root/section/form_XXXXXXXX/ on this server"
+#   when saving an AEM Forms component in the Universal Editor.
+#
+# Root cause (confirmed via Network tab):
+#   - Normal UE components (text, image, etc.) persist via Adobe's hosted
+#     Universal Editor Service: POST https://universal-editor-service.adobe.io/patch
+#     (never touches the author CDN directly — always works).
+#   - The AEM Forms component instead does a DIRECT browser->author POST:
+#       POST https://author-pXXXXX-eXXXXX.adobeaemcloud.com/content/.../form_XXXXXXXX
+#     This hits the author CDN/dispatcher filter, which denies it by default.
+#
+# This snippet is a WORKAROUND that allows the direct form-node write.
+# The root-cause fix is to make the Forms component persist via the UE
+# service like other components (see docs/setup/universal-editor-cors.md).
+
+# Allow direct Universal Editor form-node persistence POSTs to author
+/0150 { /type "allow" /method "POST" /url "/content/*/jcr:content/root/section/form_*" }
+/0151 { /type "allow" /method "POST" /url "/content/*/jcr:content/*/form_*" }
