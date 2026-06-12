@@ -1,21 +1,22 @@
 {
-  "supportscredentials": true,
+  "alloworigin": [
+    "https://experience.adobe.com",
+    "https://localhost:9080",
+    "https://47998-nrueextensions-stage.adobeio-static.net"
+  ],
+  "alloworiginregexp": [],
+  "allowedpaths": [
+    "/.*"
+  ],
   "supportedmethods": [
     "GET",
     "HEAD",
     "POST",
-    "OPTIONS",
     "PUT",
     "DELETE",
+    "OPTIONS",
     "PATCH"
   ],
-  "alloworigin": [
-    "https://experience.adobe.com"
-  ],
-  "alloworiginregexp": [
-    "https://.*\\.experience\\.adobe\\.com"
-  ],
-  "maxage:Integer": 1800,
   "supportedheaders": [
     "Origin",
     "Accept",
@@ -24,19 +25,12 @@
     "Access-Control-Request-Method",
     "Access-Control-Request-Headers",
     "Authorization",
-    "CSRF-Token"
+    "CSRF-Token",
+    "x-adobe-accept-experimental",
+    "x-api-key",
+    "x-gw-ims-org-id",
+    "X-Adobe-Accept-Unsupported-Api"
   ],
-  "exposedheaders": [
-    "CSRF-Token"
-  ],
-  "allowedpaths": [
-    "/content/.*",
-    "/conf/.*",
-    "/bin/.*",
-    "/libs/.*",
-    "/apps/.*",
-    "/etc/.*",
-    "/var/.*",
-    "/services/.*"
-  ]
+  "supportscredentials": true,
+  "maxage:Integer": 60
 }
