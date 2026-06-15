@@ -34,13 +34,21 @@
       "home-hero-stryker",
       "section-anchor-stryker",
       "overview-stryker",
-      "text-and-image-stryker"
+      "text-and-image-stryker",
+      "social-cta-stryker"
     ]
   },
   {
     "id": "overview-stryker",
     "components": [
       "overview-stryker-card"
+    ]
+  },
+  {
+    "id": "social-cta-stryker",
+    "components": [
+      "social-cta-link",
+      "social-cta-icon"
     ]
   },
   {

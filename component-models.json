@@ -1,5 +1,56 @@
 [
   {
+    "id": "social-cta-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "name": "heading",
+        "label": "Heading",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "social-cta-link",
+    "fields": [
+      {
+        "component": "text",
+        "name": "label",
+        "label": "Link Text",
+        "valueType": "string"
+      },
+      {
+        "component": "aem-content",
+        "name": "link",
+        "label": "Link",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "social-cta-icon",
+    "fields": [
+      {
+        "component": "select",
+        "name": "icon",
+        "label": "Social Network",
+        "valueType": "string",
+        "options": [
+          { "name": "Facebook", "value": "facebook" },
+          { "name": "LinkedIn", "value": "linkedin" },
+          { "name": "YouTube", "value": "youtube" },
+          { "name": "Instagram", "value": "instagram" }
+        ]
+      },
+      {
+        "component": "text",
+        "name": "link",
+        "label": "Link URL",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
     "id": "text-and-image-stryker",
     "fields": [
       {
