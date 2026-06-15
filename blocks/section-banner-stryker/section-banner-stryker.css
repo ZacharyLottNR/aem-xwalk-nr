@@ -1,0 +1,30 @@
+.section-banner-stryker {
+  background-color: #f0a500;
+  width: 100%;
+}
+
+.section-banner-stryker .section-banner-stryker-content {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 36px 24px;
+  font-family: var(--stryker-body-font);
+  font-size: 24px;
+  line-height: 1.3;
+  color: var(--stryker-black, #000);
+}
+
+.section-banner-stryker .section-banner-stryker-content p {
+  margin: 0;
+}
+
+.section-banner-stryker .section-banner-stryker-content strong {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+}
+
+@media (width < 900px) {
+  .section-banner-stryker .section-banner-stryker-content {
+    font-size: 20px;
+    padding: 28px 24px;
+  }
+}

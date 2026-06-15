@@ -1,5 +1,16 @@
 [
   {
+    "id": "section-banner-stryker",
+    "fields": [
+      {
+        "component": "richtext",
+        "name": "text",
+        "label": "Text",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
     "id": "social-cta-stryker",
     "fields": [
       {
