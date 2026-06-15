@@ -24,6 +24,9 @@ export default function decorate(block) {
   const nav = document.createElement('nav');
   nav.className = 'section-anchor-stryker-nav';
 
+  const linkBySectionId = new Map();
+  const linkedSections = [];
+
   laterSections.forEach((section) => {
     const name = section.dataset.name?.trim();
     if (!name) return;
@@ -40,8 +43,33 @@ export default function decorate(block) {
       window.history.replaceState(null, '', `#${section.id}`);
     });
     nav.append(link);
+    linkBySectionId.set(section.id, link);
+    linkedSections.push(section);
   });
 
   if (!nav.children.length) return;
   block.append(nav);
+
+  // Scroll-spy: highlight the link for the section currently in view
+  const setActive = (id) => {
+    linkBySectionId.forEach((link, sectionId) => {
+      link.classList.toggle('active', sectionId === id);
+    });
+  };
+
+  const visible = new Set();
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) visible.add(entry.target);
+      else visible.delete(entry.target);
+    });
+    // Highlight the topmost section currently in view
+    const topmost = linkedSections.find((section) => visible.has(section));
+    if (topmost) setActive(topmost.id);
+  }, {
+    rootMargin: '-30% 0px -60% 0px',
+    threshold: 0,
+  });
+
+  linkedSections.forEach((section) => observer.observe(section));
 }

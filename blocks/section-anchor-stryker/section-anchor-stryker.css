@@ -57,6 +57,11 @@
   color: #fff;
 }
 
+.section-anchor-stryker .section-anchor-stryker-link.active:any-link {
+  background-color: #f0a500;
+  color: #000;
+}
+
 @media (width < 900px) {
   .section-anchor-stryker .section-anchor-stryker-nav {
     justify-content: flex-start;
