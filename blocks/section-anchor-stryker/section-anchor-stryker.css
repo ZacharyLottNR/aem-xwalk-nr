@@ -1,0 +1,68 @@
+/* Make the section containing the anchor block sticky at the top */
+.section.section-anchor-stryker-container {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin: 0;
+  padding: 0;
+}
+
+.section.section-anchor-stryker-container > div {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.section-anchor-stryker {
+  background-color: #58595b;
+  width: 100%;
+}
+
+.section-anchor-stryker .section-anchor-stryker-nav {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.section-anchor-stryker .section-anchor-stryker-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.section-anchor-stryker .section-anchor-stryker-link:any-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px 40px;
+  font-family: var(--stryker-heading-font);
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  color: #fff;
+  border-left: 1px solid rgb(255 255 255 / 25%);
+  transition: background-color 0.2s;
+}
+
+.section-anchor-stryker .section-anchor-stryker-link:last-child {
+  border-right: 1px solid rgb(255 255 255 / 25%);
+}
+
+.section-anchor-stryker .section-anchor-stryker-link:any-link:hover {
+  background-color: rgb(0 0 0 / 20%);
+  color: #fff;
+}
+
+@media (width < 900px) {
+  .section-anchor-stryker .section-anchor-stryker-nav {
+    justify-content: flex-start;
+  }
+
+  .section-anchor-stryker .section-anchor-stryker-link:any-link {
+    padding: 18px 24px;
+  }
+}
