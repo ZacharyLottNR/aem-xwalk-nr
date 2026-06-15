@@ -1,5 +1,57 @@
 [
   {
+    "id": "overview-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "name": "titleBlack",
+        "label": "Title (Black)",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "titleGold",
+        "label": "Title (Gold)",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "primer",
+        "label": "Primer Text",
+        "valueType": "string"
+      },
+      {
+        "component": "richtext",
+        "name": "richText",
+        "label": "Rich Text",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "overview-stryker-card",
+    "fields": [
+      {
+        "component": "reference",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "name": "cardTitle",
+        "label": "Title",
+        "valueType": "string"
+      },
+      {
+        "component": "richtext",
+        "name": "cardDescription",
+        "label": "Description",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
     "id": "home-hero-stryker",
     "fields": [
       {

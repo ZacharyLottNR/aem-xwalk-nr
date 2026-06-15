@@ -32,7 +32,14 @@
       "ai-generate",
       "experience-fragment",
       "home-hero-stryker",
-      "section-anchor-stryker"
+      "section-anchor-stryker",
+      "overview-stryker"
+    ]
+  },
+  {
+    "id": "overview-stryker",
+    "components": [
+      "overview-stryker-card"
     ]
   },
   {
