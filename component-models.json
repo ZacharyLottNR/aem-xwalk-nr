@@ -1,5 +1,38 @@
 [
   {
+    "id": "text-and-image-stryker",
+    "fields": [
+      {
+        "component": "reference",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "name": "heading",
+        "label": "Heading (Bold)",
+        "valueType": "string"
+      },
+      {
+        "component": "richtext",
+        "name": "body",
+        "label": "Body Text",
+        "valueType": "string"
+      },
+      {
+        "component": "select",
+        "name": "classes",
+        "label": "Image Position",
+        "valueType": "string",
+        "options": [
+          { "name": "Image Left", "value": "image-left" },
+          { "name": "Image Right", "value": "image-right" }
+        ]
+      }
+    ]
+  },
+  {
     "id": "overview-stryker",
     "fields": [
       {
