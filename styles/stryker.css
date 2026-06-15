@@ -1,0 +1,91 @@
+/*
+ * Stryker site styles — loaded only on /content/stryker/* pages.
+ * Scoped under body.theme-stryker so it never affects other sites.
+ * Brand tokens sourced from stryker.com.
+ */
+
+body.theme-stryker {
+  /* brand colors */
+  --stryker-teal: #4c7d7a;
+  --stryker-teal-dark: #3a615f;
+  --stryker-black: #000;
+  --stryker-white: #fff;
+  --stryker-gray: #58595b;
+  --stryker-light-gray: #f2f2f2;
+  --stryker-border: #d9d9d9;
+
+  /* fonts */
+  --stryker-body-font: humanistslab712w01, cambria, palatino, serif;
+  --stryker-heading-font: "futura lt w01", arial, helvetica, sans-serif;
+
+  /* type scale */
+  --stryker-h1-size: 48px;
+  --stryker-h2-size: 36px;
+  --stryker-h3-size: 24px;
+  --stryker-body-size: 16px;
+  --stryker-small-size: 14px;
+
+  /* layout */
+  --stryker-max-width: 1280px;
+  --stryker-nav-height: 80px;
+
+  background-color: var(--stryker-white);
+  color: var(--stryker-black);
+  font-family: var(--stryker-body-font);
+  font-size: var(--stryker-body-size);
+}
+
+body.theme-stryker h1,
+body.theme-stryker h2,
+body.theme-stryker h3,
+body.theme-stryker h4,
+body.theme-stryker h5,
+body.theme-stryker h6 {
+  font-family: var(--stryker-heading-font);
+  color: var(--stryker-black);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+body.theme-stryker h1 {
+  font-size: var(--stryker-h1-size);
+}
+
+body.theme-stryker h2 {
+  font-size: var(--stryker-h2-size);
+}
+
+body.theme-stryker h3 {
+  font-size: var(--stryker-h3-size);
+}
+
+body.theme-stryker a:any-link {
+  color: var(--stryker-teal);
+}
+
+body.theme-stryker a:hover {
+  color: var(--stryker-teal-dark);
+}
+
+/* Stryker buttons / CTAs */
+body.theme-stryker a.button:any-link,
+body.theme-stryker button {
+  font-family: var(--stryker-heading-font);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 0;
+  background-color: var(--stryker-teal);
+  border: 1px solid var(--stryker-teal);
+  color: var(--stryker-white);
+}
+
+body.theme-stryker a.button.secondary,
+body.theme-stryker button.secondary {
+  background-color: transparent;
+  color: var(--stryker-teal);
+}
+
+/* Section width */
+body.theme-stryker main > .section > div {
+  max-width: var(--stryker-max-width);
+}

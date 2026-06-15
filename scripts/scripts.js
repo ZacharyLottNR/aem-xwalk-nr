@@ -92,6 +92,9 @@ export function decorateMain(main) {
 async function loadEager(doc) {
   document.documentElement.lang = 'en';
   decorateTemplateAndTheme();
+  if (document.body.classList.contains('theme-stryker')) {
+    await loadCSS(`${window.hlx.codeBasePath}/styles/stryker.css`);
+  }
   const main = doc.querySelector('main');
   if (main) {
     decorateMain(main);
