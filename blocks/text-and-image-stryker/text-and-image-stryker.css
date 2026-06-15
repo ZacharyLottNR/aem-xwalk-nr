@@ -60,14 +60,17 @@
     padding: 32px 24px;
   }
 
-  .text-and-image-stryker .text-and-image-stryker-image,
-  .text-and-image-stryker .text-and-image-stryker-text,
-  .text-and-image-stryker.image-right .text-and-image-stryker-image,
-  .text-and-image-stryker.image-right .text-and-image-stryker-text {
+  .text-and-image-stryker .text-and-image-stryker-image {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .text-and-image-stryker .text-and-image-stryker-text {
     grid-column: 1;
   }
 
-  .text-and-image-stryker .text-and-image-stryker-image {
-    grid-row: 1;
+  .text-and-image-stryker.image-right .text-and-image-stryker-image,
+  .text-and-image-stryker.image-right .text-and-image-stryker-text {
+    grid-column: 1;
   }
 }
