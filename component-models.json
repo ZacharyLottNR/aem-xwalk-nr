@@ -5569,6 +5569,18 @@
     ]
   },
   {
+    "id": "legal-text-stryker",
+    "fields": [
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Legal Text",
+        "value": ""
+      }
+    ]
+  },
+  {
     "id": "quick-link-lists-stryker",
     "fields": [
       {

@@ -1,0 +1,38 @@
+.legal-text-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.legal-text-stryker .legal-text-stryker-content {
+  font-family: var(--stryker-body-font);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--stryker-black, #000);
+}
+
+.legal-text-stryker .legal-text-stryker-content :first-child {
+  margin-top: 0;
+}
+
+.legal-text-stryker .legal-text-stryker-content :last-child {
+  margin-bottom: 0;
+}
+
+.legal-text-stryker .legal-text-stryker-content p {
+  margin: 0 0 0.5em;
+}
+
+.legal-text-stryker .legal-text-stryker-content ol,
+.legal-text-stryker .legal-text-stryker-content ul {
+  margin: 0 0 0.5em;
+  padding-left: 24px;
+}
+
+.legal-text-stryker .legal-text-stryker-content li {
+  margin: 0 0 2px;
+}
+
+.legal-text-stryker .legal-text-stryker-content a:any-link {
+  color: var(--stryker-teal, #4c7d7a);
+}
