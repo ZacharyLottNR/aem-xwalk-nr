@@ -225,5 +225,11 @@
       "wizard",
       "range"
     ]
+  },
+  {
+    "id": "image-gallery-stryker",
+    "components": [
+      "image-gallery-stryker-item"
+    ]
   }
 ]
