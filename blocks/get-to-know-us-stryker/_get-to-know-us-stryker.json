@@ -52,6 +52,38 @@
           "valueType": "string",
           "name": "buttonLink",
           "label": "Button Link"
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "layout",
+          "label": "Layout",
+          "value": "standard",
+          "options": [
+            {
+              "name": "Standard (text left, image right)",
+              "value": "standard"
+            },
+            {
+              "name": "Banner (image left, text right, background band)",
+              "value": "banner"
+            }
+          ]
+        },
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "backgroundImage",
+          "label": "Background Image (Banner layout)",
+          "description": "Full-width band behind the block. Used only in Banner layout; falls back to a dark color if empty.",
+          "multi": false
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "backgroundImageAlt",
+          "label": "Background Image Alt",
+          "value": ""
         }
       ]
     }

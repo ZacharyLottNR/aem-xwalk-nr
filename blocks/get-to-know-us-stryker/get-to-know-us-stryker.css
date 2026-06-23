@@ -8,7 +8,7 @@
   padding: 48px 24px;
 }
 
-.get-to-know-us-stryker .get-to-know-us-stryker-content {
+.get-to-know-us-stryker.get-to-know-us-stryker-standard .get-to-know-us-stryker-content {
   grid-column: 1;
 }
 
@@ -57,14 +57,68 @@
 }
 
 .get-to-know-us-stryker .get-to-know-us-stryker-image {
-  grid-column: 2;
   line-height: 0;
+}
+
+.get-to-know-us-stryker.get-to-know-us-stryker-standard .get-to-know-us-stryker-image {
+  grid-column: 2;
 }
 
 .get-to-know-us-stryker .get-to-know-us-stryker-image img {
   width: 100%;
   height: auto;
   display: block;
+}
+
+/*
+ * Banner layout: image left, text + CTA right, over a full-bleed background
+ * band. Block sits in a centered grid; the band breaks out to viewport width.
+ */
+.get-to-know-us-stryker.get-to-know-us-stryker-banner {
+  position: relative;
+}
+
+.get-to-know-us-stryker.get-to-know-us-stryker-banner .get-to-know-us-stryker-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 180px;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  background-color: var(--stryker-teal-dark, #3a615f);
+  line-height: 0;
+}
+
+.get-to-know-us-stryker.get-to-know-us-stryker-banner .get-to-know-us-stryker-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.get-to-know-us-stryker.get-to-know-us-stryker-banner .get-to-know-us-stryker-image,
+.get-to-know-us-stryker.get-to-know-us-stryker-banner .get-to-know-us-stryker-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Banner image is a white-framed photo */
+.get-to-know-us-stryker.get-to-know-us-stryker-banner .get-to-know-us-stryker-image {
+  background-color: var(--stryker-white, #fff);
+  padding: 16px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+}
+
+/* Banner text card is transparent (no border / fill) */
+.get-to-know-us-stryker.get-to-know-us-stryker-banner .get-to-know-us-stryker-card {
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.get-to-know-us-stryker.get-to-know-us-stryker-banner .get-to-know-us-stryker-card p {
+  font-size: 16px;
 }
 
 /* Stacked layout on smaller viewports */
@@ -83,5 +137,10 @@
   .get-to-know-us-stryker .get-to-know-us-stryker-image img {
     max-width: 540px;
     margin: 0 auto;
+  }
+
+  /* Banner: stack image over text; band spans full height behind both */
+  .get-to-know-us-stryker.get-to-know-us-stryker-banner .get-to-know-us-stryker-bg {
+    height: 100%;
   }
 }
