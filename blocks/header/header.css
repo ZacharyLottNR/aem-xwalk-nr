@@ -344,3 +344,244 @@ body.theme-dark header nav .nav-hamburger button {
   background-color: var(--background-color);
   color: var(--text-color);
 }
+
+/* ===================== Stryker header ===================== */
+.nav-stryker {
+  font-family: var(--stryker-heading-font);
+}
+
+body.theme-stryker header {
+  background-color: var(--stryker-white, #fff);
+  border-bottom: 1px solid var(--stryker-border, #d9d9d9);
+}
+
+body.theme-stryker header .nav-wrapper,
+body.theme-stryker header .nav-stryker {
+  max-width: none;
+}
+
+/* Global utility bar */
+.nav-stryker .nav-stryker-global {
+  border-bottom: 1px solid var(--stryker-border, #d9d9d9);
+}
+
+.nav-stryker .nav-stryker-global-inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 12px 24px;
+}
+
+.nav-stryker .nav-stryker-brand {
+  flex: 0 0 auto;
+}
+
+.nav-stryker .nav-stryker-brand p { margin: 0; }
+
+.nav-stryker .nav-stryker-brand img {
+  display: block;
+  width: 140px;
+  height: auto;
+}
+
+.nav-stryker .nav-stryker-utility {
+  margin-left: auto;
+}
+
+.nav-stryker .nav-stryker-utility ul {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-stryker .nav-stryker-utility a:any-link {
+  font-size: 13px;
+  color: var(--stryker-gray, #58595b);
+  text-decoration: none;
+}
+
+.nav-stryker .nav-stryker-utility a:hover {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+.nav-stryker .nav-stryker-locale a:any-link {
+  font-size: 13px;
+  color: var(--stryker-gray, #58595b);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-stryker .nav-stryker-locale a:hover {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+/* Hamburger hidden on desktop */
+.nav-stryker .nav-stryker-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.nav-stryker .nav-stryker-hamburger span {
+  display: block;
+  height: 2px;
+  width: 24px;
+  background-color: var(--stryker-black, #000);
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+/* Main nav bar */
+.nav-stryker .nav-stryker-main-inner {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.nav-stryker .nav-stryker-main-inner > ul {
+  display: flex;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-stryker .nav-stryker-item {
+  position: relative;
+}
+
+.nav-stryker .nav-stryker-item > a:any-link {
+  display: block;
+  padding: 18px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--stryker-black, #000);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+
+.nav-stryker .nav-stryker-item > a:hover {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+/* Active section indicator */
+.nav-stryker .nav-stryker-item.is-active > a {
+  border-bottom-color: #f0a500;
+}
+
+/* Megamenu panel */
+.nav-stryker .nav-stryker-panel {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 50;
+  min-width: 260px;
+  background-color: var(--stryker-white, #fff);
+  border: 1px solid var(--stryker-border, #d9d9d9);
+  border-top: 3px solid #f0a500;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+}
+
+.nav-stryker .nav-stryker-panel-inner {
+  padding: 20px 24px;
+}
+
+.nav-stryker .nav-stryker-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.nav-stryker .nav-stryker-panel a:any-link {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--stryker-black, #000);
+  text-decoration: none;
+}
+
+.nav-stryker .nav-stryker-panel a:hover {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+/* Desktop: reveal panel on hover/focus */
+@media (width >= 900px) {
+  .nav-stryker .nav-stryker-has-menu:hover .nav-stryker-panel,
+  .nav-stryker .nav-stryker-has-menu:focus-within .nav-stryker-panel {
+    display: block;
+  }
+}
+
+/* Tablet / mobile: drawer */
+@media (width < 900px) {
+  .nav-stryker .nav-stryker-hamburger {
+    display: flex;
+    order: -1;
+  }
+
+  .nav-stryker .nav-stryker-utility,
+  .nav-stryker .nav-stryker-locale {
+    display: none;
+  }
+
+  .nav-stryker .nav-stryker-brand {
+    margin-left: 8px;
+  }
+
+  .nav-stryker .nav-stryker-main {
+    display: none;
+  }
+
+  header.nav-stryker-open .nav-stryker-main {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    overflow-y: auto;
+    background-color: var(--stryker-white, #fff);
+    padding-top: 16px;
+  }
+
+  header.nav-stryker-open .nav-stryker-utility,
+  header.nav-stryker-open .nav-stryker-locale {
+    display: block;
+  }
+
+  .nav-stryker .nav-stryker-main-inner > ul {
+    flex-direction: column;
+  }
+
+  .nav-stryker .nav-stryker-item > a:any-link {
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--stryker-border, #d9d9d9);
+  }
+
+  /* Submenus collapsed by default; expand the open item */
+  .nav-stryker .nav-stryker-panel {
+    display: none;
+    position: static;
+    border: 0;
+    box-shadow: none;
+    min-width: 0;
+  }
+
+  .nav-stryker .nav-stryker-has-menu.is-open .nav-stryker-panel {
+    display: block;
+  }
+
+  .nav-stryker .nav-stryker-panel-inner {
+    padding: 8px 24px 8px 40px;
+  }
+}

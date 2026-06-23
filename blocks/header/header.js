@@ -108,6 +108,13 @@ function toggleMenu(nav, navSections, forceExpanded = null) {
  * @param {Element} block The header block element
  */
 export default async function decorate(block) {
+  // Stryker sites use a dedicated nav decorator (global utility bar + megamenu).
+  if (document.body.classList.contains('theme-stryker')) {
+    const { default: decorateStrykerHeader } = await import('./header-stryker.js');
+    await decorateStrykerHeader(block);
+    return;
+  }
+
   // load nav as fragment
   const navMeta = getMetadata('nav');
   let navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';

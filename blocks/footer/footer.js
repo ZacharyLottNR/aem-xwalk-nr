@@ -6,6 +6,13 @@ import { loadFragment } from '../fragment/fragment.js';
  * @param {Element} block The footer block element
  */
 export default async function decorate(block) {
+  // Stryker sites use a dedicated footer decorator.
+  if (document.body.classList.contains('theme-stryker')) {
+    const { default: decorateStrykerFooter } = await import('./footer-stryker.js');
+    await decorateStrykerFooter(block);
+    return;
+  }
+
   // load footer as fragment
   const footerMeta = getMetadata('footer');
   let footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : '/footer';

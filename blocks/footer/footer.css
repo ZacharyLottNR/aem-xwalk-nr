@@ -47,3 +47,111 @@ footer .footer ul li {
     padding: 40px 32px 24px;
   }
 }
+
+/* ===================== Stryker footer ===================== */
+body.theme-stryker footer {
+  background-color: var(--stryker-white, #fff);
+  border-top: 1px solid var(--stryker-border, #d9d9d9);
+}
+
+.footer-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 32px 24px;
+  font-family: var(--stryker-heading-font);
+}
+
+.footer-stryker .footer-stryker-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 32px;
+}
+
+.footer-stryker .footer-stryker-legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  font-size: 12px;
+  color: var(--stryker-gray, #58595b);
+}
+
+.footer-stryker .footer-stryker-legal p {
+  margin: 0;
+}
+
+.footer-stryker .footer-stryker-legal ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-stryker .footer-stryker-legal a:any-link {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--stryker-gray, #58595b);
+  text-decoration: none;
+}
+
+.footer-stryker .footer-stryker-legal a:hover {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+.footer-stryker .footer-stryker-social ul {
+  display: flex;
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-stryker .footer-stryker-social-link {
+  display: block;
+  width: 28px;
+  height: 28px;
+}
+
+.footer-stryker .footer-stryker-social-link img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.footer-stryker .footer-stryker-secondary {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--stryker-border, #d9d9d9);
+}
+
+.footer-stryker .footer-stryker-secondary ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-stryker .footer-stryker-secondary a:any-link {
+  font-size: 13px;
+  color: var(--stryker-gray, #58595b);
+  text-decoration: none;
+}
+
+.footer-stryker .footer-stryker-secondary a:hover {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+@media (width < 700px) {
+  .footer-stryker .footer-stryker-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
