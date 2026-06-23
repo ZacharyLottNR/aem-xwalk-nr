@@ -1,0 +1,41 @@
+.quick-links-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.quick-links-stryker .quick-links-stryker-heading {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--stryker-black, #000);
+  margin: 0 0 32px;
+}
+
+.quick-links-stryker .quick-links-stryker-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+/* Nested list blocks sit in the grid; strip block-wrapper spacing */
+.quick-links-stryker .quick-links-stryker-grid > .quick-link-lists-stryker {
+  margin: 0;
+}
+
+/* Tablet: 2 columns */
+@media (width < 900px) {
+  .quick-links-stryker .quick-links-stryker-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+}
+
+/* Mobile: single column, categories stacked */
+@media (width < 600px) {
+  .quick-links-stryker .quick-links-stryker-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}

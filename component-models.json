@@ -5569,6 +5569,34 @@
     ]
   },
   {
+    "id": "quick-link-lists-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "category",
+        "label": "Category Name"
+      }
+    ]
+  },
+  {
+    "id": "quick-link-lists-stryker-item",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "linkText",
+        "label": "Link Name"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "linkUrl",
+        "label": "Link URL"
+      }
+    ]
+  },
+  {
     "id": "search-asset",
     "fields": [
       {

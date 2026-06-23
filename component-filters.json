@@ -231,5 +231,17 @@
     "components": [
       "image-gallery-stryker-item"
     ]
+  },
+  {
+    "id": "quick-link-lists-stryker",
+    "components": [
+      "quick-link-lists-stryker-item"
+    ]
+  },
+  {
+    "id": "quick-links-stryker",
+    "components": [
+      "quick-link-lists-stryker"
+    ]
   }
 ]
