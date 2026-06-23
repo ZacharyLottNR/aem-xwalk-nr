@@ -227,6 +227,12 @@
     ]
   },
   {
+    "id": "image-collection-stryker",
+    "components": [
+      "image-gallery-item-stryker"
+    ]
+  },
+  {
     "id": "image-gallery-stryker",
     "components": [
       "image-gallery-stryker-item"

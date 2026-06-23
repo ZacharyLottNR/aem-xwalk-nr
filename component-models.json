@@ -5521,6 +5521,56 @@
     ]
   },
   {
+    "id": "image-collection-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "headingHighlight",
+        "label": "Heading (highlight, amber)"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading (rest)"
+      }
+    ]
+  },
+  {
+    "id": "image-gallery-item-stryker",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Learn More Link",
+        "description": "Optional. No link is shown if left empty."
+      }
+    ]
+  },
+  {
     "id": "image-gallery-stryker",
     "fields": [
       {
