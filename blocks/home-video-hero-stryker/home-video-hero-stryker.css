@@ -14,6 +14,15 @@
   object-fit: cover;
 }
 
+/* YouTube iframe: fill width at 16:9, cover-cropped to avoid letterboxing */
+.home-video-hero-stryker .home-video-hero-stryker-iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  pointer-events: none;
+}
+
 /* Hidden on mobile */
 @media (width < 900px) {
   .home-video-hero-stryker {
