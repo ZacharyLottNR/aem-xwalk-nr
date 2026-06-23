@@ -473,6 +473,21 @@
           }
         },
         {
+          "title": "Adaptive Form (Stryker)",
+          "id": "form-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "fd/franklin/components/form/v1/form",
+                "template": {
+                  "fieldType": "form",
+                  "fd:version": "2.1"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Adaptive Form",
           "id": "form",
           "plugins": {
