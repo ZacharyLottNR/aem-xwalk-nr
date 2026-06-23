@@ -450,6 +450,10 @@
     ]
   },
   {
+    "id": "content-break-stryker",
+    "fields": []
+  },
+  {
     "id": "embed-calendar",
     "fields": [
       {
