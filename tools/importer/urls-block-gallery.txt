@@ -1,0 +1,3 @@
+# The gallery is synthetic; the transform ignores this page's DOM.
+# A real, fast-loading URL is used only to satisfy the importer's navigation step.
+https://example.com/
