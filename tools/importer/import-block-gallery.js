@@ -241,6 +241,27 @@ export default {
       main.append(block);
     });
 
+    // section-anchor-stryker — builds a sticky nav from the NAMED sections that
+    // follow it. Demo: the anchor block, then three named sections (each given a
+    // name via a Section Metadata block) so the nav has targets to link to.
+    main.append(document.createElement('hr'));
+    main.append(label(document, 'section-anchor-stryker'));
+    main.append(WebImporter.Blocks.createBlock(document, { name: 'section-anchor-stryker', cells: [['']] }));
+
+    [
+      ['Overview', 'Welcome to the RISE of a new OR for ENT and Neurosurgery.'],
+      ['Features', 'Vision is a protocol management dashboard for caregivers.'],
+      ['Contact', 'Contact an expert about RISE.'],
+    ].forEach(([name, body]) => {
+      main.append(document.createElement('hr'));
+      main.append(el(document, 'h2', name));
+      main.append(el(document, 'p', body));
+      main.append(WebImporter.Blocks.createBlock(document, {
+        name: 'Section Metadata',
+        cells: { name },
+      }));
+    });
+
     // Page metadata: stryker theme + shared nav/footer.
     main.append(document.createElement('hr'));
     const metadata = WebImporter.Blocks.createBlock(document, {

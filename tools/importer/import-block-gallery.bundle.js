@@ -200,6 +200,22 @@ var CustomImportScript = (() => {
         main.append(block);
       });
       main.append(document.createElement("hr"));
+      main.append(label(document, "section-anchor-stryker"));
+      main.append(WebImporter.Blocks.createBlock(document, { name: "section-anchor-stryker", cells: [[""]] }));
+      [
+        ["Overview", "Welcome to the RISE of a new OR for ENT and Neurosurgery."],
+        ["Features", "Vision is a protocol management dashboard for caregivers."],
+        ["Contact", "Contact an expert about RISE."]
+      ].forEach(([name, body]) => {
+        main.append(document.createElement("hr"));
+        main.append(el(document, "h2", name));
+        main.append(el(document, "p", body));
+        main.append(WebImporter.Blocks.createBlock(document, {
+          name: "Section Metadata",
+          cells: { name }
+        }));
+      });
+      main.append(document.createElement("hr"));
       const metadata = WebImporter.Blocks.createBlock(document, {
         name: "metadata",
         cells: {
