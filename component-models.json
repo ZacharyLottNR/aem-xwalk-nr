@@ -5581,6 +5581,66 @@
     ]
   },
   {
+    "id": "product-preview-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "titleLead",
+        "label": "Title (lead, black)"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "titleHighlight",
+        "label": "Title (highlight, amber)"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "description",
+        "label": "Description",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "instruction",
+        "label": "Instruction Text"
+      }
+    ]
+  },
+  {
+    "id": "product-preview-stryker-frame",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Frame Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Frame Alt",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "id": "product-preview-stryker-feature",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "feature",
+        "label": "Feature"
+      }
+    ]
+  },
+  {
     "id": "quick-link-lists-stryker",
     "fields": [
       {

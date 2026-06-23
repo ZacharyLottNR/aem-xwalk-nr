@@ -233,6 +233,13 @@
     ]
   },
   {
+    "id": "product-preview-stryker",
+    "components": [
+      "product-preview-stryker-frame",
+      "product-preview-stryker-feature"
+    ]
+  },
+  {
     "id": "quick-link-lists-stryker",
     "components": [
       "quick-link-lists-stryker-item"

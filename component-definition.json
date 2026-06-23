@@ -1159,6 +1159,52 @@
           }
         },
         {
+          "title": "Product Preview Stryker",
+          "id": "product-preview-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Product Preview Stryker",
+                  "model": "product-preview-stryker",
+                  "filter": "product-preview-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Product Frame",
+          "id": "product-preview-stryker-frame",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Product Frame",
+                  "model": "product-preview-stryker-frame"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Feature",
+          "id": "product-preview-stryker-feature",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Feature",
+                  "model": "product-preview-stryker-feature"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Quick Link List Stryker",
           "id": "quick-link-lists-stryker",
           "plugins": {
