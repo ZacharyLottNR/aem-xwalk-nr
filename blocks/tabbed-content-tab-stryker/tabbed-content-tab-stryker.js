@@ -1,4 +1,5 @@
 import { decorateBlock, loadBlock } from '../../scripts/aem.js';
+import { tableToBlock } from '../../scripts/scripts.js';
 
 function innerCell(row) {
   return row?.querySelector(':scope > div') || row;
@@ -15,8 +16,15 @@ export default async function decorate(block) {
   block.dataset.tabName = name;
   rows[0]?.remove();
 
-  // Decorate nested content blocks. Default content (headings, paragraphs,
-  // images) is left as-is; anything whose first class names a block is loaded.
+  // Imported nested content blocks arrive as <table> elements; convert them to
+  // block divs so they decorate. Default content (headings, paragraphs, images)
+  // is left as-is.
+  [...block.children].forEach((child) => {
+    const table = child.querySelector(':scope table') || (child.tagName === 'TABLE' ? child : null);
+    if (table) child.replaceWith(tableToBlock(table));
+  });
+
+  // Decorate nested content blocks; anything whose first class names a block.
   await Promise.all([...block.children].map(async (child) => {
     const blockName = child.classList[0];
     if (blockName && !child.dataset.blockStatus) {

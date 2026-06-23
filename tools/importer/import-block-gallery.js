@@ -223,15 +223,50 @@ export default {
       [el(document, 'div', '<p><strong>References</strong></p><ol><li>As compared to previous Stryker offering</li><li>1937000</li><li>1000904469</li><li>COMMS-COMSO-WHPR-1532602</li></ol><p>ENDO-GSNPS-SYK-2116500</p><p>Last Updated July/2025</p>')],
     ]]);
 
-    // NOTE: The nested-block container blocks are intentionally omitted from this
-    // synthetic gallery: quick-links-stryker, image-collection-stryker, and
-    // tabbed-content-stryker. Each holds child blocks (quick-link-lists-stryker,
-    // image-gallery-item-stryker, tabbed-content-tab-stryker), and the importer's
-    // markdown round-trip cannot faithfully reproduce nested blocks (they degrade
-    // to nested <table> elements the renderer won't re-decorate). These work
-    // correctly under real Universal Editor authoring and should be QA'd there.
-    // form-stryker is also omitted: it needs a live form definition (spreadsheet
-    // or UE-authored components), not synthetic block-table content.
+    // Nested-block container blocks. Each parent cell holds a child block table;
+    // the container's decorate converts these nested tables back into block divs
+    // (see scripts.js resolveNestedBlocks / tableToBlock). form-stryker is still
+    // omitted: it needs a live form definition, not synthetic block-table content.
+    const childBlock = (name, cells) => WebImporter.Blocks.createBlock(document, { name, cells });
+
+    // quick-links-stryker → quick-link-lists-stryker children (category + links)
+    const quickLinkList = (category, links) => {
+      const cells = [[category]];
+      links.forEach(([text, href]) => cells.push([text, anchor(document, href, href)]));
+      return childBlock('quick-link-lists-stryker', cells);
+    };
+    blocks.push(['quick-links-stryker', [
+      [quickLinkList('Portfolio', [['Medical and Surgical Equipment', 'https://www.stryker.com/ms'], ['Orthopaedics', 'https://www.stryker.com/ortho'], ['Neurotechnology', 'https://www.stryker.com/neuro']])],
+      [quickLinkList('Offerings', [['Services', 'https://www.stryker.com/services'], ['Care Settings', 'https://www.stryker.com/care'], ['Training and Education', 'https://www.stryker.com/training']])],
+      [quickLinkList('Our company', [['Contact Us', 'https://www.stryker.com/contact'], ['Investor Relations', 'https://www.stryker.com/investors'], ['Comprehensive Report', 'https://www.stryker.com/report']])],
+      [quickLinkList('More information', [['Advanced Digital Healthcare', 'https://www.stryker.com/adh'], ['Patients', 'https://www.stryker.com/patients']])],
+    ]]);
+
+    // image-collection-stryker → image-gallery-item-stryker children (img, text, optional link)
+    const galleryItem = (title, body, url) => {
+      const cells = [
+        [img(document, IMG(560, 360, title), title)],
+        [el(document, 'div', `<h3>${title}</h3><p>${body}</p>`)],
+        [url ? anchor(document, url, url) : ''],
+      ];
+      return childBlock('image-gallery-item-stryker', cells);
+    };
+    blocks.push(['image-collection-stryker', [
+      ['Visualization,'],
+      ['reimagined'],
+      [galleryItem('Tone mode', 'Balance brightness and illuminate shadows across the field of view.', 'https://www.stryker.com/tone')],
+      [galleryItem('Full frame HDR', 'High dynamic range, designed to provide more detail in shadows and highlights.', '')],
+      [galleryItem('Experience one billion colors', '62.5x more colors.', '')],
+      [galleryItem('Fluorescence imaging', 'Clearer delineation of fluorescence signal for improved visualization.', 'https://www.stryker.com/fluorescence')],
+    ]]);
+
+    // tabbed-content-stryker → tabbed-content-tab-stryker children (name + content)
+    const tab = (name, contentEl) => childBlock('tabbed-content-tab-stryker', [[name], [contentEl]]);
+    blocks.push(['tabbed-content-stryker', [
+      [tab('Product Information', el(document, 'div', '<h3>Connected Solutions Beds Brochure</h3><p>Download the brochure to learn more.</p>'))],
+      [tab('Related Products', el(document, 'div', '<h3>ProCuity LE(X) / Z(X)</h3><p>For an enhanced MedSurg experience.</p>'))],
+      [tab('Videos', el(document, 'div', '<h3>iBed Vision</h3><p>Watch the overview video.</p>'))],
+    ]]);
 
     // Build the page: a label + block table per entry, separated by section breaks.
     blocks.forEach(([name, cells], idx) => {

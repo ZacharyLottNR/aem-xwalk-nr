@@ -1,11 +1,11 @@
 import { decorateBlock, loadBlock } from '../../scripts/aem.js';
+import { resolveNestedBlocks } from '../../scripts/scripts.js';
 
 export default async function decorate(block) {
-  // Each row is a tab sub-block. Decorate/load them, then read their names.
-  const tabBlocks = [...block.children];
+  // Each row is a tab sub-block (UE block div, or an imported nested table).
+  const tabBlocks = resolveNestedBlocks(block, 'tabbed-content-tab-stryker');
 
   await Promise.all(tabBlocks.map(async (row) => {
-    row.classList.add('tabbed-content-tab-stryker');
     decorateBlock(row);
     await loadBlock(row);
   }));

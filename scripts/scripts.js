@@ -47,6 +47,60 @@ export function moveInstrumentation(from, to) {
 }
 
 /**
+ * Convert a nested block authored as an HTML table into the block-div structure
+ * EDS expects. The content importer emits child blocks (block-in-block) as
+ * literal <table> elements, which the renderer does not auto-convert because it
+ * only processes top-level block tables. Container blocks call this so their
+ * nested children decorate correctly both from imported content and from the
+ * Universal Editor (where children already arrive as block divs).
+ * @param {Element} table the nested table element
+ * @returns {Element} a block div (`<div class="block-name">` with row/cell divs)
+ */
+export function tableToBlock(table) {
+  const headerText = table.querySelector('thead th, thead td')?.textContent?.trim() || '';
+  const className = headerText.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+  const block = document.createElement('div');
+  if (className) block.className = className;
+
+  table.querySelectorAll(':scope > tbody > tr').forEach((tr) => {
+    const row = document.createElement('div');
+    [...tr.children].forEach((td) => {
+      const cell = document.createElement('div');
+      cell.append(...td.childNodes);
+      row.append(cell);
+    });
+    block.append(row);
+  });
+
+  return block;
+}
+
+/**
+ * Normalize a container block's children into nested block divs, converting any
+ * imported <table> children via tableToBlock. Returns the resolved block divs.
+ * @param {Element} container the parent block element
+ * @param {string} blockName the expected nested block class name
+ * @returns {Element[]} the nested block elements
+ */
+export function resolveNestedBlocks(container, blockName) {
+  const blocks = [];
+  [...container.children].forEach((child) => {
+    const table = child.querySelector(':scope table') || (child.tagName === 'TABLE' ? child : null);
+    if (table) {
+      const converted = tableToBlock(table);
+      converted.classList.add(blockName);
+      child.replaceWith(converted);
+      blocks.push(converted);
+    } else {
+      child.classList.add(blockName);
+      blocks.push(child);
+    }
+  });
+  return blocks;
+}
+
+/**
  * load fonts.css and set a session storage flag
  */
 async function loadFonts() {
