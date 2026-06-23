@@ -5636,5 +5636,32 @@
         ]
       }
     ]
+  },
+  {
+    "id": "video-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "video",
+        "label": "Video URL",
+        "description": "Direct video file (mp4/webm) or a YouTube URL. Does not autoplay."
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "poster",
+        "label": "Poster Image",
+        "description": "Optional thumbnail shown before play (direct video files only).",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "posterAlt",
+        "label": "Poster Alt",
+        "value": ""
+      }
+    ]
   }
 ]
