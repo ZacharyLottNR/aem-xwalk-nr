@@ -65,6 +65,12 @@
     ]
   },
   {
+    "id": "cards-stryker",
+    "components": [
+      "cards-stryker-card"
+    ]
+  },
+  {
     "id": "cards",
     "components": [
       "card"

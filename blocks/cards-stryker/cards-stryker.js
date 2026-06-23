@@ -1,0 +1,94 @@
+import { createOptimizedPicture } from '../../scripts/aem.js';
+import { moveInstrumentation } from '../../scripts/scripts.js';
+
+const COLUMN_VALUES = ['3', '4'];
+const STYLE_VALUES = ['news', 'product', 'default'];
+
+export default function decorate(block) {
+  const rows = [...block.children];
+
+  let heading = '';
+  let columns = '3';
+  let style = 'default';
+  const cardRows = [];
+
+  // Classify rows independently of authored order: card rows contain an image;
+  // the remaining single-value rows carry heading / columns / style.
+  rows.forEach((row) => {
+    if (row.querySelector('picture')) {
+      cardRows.push(row);
+      return;
+    }
+    const text = row.textContent.trim();
+    const token = text.toLowerCase();
+    if (COLUMN_VALUES.includes(text)) columns = text;
+    else if (STYLE_VALUES.includes(token)) style = token;
+    else if (text) heading = text;
+  });
+
+  block.textContent = '';
+  block.classList.add(`cards-stryker-cols-${columns}`, `cards-stryker-${style}`);
+
+  if (heading) {
+    const h = document.createElement('h2');
+    h.className = 'cards-stryker-heading';
+    h.textContent = heading;
+    block.append(h);
+  }
+
+  const ul = document.createElement('ul');
+  ul.className = 'cards-stryker-list';
+
+  cardRows.forEach((row) => {
+    // Card item field order: 0: image, 1: cta text, 2: cta url, 3: text
+    const cells = [...row.children];
+    const imageCell = cells[0];
+    const ctaTextCell = cells[1];
+    const ctaUrlCell = cells[2];
+    const textCell = cells[3];
+
+    const li = document.createElement('li');
+    li.className = 'cards-stryker-card';
+    moveInstrumentation(row, li);
+
+    const picture = imageCell?.querySelector('picture');
+    if (picture) {
+      const imageWrap = document.createElement('div');
+      imageWrap.className = 'cards-stryker-card-image';
+      imageWrap.append(picture);
+      li.append(imageWrap);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'cards-stryker-card-body';
+
+    const textHtml = textCell?.innerHTML?.trim();
+    if (textHtml) {
+      const text = document.createElement('div');
+      text.className = 'cards-stryker-card-text';
+      text.innerHTML = textHtml;
+      body.append(text);
+    }
+
+    const ctaLabel = ctaTextCell?.textContent?.trim();
+    const ctaHref = ctaUrlCell?.querySelector('a')?.href || ctaUrlCell?.textContent?.trim();
+    if (ctaLabel && ctaHref) {
+      const cta = document.createElement('a');
+      cta.className = 'cards-stryker-cta';
+      cta.href = ctaHref;
+      cta.textContent = ctaLabel;
+      body.append(cta);
+    }
+
+    li.append(body);
+    ul.append(li);
+  });
+
+  block.append(ul);
+
+  ul.querySelectorAll('picture > img').forEach((img) => {
+    const optimized = createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }]);
+    moveInstrumentation(img, optimized.querySelector('img'));
+    img.closest('picture').replaceWith(optimized);
+  });
+}
