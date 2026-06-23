@@ -51,8 +51,47 @@ export default {
       [anchor(document, 'https://youtu.be/kRIuiIy_SCs', 'https://youtu.be/kRIuiIy_SCs')],
     ]]);
 
+    // home-hero-stryker — eyebrow, heading, subtext, cta link, cta text, bg image
+    blocks.push(['home-hero-stryker', [
+      ['Now available'],
+      ['Connected care, reimagined'],
+      ['Technology that helps you deliver better outcomes for more patients.'],
+      [anchor(document, 'https://www.stryker.com/us/en/index.html', 'Explore')],
+      ['Explore solutions'],
+      [img(document, IMG(900, 620, 'Hero'), 'Hero background')],
+    ]]);
+
+    // overview-stryker — row0: titleBlack, titleGold, primer, richText; then cards
+    const overviewCard = (title, desc) => [
+      img(document, IMG(400, 260, 'Overview'), title),
+      title,
+      el(document, 'div', `<p>${desc}</p>`),
+    ];
+    blocks.push(['overview-stryker', [
+      ['Our', 'focus', el(document, 'div', '<p>Empowering people for powerful outcomes.</p>'), el(document, 'div', '<p>Across the continuum of care.</p>')],
+      overviewCard('Medical and Surgical', 'Empowering people for powerful outcomes.'),
+      overviewCard('Orthopaedics', "Leading what's next."),
+      overviewCard('Neurotechnology', 'Better connected.'),
+    ]]);
+
     // 2. content-break-stryker — no fields
     blocks.push(['content-break-stryker', [['']]]);
+
+    // section-banner-stryker — single richtext cell
+    blocks.push(['section-banner-stryker', [
+      [el(document, 'div', '<p>Interested in learning more? <strong>Talk to a rep today.</strong></p>')],
+    ]]);
+
+    // social-cta-stryker — row0: heading; then item rows [label-or-icon, href]
+    blocks.push(['social-cta-stryker', [
+      ['Connect with us'],
+      ['Contact sales', anchor(document, 'https://www.stryker.com/contact', 'Contact')],
+      ['Find a rep', anchor(document, 'https://www.stryker.com/reps', 'Reps')],
+      ['facebook', anchor(document, 'https://facebook.com/stryker', 'fb')],
+      ['linkedin', anchor(document, 'https://linkedin.com/company/stryker', 'li')],
+      ['youtube', anchor(document, 'https://youtube.com/stryker', 'yt')],
+      ['instagram', anchor(document, 'https://instagram.com/stryker', 'ig')],
+    ]]);
 
     // 3. get-to-know-us-stryker (standard layout)
     blocks.push(['get-to-know-us-stryker', [
@@ -144,17 +183,55 @@ export default {
       ['Storage drawer for cables and foot pedal'],
     ]]);
 
+    // text-and-media-stryker (basic theme, image, media-left)
+    blocks.push(['text-and-media-stryker', [
+      [img(document, IMG(600, 400, 'Vision'), 'Vision')],
+      ['Vision'],
+      [''],
+      [''],
+      ['Vision'],
+      [el(document, 'div', '<p>Vision is a protocol management dashboard that gives caregivers visibility to compliance and bed exit alarm activity.</p>')],
+      ['basic'],
+      ['media-left'],
+    ]]);
+
+    // text-and-media-stryker (advanced theme, video, media-right)
+    blocks.push(['text-and-media-stryker', [
+      [''],
+      [''],
+      [anchor(document, 'https://youtu.be/kRIuiIy_SCs', 'https://youtu.be/kRIuiIy_SCs')],
+      ['Centralized'],
+      ['control'],
+      [el(document, 'div', '<p>Your team can assist you from the doc station without breaking sterility around the sterile field.</p>')],
+      ['advanced'],
+      ['media-right'],
+    ]]);
+
+    // cross-promo-stryker — one per alignment (left, center, right)
+    ['left', 'center', 'right'].forEach((align) => {
+      blocks.push(['cross-promo-stryker', [
+        [img(document, IMG(420, 240, `ProCare ${align}`), 'ProCare Services')],
+        ['ProCare Services'],
+        [anchor(document, 'https://www.stryker.com/us/en/acute-care/services/procare.html', 'ProCare')],
+        ['Read more'],
+        [align],
+      ]]);
+    });
+
     // 10. legal-text-stryker
     blocks.push(['legal-text-stryker', [
       [el(document, 'div', '<p><strong>References</strong></p><ol><li>As compared to previous Stryker offering</li><li>1937000</li><li>1000904469</li><li>COMMS-COMSO-WHPR-1532602</li></ol><p>ENDO-GSNPS-SYK-2116500</p><p>Last Updated July/2025</p>')],
     ]]);
 
-    // NOTE: quick-links-stryker is intentionally omitted. It is a nested-block
-    // container (parent holds child quick-link-lists-stryker blocks). The
-    // importer's markdown round-trip cannot faithfully reproduce nested blocks
-    // (they degrade to nested <table> elements the renderer won't re-decorate).
-    // The block works correctly under real Universal Editor authoring; for QA it
-    // should be reviewed on a UE-authored page rather than this synthetic gallery.
+    // NOTE: The nested-block container blocks are intentionally omitted from this
+    // synthetic gallery: quick-links-stryker, image-collection-stryker, and
+    // tabbed-content-stryker. Each holds child blocks (quick-link-lists-stryker,
+    // image-gallery-item-stryker, tabbed-content-tab-stryker), and the importer's
+    // markdown round-trip cannot faithfully reproduce nested blocks (they degrade
+    // to nested <table> elements the renderer won't re-decorate). These work
+    // correctly under real Universal Editor authoring and should be QA'd there.
+    // form-stryker is also omitted: it needs a live form definition (spreadsheet
+    // or UE-authored components), not synthetic block-table content.
 
     // Build the page: a label + block table per entry, separated by section breaks.
     blocks.forEach(([name, cells], idx) => {

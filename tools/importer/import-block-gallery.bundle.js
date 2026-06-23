@@ -53,7 +53,38 @@ var CustomImportScript = (() => {
       blocks.push(["home-video-hero-stryker", [
         [anchor(document, "https://youtu.be/kRIuiIy_SCs", "https://youtu.be/kRIuiIy_SCs")]
       ]]);
+      blocks.push(["home-hero-stryker", [
+        ["Now available"],
+        ["Connected care, reimagined"],
+        ["Technology that helps you deliver better outcomes for more patients."],
+        [anchor(document, "https://www.stryker.com/us/en/index.html", "Explore")],
+        ["Explore solutions"],
+        [img(document, IMG(900, 620, "Hero"), "Hero background")]
+      ]]);
+      const overviewCard = (title, desc) => [
+        img(document, IMG(400, 260, "Overview"), title),
+        title,
+        el(document, "div", `<p>${desc}</p>`)
+      ];
+      blocks.push(["overview-stryker", [
+        ["Our", "focus", el(document, "div", "<p>Empowering people for powerful outcomes.</p>"), el(document, "div", "<p>Across the continuum of care.</p>")],
+        overviewCard("Medical and Surgical", "Empowering people for powerful outcomes."),
+        overviewCard("Orthopaedics", "Leading what's next."),
+        overviewCard("Neurotechnology", "Better connected.")
+      ]]);
       blocks.push(["content-break-stryker", [[""]]]);
+      blocks.push(["section-banner-stryker", [
+        [el(document, "div", "<p>Interested in learning more? <strong>Talk to a rep today.</strong></p>")]
+      ]]);
+      blocks.push(["social-cta-stryker", [
+        ["Connect with us"],
+        ["Contact sales", anchor(document, "https://www.stryker.com/contact", "Contact")],
+        ["Find a rep", anchor(document, "https://www.stryker.com/reps", "Reps")],
+        ["facebook", anchor(document, "https://facebook.com/stryker", "fb")],
+        ["linkedin", anchor(document, "https://linkedin.com/company/stryker", "li")],
+        ["youtube", anchor(document, "https://youtube.com/stryker", "yt")],
+        ["instagram", anchor(document, "https://instagram.com/stryker", "ig")]
+      ]]);
       blocks.push(["get-to-know-us-stryker", [
         [img(document, IMG(600, 480, "People"), "People")],
         [el(document, "div", "<h2>What we do</h2><p>Stryker is one of the world's leading medical technology companies. Alongside our customers around the world, we impact more than 150 million patients annually.</p>")],
@@ -130,6 +161,35 @@ var CustomImportScript = (() => {
         ["Suction canister holder"],
         ["Storage drawer for cables and foot pedal"]
       ]]);
+      blocks.push(["text-and-media-stryker", [
+        [img(document, IMG(600, 400, "Vision"), "Vision")],
+        ["Vision"],
+        [""],
+        [""],
+        ["Vision"],
+        [el(document, "div", "<p>Vision is a protocol management dashboard that gives caregivers visibility to compliance and bed exit alarm activity.</p>")],
+        ["basic"],
+        ["media-left"]
+      ]]);
+      blocks.push(["text-and-media-stryker", [
+        [""],
+        [""],
+        [anchor(document, "https://youtu.be/kRIuiIy_SCs", "https://youtu.be/kRIuiIy_SCs")],
+        ["Centralized"],
+        ["control"],
+        [el(document, "div", "<p>Your team can assist you from the doc station without breaking sterility around the sterile field.</p>")],
+        ["advanced"],
+        ["media-right"]
+      ]]);
+      ["left", "center", "right"].forEach((align) => {
+        blocks.push(["cross-promo-stryker", [
+          [img(document, IMG(420, 240, `ProCare ${align}`), "ProCare Services")],
+          ["ProCare Services"],
+          [anchor(document, "https://www.stryker.com/us/en/acute-care/services/procare.html", "ProCare")],
+          ["Read more"],
+          [align]
+        ]]);
+      });
       blocks.push(["legal-text-stryker", [
         [el(document, "div", "<p><strong>References</strong></p><ol><li>As compared to previous Stryker offering</li><li>1937000</li><li>1000904469</li><li>COMMS-COMSO-WHPR-1532602</li></ol><p>ENDO-GSNPS-SYK-2116500</p><p>Last Updated July/2025</p>")]
       ]]);
