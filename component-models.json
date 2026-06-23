@@ -5698,6 +5698,87 @@
     ]
   },
   {
+    "id": "text-and-media-stryker",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "description": "Used when no video URL is set.",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "video",
+        "label": "Video URL",
+        "description": "Optional. Direct video file or YouTube URL. Takes precedence over the image."
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "headingHighlight",
+        "label": "Heading (highlight)",
+        "description": "Colored amber in the Advanced theme."
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading (rest)"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "body",
+        "label": "Body",
+        "value": ""
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "theme",
+        "label": "Theme",
+        "value": "basic",
+        "options": [
+          {
+            "name": "Basic",
+            "value": "basic"
+          },
+          {
+            "name": "Advanced",
+            "value": "advanced"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "layout",
+        "label": "Layout",
+        "value": "media-left",
+        "options": [
+          {
+            "name": "Media Left",
+            "value": "media-left"
+          },
+          {
+            "name": "Media Right",
+            "value": "media-right"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "video-stryker",
     "fields": [
       {

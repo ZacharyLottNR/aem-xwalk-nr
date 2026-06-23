@@ -1,0 +1,108 @@
+.text-and-media-stryker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 64px;
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+/* Media / text placement */
+.text-and-media-stryker .text-and-media-stryker-media {
+  grid-column: 1;
+  line-height: 0;
+}
+
+.text-and-media-stryker .text-and-media-stryker-text {
+  grid-column: 2;
+}
+
+.text-and-media-stryker.text-and-media-stryker-media-right .text-and-media-stryker-media {
+  grid-column: 2;
+}
+
+.text-and-media-stryker.text-and-media-stryker-media-right .text-and-media-stryker-text {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* Media elements */
+.text-and-media-stryker .text-and-media-stryker-media img,
+.text-and-media-stryker .text-and-media-stryker-media video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.text-and-media-stryker .text-and-media-stryker-iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
+/* Body text (shared) */
+.text-and-media-stryker .text-and-media-stryker-body {
+  font-family: var(--stryker-body-font);
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--stryker-black, #000);
+}
+
+.text-and-media-stryker .text-and-media-stryker-body p {
+  margin: 0 0 1em;
+}
+
+.text-and-media-stryker .text-and-media-stryker-body :first-child {
+  margin-top: 0;
+}
+
+/* Basic theme: single-color sans heading */
+.text-and-media-stryker.text-and-media-stryker-basic .text-and-media-stryker-heading {
+  font-family: var(--stryker-heading-font);
+  font-weight: 500;
+  font-size: 32px;
+  color: var(--stryker-black, #000);
+  margin: 0 0 20px;
+}
+
+/* Advanced theme: large two-color stylized heading, lighter body */
+.text-and-media-stryker.text-and-media-stryker-advanced .text-and-media-stryker-heading {
+  font-family: var(--stryker-heading-font);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.1;
+  color: var(--stryker-black, #000);
+  margin: 0 0 16px;
+}
+
+.text-and-media-stryker.text-and-media-stryker-advanced .text-and-media-stryker-heading-highlight {
+  font-weight: 700;
+  color: #f0a500;
+}
+
+.text-and-media-stryker.text-and-media-stryker-advanced .text-and-media-stryker-body {
+  font-size: 15px;
+}
+
+@media (width < 900px) {
+  .text-and-media-stryker {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 32px 24px;
+  }
+
+  .text-and-media-stryker .text-and-media-stryker-media,
+  .text-and-media-stryker .text-and-media-stryker-text {
+    grid-column: 1;
+  }
+
+  .text-and-media-stryker .text-and-media-stryker-media {
+    grid-row: 1;
+  }
+
+  .text-and-media-stryker.text-and-media-stryker-advanced .text-and-media-stryker-heading {
+    font-size: 32px;
+  }
+}
