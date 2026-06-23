@@ -1,0 +1,71 @@
+.tabbed-content-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.tabbed-content-stryker .tabbed-content-stryker-tablist {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0;
+  border-bottom: 1px solid var(--stryker-border, #d9d9d9);
+  margin-bottom: 32px;
+}
+
+.tabbed-content-stryker .tabbed-content-stryker-tab {
+  position: relative;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: var(--stryker-heading-font);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--stryker-gray, #58595b);
+  padding: 8px 24px 16px;
+  white-space: nowrap;
+}
+
+/* Divider between tabs */
+.tabbed-content-stryker .tabbed-content-stryker-tab:not(:first-child) {
+  border-left: 1px solid var(--stryker-border, #d9d9d9);
+}
+
+.tabbed-content-stryker .tabbed-content-stryker-tab:hover {
+  color: var(--stryker-black, #000);
+}
+
+.tabbed-content-stryker .tabbed-content-stryker-tab.is-active {
+  color: var(--stryker-black, #000);
+}
+
+/* Active indicator line */
+.tabbed-content-stryker .tabbed-content-stryker-tab.is-active::after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: -1px;
+  height: 3px;
+  background-color: #f0a500;
+}
+
+.tabbed-content-stryker .tabbed-content-stryker-panel[hidden] {
+  display: none;
+}
+
+/* Mobile: allow horizontal scroll of the tablist */
+@media (width < 700px) {
+  .tabbed-content-stryker .tabbed-content-stryker-tablist {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .tabbed-content-stryker .tabbed-content-stryker-tab {
+    padding: 8px 16px 16px;
+    font-size: 13px;
+  }
+}

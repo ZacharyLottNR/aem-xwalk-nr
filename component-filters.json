@@ -256,5 +256,25 @@
     "components": [
       "quick-link-lists-stryker"
     ]
+  },
+  {
+    "id": "tabbed-content-stryker",
+    "components": [
+      "tabbed-content-tab-stryker"
+    ]
+  },
+  {
+    "id": "tabbed-content-tab-stryker",
+    "components": [
+      "text",
+      "image",
+      "title",
+      "button",
+      "cards-stryker",
+      "video-stryker",
+      "image-collection-stryker",
+      "text-and-media-stryker",
+      "legal-text-stryker"
+    ]
   }
 ]
