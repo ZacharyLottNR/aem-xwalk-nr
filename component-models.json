@@ -1,194 +1,5 @@
 [
   {
-    "id": "section-banner-stryker",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "text",
-        "label": "Text",
-        "valueType": "string"
-      }
-    ]
-  },
-  {
-    "id": "social-cta-stryker",
-    "fields": [
-      {
-        "component": "text",
-        "name": "heading",
-        "label": "Heading",
-        "valueType": "string"
-      }
-    ]
-  },
-  {
-    "id": "social-cta-link",
-    "fields": [
-      {
-        "component": "text",
-        "name": "label",
-        "label": "Link Text",
-        "valueType": "string"
-      },
-      {
-        "component": "aem-content",
-        "name": "link",
-        "label": "Link",
-        "valueType": "string"
-      }
-    ]
-  },
-  {
-    "id": "social-cta-icon",
-    "fields": [
-      {
-        "component": "select",
-        "name": "icon",
-        "label": "Social Network",
-        "valueType": "string",
-        "options": [
-          { "name": "Facebook", "value": "facebook" },
-          { "name": "LinkedIn", "value": "linkedin" },
-          { "name": "YouTube", "value": "youtube" },
-          { "name": "Instagram", "value": "instagram" }
-        ]
-      },
-      {
-        "component": "text",
-        "name": "link",
-        "label": "Link URL",
-        "valueType": "string"
-      }
-    ]
-  },
-  {
-    "id": "text-and-image-stryker",
-    "fields": [
-      {
-        "component": "reference",
-        "name": "image",
-        "label": "Image",
-        "multi": false
-      },
-      {
-        "component": "text",
-        "name": "heading",
-        "label": "Heading (Bold)",
-        "valueType": "string"
-      },
-      {
-        "component": "richtext",
-        "name": "body",
-        "label": "Body Text",
-        "valueType": "string"
-      },
-      {
-        "component": "select",
-        "name": "classes",
-        "label": "Image Position",
-        "valueType": "string",
-        "options": [
-          { "name": "Image Left", "value": "image-left" },
-          { "name": "Image Right", "value": "image-right" }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "overview-stryker",
-    "fields": [
-      {
-        "component": "text",
-        "name": "titleBlack",
-        "label": "Title (Black)",
-        "valueType": "string"
-      },
-      {
-        "component": "text",
-        "name": "titleGold",
-        "label": "Title (Gold)",
-        "valueType": "string"
-      },
-      {
-        "component": "text",
-        "name": "primer",
-        "label": "Primer Text",
-        "valueType": "string"
-      },
-      {
-        "component": "richtext",
-        "name": "richText",
-        "label": "Rich Text",
-        "valueType": "string"
-      }
-    ]
-  },
-  {
-    "id": "overview-stryker-card",
-    "fields": [
-      {
-        "component": "reference",
-        "name": "image",
-        "label": "Image",
-        "multi": false
-      },
-      {
-        "component": "text",
-        "name": "cardTitle",
-        "label": "Title",
-        "valueType": "string"
-      },
-      {
-        "component": "richtext",
-        "name": "cardDescription",
-        "label": "Description",
-        "valueType": "string"
-      }
-    ]
-  },
-  {
-    "id": "home-hero-stryker",
-    "fields": [
-      {
-        "component": "text",
-        "name": "eyebrow",
-        "label": "Eyebrow",
-        "valueType": "string",
-        "description": "Top-right label (e.g. Information for healthcare professionals)"
-      },
-      {
-        "component": "text",
-        "name": "heading",
-        "label": "Heading",
-        "valueType": "string"
-      },
-      {
-        "component": "text",
-        "name": "subtext",
-        "label": "Subtext",
-        "valueType": "string"
-      },
-      {
-        "component": "aem-content",
-        "name": "ctaLink",
-        "label": "CTA Link",
-        "valueType": "string"
-      },
-      {
-        "component": "text",
-        "name": "ctaText",
-        "label": "CTA Text",
-        "valueType": "string"
-      },
-      {
-        "component": "reference",
-        "name": "image",
-        "label": "Background Image",
-        "multi": false
-      }
-    ]
-  },
-  {
     "id": "page-metadata",
     "fields": [
       {
@@ -211,13 +22,6 @@
         "label": "Keywords"
       },
       {
-        "component": "text",
-        "valueType": "string",
-        "name": "logo",
-        "label": "Logo Image",
-        "description": "DAM path to logo image (e.g. /content/dam/asset-share-commons/en/site/Logo-light.png)"
-      },
-      {
         "component": "select",
         "valueType": "string",
         "name": "theme",
@@ -232,6 +36,13 @@
             "value": "dark"
           }
         ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "logo",
+        "label": "Logo Image",
+        "description": "DAM path to logo image (e.g. /content/dam/asset-share-commons/en/site/Logo-light.png)"
       },
       {
         "component": "text",
@@ -262,139 +73,6 @@
         "component": "text",
         "name": "imageAlt",
         "label": "Alt Text"
-      }
-    ]
-  },
-  {
-    "id": "ai-generate",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "prompt",
-        "label": "Prompt",
-        "valueType": "string"
-      },
-      {
-        "component": "select",
-        "name": "format",
-        "label": "Output Format",
-        "valueType": "string",
-        "options": [
-          { "name": "Plain Text", "value": "text" },
-          { "name": "HTML", "value": "html" }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "experience-fragment",
-    "fields": [
-      {
-        "component": "aem-content",
-        "name": "xfPath",
-        "label": "Experience Fragment",
-        "valueType": "string",
-        "validation": {
-          "rootPath": "/content/experience-fragments"
-        }
-      }
-    ]
-  },
-  {
-    "id": "layout",
-    "fields": [
-      {
-        "component": "select",
-        "name": "columns",
-        "label": "Columns",
-        "valueType": "number",
-        "options": [
-          { "name": "1", "value": 1 },
-          { "name": "2", "value": 2 },
-          { "name": "3", "value": 3 },
-          { "name": "4", "value": 4 }
-        ]
-      },
-      {
-        "component": "select",
-        "name": "classes",
-        "label": "Layout",
-        "valueType": "string",
-        "options": [
-          { "name": "1 Column (100%)", "value": "layout-1-col" },
-          { "name": "2 Columns (50/50)", "value": "layout-2-col-50-50" },
-          { "name": "2 Columns (75/25)", "value": "layout-2-col-75-25" },
-          { "name": "2 Columns (66/33)", "value": "layout-2-col-66-33" },
-          { "name": "3 Columns (33/33/33)", "value": "layout-3-col" },
-          { "name": "4 Columns (25/25/25/25)", "value": "layout-4-col" }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "super-text",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "content",
-        "label": "Text",
-        "valueType": "string"
-      },
-      {
-        "component": "multiselect",
-        "name": "classes",
-        "label": "Additional Formatting",
-        "options": [
-          { "name": "Align Left", "value": "align-left" },
-          { "name": "Align Center", "value": "align-center" },
-          { "name": "Align Right", "value": "align-right" },
-          { "name": "Align Justify", "value": "align-justify" },
-          { "name": "Indent 1", "value": "indent-1" },
-          { "name": "Indent 2", "value": "indent-2" },
-          { "name": "Indent 3", "value": "indent-3" },
-          { "name": "Indent 4", "value": "indent-4" },
-          { "name": "Outdent 1", "value": "outdent-1" },
-          { "name": "Outdent 2", "value": "outdent-2" },
-          { "name": "Outdent 3", "value": "outdent-3" },
-          { "name": "Outdent 4", "value": "outdent-4" },
-          { "name": "Max-Width Narrow (600px)", "value": "max-w-narrow" },
-          { "name": "Max-Width Medium (800px)", "value": "max-w-medium" },
-          { "name": "Max-Width Full", "value": "max-w-full" }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "text",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "text",
-        "label": "Text",
-        "valueType": "string"
-      },
-      {
-        "component": "select",
-        "name": "classes",
-        "label": "Alignment",
-        "options": [
-          {
-            "name": "Left",
-            "value": "text-left"
-          },
-          {
-            "name": "Center",
-            "value": "text-center"
-          },
-          {
-            "name": "Right",
-            "value": "text-right"
-          },
-          {
-            "name": "Justify",
-            "value": "text-justify"
-          }
-        ]
       }
     ]
   },
@@ -495,22 +173,6 @@
           {
             "name": "Highlight",
             "value": "highlight"
-          },
-          {
-            "name": "Text Left",
-            "value": "text-left"
-          },
-          {
-            "name": "Text Center",
-            "value": "text-center"
-          },
-          {
-            "name": "Text Right",
-            "value": "text-right"
-          },
-          {
-            "name": "Text Justify",
-            "value": "text-justify"
           }
         ]
       }
@@ -5656,6 +5318,18 @@
         "value": "",
         "label": "Text",
         "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "home-video-hero-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "video",
+        "label": "Video URL",
+        "description": "Full-width background video URL. Plays muted and looping; hidden on mobile."
       }
     ]
   },

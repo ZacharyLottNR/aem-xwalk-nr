@@ -1,0 +1,22 @@
+.home-video-hero-stryker {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.home-video-hero-stryker .home-video-hero-stryker-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Hidden on mobile */
+@media (width < 900px) {
+  .home-video-hero-stryker {
+    display: none;
+  }
+}

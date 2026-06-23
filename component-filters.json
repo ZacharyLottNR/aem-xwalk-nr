@@ -21,41 +21,7 @@
       "accordion-filter",
       "columns-statistics",
       "asset-detail",
-      "cart-page",
-      "cards-recent",
-      "super-text",
-      "video-detail",
-      "document-detail",
-      "presentation-detail",
-      "theme-redirect",
-      "layout",
-      "ai-generate",
-      "experience-fragment",
-      "home-hero-stryker",
-      "section-anchor-stryker",
-      "overview-stryker",
-      "text-and-image-stryker",
-      "social-cta-stryker",
-      "section-banner-stryker"
-    ]
-  },
-  {
-    "id": "overview-stryker",
-    "components": [
-      "overview-stryker-card"
-    ]
-  },
-  {
-    "id": "social-cta-stryker",
-    "components": [
-      "social-cta-link",
-      "social-cta-icon"
-    ]
-  },
-  {
-    "id": "layout",
-    "components": [
-      "column"
+      "cart-page"
     ]
   },
   {
