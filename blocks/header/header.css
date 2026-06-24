@@ -369,9 +369,18 @@ body.theme-stryker header nav.nav-stryker-utility {
   display: block;
   max-width: none;
   height: auto;
-  margin: 0;
   padding: 0;
   gap: 0;
+}
+
+body.theme-stryker header nav.nav-stryker-main {
+  margin: 0;
+}
+
+/* Keep margin-left: auto so the utility group is pushed to the right; only
+   reset the other margins the boilerplate `header nav` rule introduced. */
+body.theme-stryker header nav.nav-stryker-utility {
+  margin: 0 0 0 auto;
 }
 
 /* Global utility bar */
