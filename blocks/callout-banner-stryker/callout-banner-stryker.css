@@ -2,6 +2,7 @@ main > .section > div.callout-banner-stryker-wrapper {
   margin: 0px;
   padding: 0px;
   width: 100vw;
+  color: var(--stryker-white, #fff);
 }
 /* Hidden by default so the banner never flashes in before the cookie check. */
 .callout-banner-stryker {
