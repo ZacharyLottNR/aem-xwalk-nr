@@ -120,11 +120,6 @@
   margin-bottom: 12px;
 }
 
-/* Default style: image with yellow left bar, bordered content card */
-.cards-stryker.cards-stryker-default .cards-stryker-card-image {
-  border-left: 6px solid #fdb913;
-}
-
 .cards-stryker.cards-stryker-default .cards-stryker-card-body {
   border: 1px solid var(--stryker-border, #d9d9d9);
   border-top: 0;
