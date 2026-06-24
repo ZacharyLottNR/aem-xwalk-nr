@@ -362,6 +362,18 @@ body.theme-stryker header .nav-stryker {
   max-width: none;
 }
 
+/* Neutralize the boilerplate `header nav` grid/flex + max-width so the Stryker
+   utility and main <nav> elements span full width and lay out on their own. */
+body.theme-stryker header nav.nav-stryker-main,
+body.theme-stryker header nav.nav-stryker-utility {
+  display: block;
+  max-width: none;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
 /* Global utility bar */
 .nav-stryker .nav-stryker-global {
   border-bottom: 1px solid var(--stryker-border, #d9d9d9);
@@ -371,9 +383,7 @@ body.theme-stryker header .nav-stryker {
   display: flex;
   align-items: center;
   gap: 24px;
-  max-width: var(--stryker-max-width, 1280px);
-  margin: 0 auto;
-  padding: 12px 24px;
+  padding: 12px 16px;
 }
 
 .nav-stryker .nav-stryker-brand {
@@ -513,9 +523,7 @@ body.theme-stryker header .nav-stryker {
 }
 
 .nav-stryker .nav-stryker-main-inner {
-  max-width: var(--stryker-max-width, 1280px);
-  margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 16px;
 }
 
 .nav-stryker .nav-stryker-main-inner > ul {
@@ -623,11 +631,11 @@ body.theme-stryker header .nav-stryker {
   }
 
   .nav-stryker .nav-stryker-panel-inner {
-    max-width: var(--stryker-max-width, 1280px);
-    margin: 0 auto;
     display: flex;
     align-items: flex-start;
     gap: 32px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   /* The submenu wrapper lays its column groups in a row */
