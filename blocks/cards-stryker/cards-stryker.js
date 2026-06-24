@@ -1,5 +1,5 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
-import { moveInstrumentation } from '../../scripts/scripts.js';
+import { moveInstrumentation, optimizeBlockImage } from '../../scripts/scripts.js';
 
 const COLUMN_VALUES = ['3', '4'];
 const STYLE_VALUES = ['news', 'product', 'default'];
@@ -86,9 +86,5 @@ export default function decorate(block) {
 
   block.append(ul);
 
-  ul.querySelectorAll('picture > img').forEach((img) => {
-    const optimized = createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }]);
-    moveInstrumentation(img, optimized.querySelector('img'));
-    img.closest('picture').replaceWith(optimized);
-  });
+  ul.querySelectorAll('picture > img').forEach((img) => optimizeBlockImage(img, createOptimizedPicture));
 }

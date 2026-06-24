@@ -1,5 +1,5 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
-import { moveInstrumentation } from '../../scripts/scripts.js';
+import { optimizeBlockImage } from '../../scripts/scripts.js';
 
 function innerCell(row) {
   return row?.querySelector(':scope > div') || row;
@@ -48,10 +48,5 @@ export default function decorate(block) {
 
   block.append(tile);
 
-  const img = tile.querySelector('.cross-promo-stryker-media picture > img');
-  if (img) {
-    const optimized = createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }]);
-    moveInstrumentation(img, optimized.querySelector('img'));
-    img.closest('picture').replaceWith(optimized);
-  }
+  optimizeBlockImage(tile.querySelector('.cross-promo-stryker-media picture > img'), createOptimizedPicture);
 }

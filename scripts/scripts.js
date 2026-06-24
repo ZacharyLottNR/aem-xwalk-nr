@@ -47,6 +47,28 @@ export function moveInstrumentation(from, to) {
 }
 
 /**
+ * Optimize a block image in place, but only when it is safe to do so.
+ * createOptimizedPicture rewrites the URL to a same-origin path and strips the
+ * query string, which breaks external/CDN images (e.g. Scene7 media-assets URLs
+ * that rely on their host and query params). For cross-origin images we leave
+ * the original <img> untouched.
+ * @param {HTMLImageElement} img the image to (maybe) optimize
+ * @param {Function} createOptimizedPicture the aem.js helper
+ * @param {object[]} breakpoints optional breakpoints for the optimized picture
+ */
+export function optimizeBlockImage(img, createOptimizedPicture, breakpoints = [{ width: '750' }]) {
+  if (!img) return;
+  let external = false;
+  try {
+    external = new URL(img.src, window.location.href).origin !== window.location.origin;
+  } catch (e) { /* treat unparseable as local */ }
+  if (external) return; // keep original external image as-is
+  const optimized = createOptimizedPicture(img.src, img.alt, false, breakpoints);
+  moveInstrumentation(img, optimized.querySelector('img'));
+  img.closest('picture').replaceWith(optimized);
+}
+
+/**
  * Convert a nested block authored as an HTML table into the block-div structure
  * EDS expects. The content importer emits child blocks (block-in-block) as
  * literal <table> elements, which the renderer does not auto-convert because it

@@ -1,5 +1,5 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
-import { moveInstrumentation } from '../../scripts/scripts.js';
+import { moveInstrumentation, optimizeBlockImage } from '../../scripts/scripts.js';
 
 function innerCell(row) {
   return row?.querySelector(':scope > div') || row;
@@ -103,9 +103,5 @@ export default function decorate(block) {
   if (cards.children.length) block.append(cards);
 
   // Optimize card images
-  block.querySelectorAll('.overview-stryker-card-image picture > img').forEach((img) => {
-    const optimized = createOptimizedPicture(img.src, img.alt, false, [{ width: '400' }]);
-    moveInstrumentation(img, optimized.querySelector('img'));
-    img.closest('picture').replaceWith(optimized);
-  });
+  block.querySelectorAll('.overview-stryker-card-image picture > img').forEach((img) => optimizeBlockImage(img, createOptimizedPicture, [{ width: '400' }]));
 }

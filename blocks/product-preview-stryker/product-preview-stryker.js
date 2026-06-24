@@ -94,9 +94,18 @@ export default function decorate(block) {
     const picture = row.querySelector('picture');
     if (picture) {
       const img = picture.querySelector('img');
-      const optimized = createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }]);
-      moveInstrumentation(img, optimized.querySelector('img'));
-      frames.push(optimized);
+      // Keep external/CDN images as-is; optimizing strips the host + query.
+      let external = false;
+      try {
+        external = new URL(img.src, window.location.href).origin !== window.location.origin;
+      } catch (e) { /* treat unparseable as local */ }
+      if (external) {
+        frames.push(picture);
+      } else {
+        const optimized = createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }]);
+        moveInstrumentation(img, optimized.querySelector('img'));
+        frames.push(optimized);
+      }
     } else {
       const text = row.textContent.trim();
       if (text) features.push(text);
