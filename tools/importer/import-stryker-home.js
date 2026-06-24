@@ -96,14 +96,14 @@ export default {
       ['media-right'],
     ]]);
 
-    // 5. Corporate responsibility (banner layout, dark band)
+    // 5. Corporate responsibility (full-bleed image, text overlaid right)
     blocks.push(['get-to-know-us-stryker', [
       [img(document, `${MEDIA}/MakingAnImpact-greenGrad-desktopV4?$max_width_1440$`, 'Corporate responsibility')],
       [el(document, 'div', '<h2>Corporate responsibility</h2><p>We are committed to positively impacting people and our planet through responsible, sustainable practices that create a better, healthier world.</p>')],
       ['Read our 2024 Comprehensive Report'],
       [anchor(document, '/stryker/home', 'Report')],
-      ['banner'],
-      [img(document, `${MEDIA}/MakingAnImpact-greenGrad-desktopV4?$max_width_1440$`, 'Band')],
+      ['fullbleed'],
+      [el(document, 'div', '')],
     ]]);
 
     // 6. Awards (image gallery)

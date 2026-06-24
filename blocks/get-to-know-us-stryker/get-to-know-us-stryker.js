@@ -21,7 +21,10 @@ export default function decorate(block) {
   const layoutCell = innerCell(rows[4]);
   const bgCell = innerCell(rows[5]);
 
-  const layout = layoutCell?.textContent?.trim().toLowerCase() === 'banner' ? 'banner' : 'standard';
+  const layoutRaw = layoutCell?.textContent?.trim().toLowerCase();
+  let layout = 'standard';
+  if (layoutRaw === 'banner') layout = 'banner';
+  else if (layoutRaw === 'fullbleed' || layoutRaw === 'full-bleed') layout = 'fullbleed';
 
   block.textContent = '';
   block.classList.add(`get-to-know-us-stryker-${layout}`);
@@ -61,9 +64,11 @@ export default function decorate(block) {
   const picture = imageCell?.querySelector('picture');
   if (picture) imageCol.append(picture);
 
-  // Banner places image first (left), then content (right);
+  // Full-bleed places the image as a full-width backdrop with content overlaid;
+  // banner places image first (left), then content (right);
   // standard keeps content first (left), image second (right).
-  if (layout === 'banner') block.append(imageCol, content);
+  if (layout === 'fullbleed') block.append(imageCol, content);
+  else if (layout === 'banner') block.append(imageCol, content);
   else block.append(content, imageCol);
 
   optimize(imageCol);

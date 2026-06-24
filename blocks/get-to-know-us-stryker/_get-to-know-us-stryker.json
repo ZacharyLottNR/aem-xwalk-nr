@@ -67,6 +67,10 @@
             {
               "name": "Banner (image left, text right, background band)",
               "value": "banner"
+            },
+            {
+              "name": "Full bleed (full-width image, text overlaid right)",
+              "value": "fullbleed"
             }
           ]
         },

@@ -121,6 +121,61 @@
   font-size: 16px;
 }
 
+/*
+ * Full-bleed layout: the image is a single full-width backdrop with the text
+ * and CTA overlaid on the right. Mirrors the source "Corporate responsibility"
+ * band, which is one full-width image (not a framed photo over a thin band).
+ */
+.get-to-know-us-stryker.get-to-know-us-stryker-fullbleed {
+  display: block;
+  position: relative;
+  max-width: none;
+  padding: 0;
+}
+
+.get-to-know-us-stryker.get-to-know-us-stryker-fullbleed .get-to-know-us-stryker-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.get-to-know-us-stryker.get-to-know-us-stryker-fullbleed .get-to-know-us-stryker-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.get-to-know-us-stryker.get-to-know-us-stryker-fullbleed .get-to-know-us-stryker-content {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 64px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Push the text card to the right half, like the source */
+.get-to-know-us-stryker.get-to-know-us-stryker-fullbleed .get-to-know-us-stryker-card {
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+  margin-left: auto;
+  width: 50%;
+}
+
+.get-to-know-us-stryker.get-to-know-us-stryker-fullbleed .get-to-know-us-stryker-card p {
+  font-size: 16px;
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.get-to-know-us-stryker.get-to-know-us-stryker-fullbleed .get-to-know-us-stryker-cta {
+  margin-left: auto;
+  width: 50%;
+}
+
 /* Stacked layout on smaller viewports */
 @media (width < 900px) {
   .get-to-know-us-stryker {
@@ -142,5 +197,16 @@
   /* Banner: stack image over text; band spans full height behind both */
   .get-to-know-us-stryker.get-to-know-us-stryker-banner .get-to-know-us-stryker-bg {
     height: 100%;
+  }
+
+  /* Full-bleed: card spans full width on small screens */
+  .get-to-know-us-stryker.get-to-know-us-stryker-fullbleed .get-to-know-us-stryker-content {
+    padding: 40px 24px;
+  }
+
+  .get-to-know-us-stryker.get-to-know-us-stryker-fullbleed .get-to-know-us-stryker-card,
+  .get-to-know-us-stryker.get-to-know-us-stryker-fullbleed .get-to-know-us-stryker-cta {
+    width: 100%;
+    margin-left: 0;
   }
 }

@@ -101,8 +101,8 @@ var CustomImportScript = (() => {
         [el(document, "div", "<h2>Corporate responsibility</h2><p>We are committed to positively impacting people and our planet through responsible, sustainable practices that create a better, healthier world.</p>")],
         ["Read our 2024 Comprehensive Report"],
         [anchor(document, "/stryker/home", "Report")],
-        ["banner"],
-        [img(document, `${MEDIA}/MakingAnImpact-greenGrad-desktopV4?$max_width_1440$`, "Band")]
+        ["fullbleed"],
+        [el(document, "div", "")]
       ]]);
       const award = (slug, alt) => [img(document, `${MEDIA}/${slug}?$max_width_png$`, alt)];
       blocks.push(["image-gallery-stryker", [
