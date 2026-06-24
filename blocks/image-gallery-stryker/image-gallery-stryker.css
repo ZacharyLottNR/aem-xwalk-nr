@@ -1,5 +1,8 @@
-.image-gallery-stryker {
+.image-gallery-stryker-wrapper {
   background-color: var(--stryker-light-gray, #f2f2f2);
+}
+
+.image-gallery-stryker {
   padding: 48px;
 }
 

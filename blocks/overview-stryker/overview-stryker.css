@@ -2,7 +2,6 @@
   max-width: var(--stryker-max-width, 1280px);
   margin: 0 auto;
   padding: 48px 24px 0;
-  border-bottom: 2px solid var(--stryker-black, #000);
 }
 
 /* Header */

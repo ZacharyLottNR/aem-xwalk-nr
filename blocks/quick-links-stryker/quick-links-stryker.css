@@ -40,7 +40,7 @@
 .quick-links-stryker .quick-links-stryker-link:any-link {
   font-family: var(--stryker-heading-font);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 900;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   text-decoration: none;
