@@ -131,6 +131,11 @@ export default async function decorate(block) {
       }
     });
 
+    // EDS button-decoration adds .button to standalone links, giving them the
+    // teal CTA background. Strip it from every nav link so they render plain.
+    topList.querySelectorAll('a.button').forEach((a) => a.classList.remove('button'));
+    topList.querySelectorAll('.button-container').forEach((el) => el.classList.remove('button-container'));
+
     [...topList.children].forEach((li) => {
       const link = li.querySelector(':scope > a');
       const submenu = li.querySelector(':scope > ul');
