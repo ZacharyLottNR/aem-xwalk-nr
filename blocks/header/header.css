@@ -383,6 +383,8 @@ body.theme-stryker header nav.nav-stryker-utility {
   display: flex;
   align-items: center;
   gap: 24px;
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
   padding: 12px 16px;
 }
 
@@ -523,6 +525,8 @@ body.theme-stryker header nav.nav-stryker-utility {
 }
 
 .nav-stryker .nav-stryker-main-inner {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
   padding: 0 16px;
 }
 
@@ -631,6 +635,8 @@ body.theme-stryker header nav.nav-stryker-utility {
   }
 
   .nav-stryker .nav-stryker-panel-inner {
+    max-width: var(--stryker-max-width, 1280px);
+    margin: 0 auto;
     display: flex;
     align-items: flex-start;
     gap: 32px;
