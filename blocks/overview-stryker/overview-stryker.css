@@ -51,8 +51,9 @@
 }
 
 .overview-stryker .overview-stryker-card-image {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   line-height: 0;
+  border-left: 6px solid #f0a500;
 }
 
 .overview-stryker .overview-stryker-card-image img {
@@ -63,9 +64,16 @@
 .overview-stryker .overview-stryker-card-title {
   font-family: var(--stryker-heading-font);
   font-weight: 700;
-  font-size: 20px;
+  font-size: 22px;
+  color: #f0a500;
+  margin: 0 0 4px;
+}
+
+/* Bold sub-line under the amber title (first strong in the description) */
+.overview-stryker .overview-stryker-card-desc > p:first-child strong {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
   color: var(--stryker-black, #000);
-  margin: 0 0 12px;
 }
 
 .overview-stryker .overview-stryker-card-desc {
