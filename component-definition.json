@@ -1128,6 +1128,21 @@
           }
         },
         {
+          "title": "Home Hero Stryker",
+          "id": "home-hero-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Home Hero Stryker",
+                  "model": "home-hero-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Home Video Hero Stryker",
           "id": "home-video-hero-stryker",
           "plugins": {
@@ -1214,6 +1229,37 @@
                 "template": {
                   "name": "Legal Text Stryker",
                   "model": "legal-text-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Overview Stryker",
+          "id": "overview-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Overview Stryker",
+                  "model": "overview-stryker",
+                  "filter": "overview-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Overview Card",
+          "id": "overview-stryker-card",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Overview Card",
+                  "model": "overview-stryker-card"
                 }
               }
             }
@@ -1322,6 +1368,67 @@
                   "name": "Search Asset",
                   "model": "search-asset",
                   "filter": "search-asset"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Section Anchor Stryker",
+          "id": "section-anchor-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Section Anchor Stryker",
+                  "model": "section-anchor-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Section Banner Stryker",
+          "id": "section-banner-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Section Banner Stryker",
+                  "model": "section-banner-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Social Cta Stryker",
+          "id": "social-cta-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Social Cta Stryker",
+                  "model": "social-cta-stryker",
+                  "filter": "social-cta-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Social CTA Item",
+          "id": "social-cta-stryker-item",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Social CTA Item",
+                  "model": "social-cta-stryker-item"
                 }
               }
             }

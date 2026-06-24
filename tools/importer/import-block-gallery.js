@@ -68,7 +68,10 @@ export default {
       el(document, 'div', `<p>${desc}</p>`),
     ];
     blocks.push(['overview-stryker', [
-      ['Our', 'focus', el(document, 'div', '<p>Empowering people for powerful outcomes.</p>'), el(document, 'div', '<p>Across the continuum of care.</p>')],
+      ['Our'],
+      ['focus'],
+      [el(document, 'div', '<p>Empowering people for powerful outcomes.</p>')],
+      [el(document, 'div', '<p>Across the continuum of care.</p>')],
       overviewCard('Medical and Surgical', 'Empowering people for powerful outcomes.'),
       overviewCard('Orthopaedics', "Leading what's next."),
       overviewCard('Neurotechnology', 'Better connected.'),
@@ -186,7 +189,6 @@ export default {
     // text-and-media-stryker (basic theme, image, media-left)
     blocks.push(['text-and-media-stryker', [
       [img(document, IMG(600, 400, 'Vision'), 'Vision')],
-      ['Vision'],
       [''],
       [''],
       ['Vision'],
@@ -197,7 +199,6 @@ export default {
 
     // text-and-media-stryker (advanced theme, video, media-right)
     blocks.push(['text-and-media-stryker', [
-      [''],
       [''],
       [anchor(document, 'https://youtu.be/kRIuiIy_SCs', 'https://youtu.be/kRIuiIy_SCs')],
       ['Centralized'],

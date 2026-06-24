@@ -91,7 +91,6 @@ var CustomImportScript = (() => {
             [""],
             [""],
             [heading],
-            [""],
             [el(document, "div", paras.map((p) => `<p>${p}</p>`).join(""))],
             ["basic"],
             [layout]

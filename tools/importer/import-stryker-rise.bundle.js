@@ -67,7 +67,10 @@ var CustomImportScript = (() => {
       main.append(WebImporter.Blocks.createBlock(document, {
         name: "overview-stryker",
         cells: [
-          ["", "", el(document, "div", ""), el(document, "div", "")],
+          [""],
+          [""],
+          [el(document, "div", "")],
+          [el(document, "div", "")],
           featCard(`${MEDIA}/Your-OR-Your-Way-v2?$max_width_1440$`, "Your OR. Your way.", ["An OR designed for you", "Helps reduce footprint", "Designed to improve workflow efficiencies"]),
           featCard(`${MEDIA}/Connectivity-v2?$max_width_1440$`, "Connectivity", ["Devices in harmony", "Multiple touchpoints", "Flow from surgery to surgery"]),
           featCard(`${MEDIA}/Visualization-v2?$max_width_1440$`, "Visualization", ["Vibrant surgical image", "62.5x more visible colors", "Scope and sheath solution"])
@@ -77,7 +80,6 @@ var CustomImportScript = (() => {
       hr();
       addBlock("text-and-media-stryker", [
         [img(document, `${MEDIA}/iSuite-2929x1648?$max_width_1410$`, "iSuite")],
-        [""],
         [""],
         ["Your OR."],
         ["Your way."],
@@ -107,7 +109,6 @@ var CustomImportScript = (() => {
       addBlock("text-and-media-stryker", [
         [img(document, `${MEDIA}/Connectivity-Neurotech-cart-OR-hub?$max_width_1410$`, "Connected OR Hub")],
         [""],
-        [""],
         ["Connected"],
         ["OR Hub"],
         [el(document, "div", "<p>As the command center for RISE, the Connected OR Hub facilitates connectivity and allows you to control your devices from multiple touch points.</p><ul><li>Capture and record</li><li>Custom surgeon profiles</li><li>Voice activation</li><li>Device control in and outside of the sterile field</li></ul>")],
@@ -118,7 +119,6 @@ var CustomImportScript = (() => {
       addBlock("text-and-media-stryker", [
         [img(document, `${MEDIA}/Centralized-control-v3?$max_width_1440$`, "Centralized control")],
         [""],
-        [""],
         ["Centralized"],
         ["control"],
         [el(document, "div", "<p>Your team can assist you from the doc station without breaking sterility around the sterile field.</p>")],
@@ -128,7 +128,6 @@ var CustomImportScript = (() => {
       hr();
       addBlock("text-and-media-stryker", [
         [img(document, `${MEDIA}/Consolidated-Foot-Pedal?$max_width_1410$`, "Consolidated foot pedal")],
-        [""],
         [""],
         ["Consolidated"],
         ["foot pedal"],

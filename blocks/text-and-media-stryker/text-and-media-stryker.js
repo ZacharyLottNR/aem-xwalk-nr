@@ -44,16 +44,16 @@ function buildVideo(url) {
 export default function decorate(block) {
   const rows = [...block.children];
 
-  // Model field order:
-  // 0: image, 1: imageAlt, 2: video, 3: headingHighlight, 4: heading,
-  // 5: body, 6: theme, 7: layout
+  // Cell order (one row per md2jcr field-group; imageAlt is carried on the
+  // image itself, so it has no separate row):
+  // 0: image, 1: video, 2: headingHighlight, 3: heading, 4: body, 5: theme, 6: layout
   const imageCell = innerCell(rows[0]);
-  const videoCell = innerCell(rows[2]);
-  const headingHighlight = innerCell(rows[3])?.textContent?.trim() || '';
-  const headingText = innerCell(rows[4])?.textContent?.trim() || '';
-  const bodyCell = innerCell(rows[5]);
-  const themeVal = innerCell(rows[6])?.textContent?.trim().toLowerCase() === 'advanced' ? 'advanced' : 'basic';
-  const layoutVal = innerCell(rows[7])?.textContent?.trim().toLowerCase() === 'media-right' ? 'media-right' : 'media-left';
+  const videoCell = innerCell(rows[1]);
+  const headingHighlight = innerCell(rows[2])?.textContent?.trim() || '';
+  const headingText = innerCell(rows[3])?.textContent?.trim() || '';
+  const bodyCell = innerCell(rows[4]);
+  const themeVal = innerCell(rows[5])?.textContent?.trim().toLowerCase() === 'advanced' ? 'advanced' : 'basic';
+  const layoutVal = innerCell(rows[6])?.textContent?.trim().toLowerCase() === 'media-right' ? 'media-right' : 'media-left';
 
   block.textContent = '';
   block.classList.add(`text-and-media-stryker-${themeVal}`, `text-and-media-stryker-${layoutVal}`);
