@@ -1,12 +1,6 @@
 export default function decorate(block) {
-  const rows = [...block.children];
-  let lightUrl = '';
-  let darkUrl = '';
-
-  rows.forEach((row) => {
-    lightUrl = window.location.href.replace('/home', '/light');
-    darkUrl = window.location.href.replace('/home', '/dark');
-  });
+  const lightUrl = window.location.href.replace('/home', '/light');
+  const darkUrl = window.location.href.replace('/home', '/dark');
 
   block.textContent = '';
 
