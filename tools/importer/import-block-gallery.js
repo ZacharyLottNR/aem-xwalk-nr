@@ -218,6 +218,11 @@ export default {
       ]]);
     });
 
+    // callout-banner-stryker — dismissible blue banner (RTE + cookie-backed X)
+    blocks.push(['callout-banner-stryker', [
+      [el(document, 'div', '<p><strong>Customer Updates: Stryker Network Disruption &gt; <a href="https://www.stryker.com/us/en/index.html">Read Now</a></strong></p>')],
+    ]]);
+
     // 10. legal-text-stryker
     blocks.push(['legal-text-stryker', [
       [el(document, 'div', '<p><strong>References</strong></p><ol><li>As compared to previous Stryker offering</li><li>1937000</li><li>1000904469</li><li>COMMS-COMSO-WHPR-1532602</li></ol><p>ENDO-GSNPS-SYK-2116500</p><p>Last Updated July/2025</p>')],
