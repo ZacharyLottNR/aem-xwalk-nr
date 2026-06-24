@@ -4,7 +4,7 @@ footer {
   font-size: var(--body-font-size-s);
 }
 
-footer .footer > div {
+body:not(.theme-stryker) footer .footer > div {
   margin: auto;
   max-width: 1200px;
   padding: 40px 24px 24px;
@@ -13,7 +13,7 @@ footer .footer > div {
   gap: 32px;
 }
 
-footer .footer > div > div {
+body:not(.theme-stryker) footer .footer > div > div {
   flex: 1;
   min-width: 200px;
 }
@@ -50,8 +50,9 @@ footer .footer ul li {
 
 /* ===================== Stryker footer ===================== */
 body.theme-stryker footer {
-  background-color: var(--stryker-white, #fff);
-  border-top: 1px solid var(--stryker-border, #d9d9d9);
+  background-color: #545857;
+  color: var(--stryker-white, #fff);
+  border-top: 0;
 }
 
 .footer-stryker {
@@ -74,12 +75,23 @@ body.theme-stryker footer {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 16px;
-  font-size: 12px;
-  color: var(--stryker-gray, #58595b);
+  font-size: 14px;
+  color: var(--stryker-white, #fff);
 }
 
 .footer-stryker .footer-stryker-legal p {
   margin: 0;
+}
+
+/* Inline the copyright + legal links onto one row, like the source */
+/* stylelint-disable-next-line no-descending-specificity */
+.footer-stryker .footer-stryker-legal > div,
+.footer-stryker .footer-stryker-legal .default-content-wrapper,
+.footer-stryker .footer-stryker-legal .default-content-wrapper > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
 }
 
 .footer-stryker .footer-stryker-legal ul {
@@ -91,22 +103,35 @@ body.theme-stryker footer {
   padding: 0;
 }
 
+/* Pipe separators between legal links */
+.footer-stryker .footer-stryker-legal ul li {
+  position: relative;
+  padding-left: 16px;
+}
+
+.footer-stryker .footer-stryker-legal ul li::before {
+  content: '|';
+  position: absolute;
+  left: 0;
+  color: rgb(255 255 255 / 60%);
+}
+
 .footer-stryker .footer-stryker-legal a:any-link {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 400;
   letter-spacing: 0.3px;
   text-transform: uppercase;
-  color: var(--stryker-gray, #58595b);
+  color: var(--stryker-white, #fff);
   text-decoration: none;
 }
 
 .footer-stryker .footer-stryker-legal a:hover {
-  color: var(--stryker-teal, #4c7d7a);
+  text-decoration: underline;
 }
 
 .footer-stryker .footer-stryker-social ul {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -114,8 +139,8 @@ body.theme-stryker footer {
 
 .footer-stryker .footer-stryker-social-link {
   display: block;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
 }
 
 .footer-stryker .footer-stryker-social-link img {
@@ -127,13 +152,13 @@ body.theme-stryker footer {
 .footer-stryker .footer-stryker-secondary {
   margin-top: 24px;
   padding-top: 16px;
-  border-top: 1px solid var(--stryker-border, #d9d9d9);
+  border-top: 1px solid rgb(255 255 255 / 25%);
 }
 
 .footer-stryker .footer-stryker-secondary ul {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px 24px;
+  flex-direction: column;
+  gap: 12px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -141,12 +166,14 @@ body.theme-stryker footer {
 
 .footer-stryker .footer-stryker-secondary a:any-link {
   font-size: 13px;
-  color: var(--stryker-gray, #58595b);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--stryker-white, #fff);
   text-decoration: none;
 }
 
 .footer-stryker .footer-stryker-secondary a:hover {
-  color: var(--stryker-teal, #4c7d7a);
+  text-decoration: underline;
 }
 
 @media (width < 700px) {

@@ -351,6 +351,8 @@ body.theme-dark header nav .nav-hamburger button {
 }
 
 body.theme-stryker header {
+  /* The global header height (--nav-height) clips the two-row Stryker nav. */
+  height: auto;
   background-color: var(--stryker-white, #fff);
   border-bottom: 1px solid var(--stryker-border, #d9d9d9);
 }
@@ -392,10 +394,23 @@ body.theme-stryker header .nav-stryker {
 
 .nav-stryker .nav-stryker-utility ul {
   display: flex;
-  gap: 24px;
+  align-items: center;
+  gap: 0;
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+/* Pipe separators between utility links (and after the last one) */
+.nav-stryker .nav-stryker-utility li {
+  display: flex;
+  align-items: center;
+}
+
+.nav-stryker .nav-stryker-utility li::after {
+  content: '|';
+  margin: 0 14px;
+  color: var(--stryker-border, #d9d9d9);
 }
 
 .nav-stryker .nav-stryker-utility a:any-link {
@@ -409,6 +424,9 @@ body.theme-stryker header .nav-stryker {
 }
 
 .nav-stryker .nav-stryker-locale a:any-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 13px;
   color: var(--stryker-gray, #58595b);
   text-decoration: none;
@@ -417,6 +435,54 @@ body.theme-stryker header .nav-stryker {
 
 .nav-stryker .nav-stryker-locale a:hover {
   color: var(--stryker-teal, #4c7d7a);
+}
+
+/* Globe icon before the locale label */
+.nav-stryker .nav-stryker-globe {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border-radius: 50%;
+  border: 1.5px solid currentcolor;
+  background:
+    linear-gradient(currentcolor, currentcolor) center / 100% 1.5px no-repeat,
+    linear-gradient(currentcolor, currentcolor) center / 1.5px 100% no-repeat;
+}
+
+/* Search field (visual only) */
+.nav-stryker .nav-stryker-search {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.nav-stryker .nav-stryker-search input {
+  width: 220px;
+  height: 40px;
+  padding: 0 40px 0 14px;
+  font-family: var(--stryker-body-font);
+  font-size: 14px;
+  color: var(--stryker-gray, #58595b);
+  background-color: var(--stryker-light-gray, #f2f2f2);
+  border: 1px solid var(--stryker-border, #d9d9d9);
+  border-radius: 0;
+  appearance: none;
+}
+
+.nav-stryker .nav-stryker-search input::placeholder {
+  color: var(--stryker-gray, #58595b);
+}
+
+.nav-stryker .nav-stryker-search-icon {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  background-color: var(--stryker-teal, #4c7d7a);
+  mask: url('/icons/search.svg') center / contain no-repeat;
+  pointer-events: none;
 }
 
 /* Hamburger hidden on desktop */
@@ -441,7 +507,11 @@ body.theme-stryker header .nav-stryker {
   transition: transform 0.2s, opacity 0.2s;
 }
 
-/* Main nav bar */
+/* Main nav bar (yellow band) */
+.nav-stryker .nav-stryker-main {
+  background-color: #ffb500;
+}
+
 .nav-stryker .nav-stryker-main-inner {
   max-width: var(--stryker-max-width, 1280px);
   margin: 0 auto;
@@ -462,39 +532,34 @@ body.theme-stryker header .nav-stryker {
 
 .nav-stryker .nav-stryker-item > a:any-link {
   display: block;
-  padding: 18px 20px;
-  font-size: 15px;
+  padding: 14px 18px;
+  font-size: 14px;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
   color: var(--stryker-black, #000);
   text-decoration: none;
-  border-bottom: 3px solid transparent;
 }
 
 .nav-stryker .nav-stryker-item > a:hover {
-  color: var(--stryker-teal, #4c7d7a);
+  color: var(--stryker-black, #000);
+  background-color: rgb(0 0 0 / 8%);
 }
 
-/* Active section indicator */
-.nav-stryker .nav-stryker-item.is-active > a {
-  border-bottom-color: #f0a500;
+/* Active section indicator — dark box with white text */
+.nav-stryker .nav-stryker-item.is-active > a,
+.nav-stryker .nav-stryker-has-menu:hover > a {
+  background-color: var(--stryker-gray, #58595b);
+  color: var(--stryker-white, #fff);
 }
 
 /* Megamenu panel */
 .nav-stryker .nav-stryker-panel {
   display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 50;
-  min-width: 260px;
-  background-color: var(--stryker-white, #fff);
-  border: 1px solid var(--stryker-border, #d9d9d9);
-  border-top: 3px solid #f0a500;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
 }
 
 .nav-stryker .nav-stryker-panel-inner {
-  padding: 20px 24px;
+  padding: 32px 24px;
 }
 
 .nav-stryker .nav-stryker-panel ul {
@@ -502,12 +567,12 @@ body.theme-stryker header .nav-stryker {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 10px;
+  gap: 20px;
 }
 
 .nav-stryker .nav-stryker-panel a:any-link {
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--stryker-black, #000);
   text-decoration: none;
 }
@@ -516,8 +581,37 @@ body.theme-stryker header .nav-stryker {
   color: var(--stryker-teal, #4c7d7a);
 }
 
-/* Desktop: reveal panel on hover/focus */
+/* Desktop: full-width panel below the yellow bar, light-gray like the source */
 @media (width >= 900px) {
+  .nav-stryker .nav-stryker-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: var(--stryker-light-gray, #f2f2f2);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+  }
+
+  .nav-stryker .nav-stryker-main {
+    position: relative;
+  }
+
+  /* Anchor the full-width panel to the main bar, not the individual item */
+  .nav-stryker .nav-stryker-item {
+    position: static;
+  }
+
+  .nav-stryker .nav-stryker-panel-inner {
+    max-width: var(--stryker-max-width, 1280px);
+    margin: 0 auto;
+  }
+
+  .nav-stryker .nav-stryker-panel ul {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px 32px;
+  }
+
   .nav-stryker .nav-stryker-has-menu:hover .nav-stryker-panel,
   .nav-stryker .nav-stryker-has-menu:focus-within .nav-stryker-panel {
     display: block;
@@ -532,7 +626,8 @@ body.theme-stryker header .nav-stryker {
   }
 
   .nav-stryker .nav-stryker-utility,
-  .nav-stryker .nav-stryker-locale {
+  .nav-stryker .nav-stryker-locale,
+  .nav-stryker .nav-stryker-search {
     display: none;
   }
 

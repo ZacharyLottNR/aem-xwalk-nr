@@ -54,7 +54,32 @@ export default async function decorate(block) {
   const locale = document.createElement('div');
   locale.className = 'nav-stryker-locale';
   const localeSrc = localeSec?.querySelector('a, p');
-  if (localeSrc) locale.append(localeSrc);
+  if (localeSrc) {
+    // The locale arrives wrapped as a CTA (button-container + .button); strip
+    // those so it renders as a plain text link, then prefix the globe icon.
+    const localeLink = localeSrc.tagName === 'A' ? localeSrc : localeSrc.querySelector('a');
+    if (localeLink) {
+      localeLink.classList.remove('button');
+      const globe = document.createElement('span');
+      globe.className = 'nav-stryker-globe';
+      globe.setAttribute('aria-hidden', 'true');
+      localeLink.prepend(globe);
+    }
+    if (localeSrc.classList) localeSrc.classList.remove('button-container');
+    locale.append(localeSrc);
+  }
+
+  // Search field (visual only — no search backend wired up yet).
+  const search = document.createElement('div');
+  search.className = 'nav-stryker-search';
+  const searchInput = document.createElement('input');
+  searchInput.type = 'search';
+  searchInput.placeholder = 'Search this site';
+  searchInput.setAttribute('aria-label', 'Search this site');
+  const searchIcon = document.createElement('span');
+  searchIcon.className = 'nav-stryker-search-icon';
+  searchIcon.setAttribute('aria-hidden', 'true');
+  search.append(searchInput, searchIcon);
 
   // Hamburger toggle (mobile/tablet)
   const hamburger = document.createElement('button');
@@ -64,7 +89,7 @@ export default async function decorate(block) {
   hamburger.setAttribute('aria-expanded', 'false');
   hamburger.innerHTML = '<span></span><span></span><span></span>';
 
-  globalInner.append(hamburger, brand, utility, locale);
+  globalInner.append(hamburger, brand, utility, locale, search);
   globalBar.append(globalInner);
 
   // --- Main nav bar with megamenu dropdowns ---
