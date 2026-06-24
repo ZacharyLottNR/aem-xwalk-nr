@@ -8,17 +8,15 @@ function innerCell(row) {
 export default function decorate(block) {
   const rows = [...block.children];
 
-  // The first row holds the block-level fields (one cell each, in model order):
-  // 0: titleBlack, 1: titleGold, 2: primer, 3: richText
-  // Remaining rows are info cards (image, title, description).
-  const fieldRow = rows[0];
-  const fieldCells = fieldRow ? [...fieldRow.children] : [];
-  const titleBlack = fieldCells[0]?.textContent?.trim() || '';
-  const titleGold = fieldCells[1]?.textContent?.trim() || '';
-  const primerCell = fieldCells[2];
-  const richTextCell = fieldCells[3];
+  // Block-level fields are one row each, in model order:
+  // 0: titleBlack, 1: titleGold, 2: primer, 3: body
+  // Remaining rows (4+) are info cards (image, title, description).
+  const titleBlack = innerCell(rows[0])?.textContent?.trim() || '';
+  const titleGold = innerCell(rows[1])?.textContent?.trim() || '';
+  const primerCell = innerCell(rows[2]);
+  const richTextCell = innerCell(rows[3]);
 
-  const cardRows = rows.slice(1);
+  const cardRows = rows.slice(4);
 
   block.textContent = '';
 

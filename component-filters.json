@@ -239,6 +239,12 @@
     ]
   },
   {
+    "id": "overview-stryker",
+    "components": [
+      "overview-stryker-card"
+    ]
+  },
+  {
     "id": "product-preview-stryker",
     "components": [
       "product-preview-stryker-frame",
@@ -255,6 +261,12 @@
     "id": "quick-links-stryker",
     "components": [
       "quick-link-lists-stryker"
+    ]
+  },
+  {
+    "id": "social-cta-stryker",
+    "components": [
+      "social-cta-stryker-item"
     ]
   },
   {

@@ -385,7 +385,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "ctaText",
+        "name": "ctaLabel",
         "label": "CTA Text"
       },
       {
@@ -578,7 +578,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "ctaText",
+        "name": "ctaLabel",
         "label": "CTA Text",
         "value": "Read more"
       },
@@ -5426,7 +5426,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "buttonText",
+        "name": "buttonLabel",
         "label": "Button Text"
       },
       {
@@ -5578,6 +5578,59 @@
     ]
   },
   {
+    "id": "home-hero-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "subtext",
+        "label": "Subtext",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "ctaUrl",
+        "label": "CTA Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "ctaLabel",
+        "label": "CTA Text",
+        "value": ""
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Background Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Background Image Alt",
+        "value": ""
+      }
+    ]
+  },
+  {
     "id": "home-video-hero-stryker",
     "fields": [
       {
@@ -5657,7 +5710,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "ctaText",
+        "name": "ctaLabel",
         "label": "CTA Text"
       },
       {
@@ -5695,6 +5748,72 @@
         "valueType": "string",
         "name": "text",
         "label": "Legal Text",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "id": "overview-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "titleBlack",
+        "label": "Title (black)",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "titleGold",
+        "label": "Title (gold)",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "primer",
+        "label": "Primer",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "body",
+        "label": "Rich Text",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "id": "overview-stryker-card",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Title",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "description",
+        "label": "Description",
         "value": ""
       }
     ]
@@ -5776,7 +5895,7 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "linkText",
+        "name": "linkLabel",
         "label": "Link Name"
       },
       {
@@ -5813,6 +5932,52 @@
             ]
           }
         ]
+      }
+    ]
+  },
+  {
+    "id": "section-anchor-stryker",
+    "fields": []
+  },
+  {
+    "id": "section-banner-stryker",
+    "fields": [
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Banner Text",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "id": "social-cta-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "id": "social-cta-stryker-item",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "label",
+        "label": "Label or Social Network",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "url",
+        "label": "URL"
       }
     ]
   },

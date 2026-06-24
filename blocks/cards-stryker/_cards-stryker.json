@@ -102,7 +102,7 @@
         {
           "component": "text",
           "valueType": "string",
-          "name": "ctaText",
+          "name": "ctaLabel",
           "label": "CTA Text"
         },
         {
