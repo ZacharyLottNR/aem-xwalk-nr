@@ -441,7 +441,7 @@ body.theme-stryker header nav.nav-stryker-utility {
 }
 
 .nav-stryker .nav-stryker-utility a:hover {
-  color: var(--stryker-teal, #4c7d7a);
+  color: #af6d04;
 }
 
 .nav-stryker .nav-stryker-locale a:any-link {
@@ -455,7 +455,7 @@ body.theme-stryker header nav.nav-stryker-utility {
 }
 
 .nav-stryker .nav-stryker-locale a:hover {
-  color: var(--stryker-teal, #4c7d7a);
+  color: var(--stryker-black, #4c7d7a);
 }
 
 /* Globe icon before the locale label */
@@ -563,8 +563,10 @@ body.theme-stryker header nav.nav-stryker-utility {
 }
 
 .nav-stryker .nav-stryker-item > a:hover {
-  color: var(--stryker-black, #000);
-  background-color: rgb(0 0 0 / 8%);
+  color: var(--stryker-white, #fff);
+  background-color: #545857;
+  padding: 5px;
+  margin: 9px 13px;
 }
 
 /* Active section + open-menu indicator — dark box with white text */

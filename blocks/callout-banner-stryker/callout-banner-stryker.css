@@ -1,3 +1,8 @@
+main > .section > div.callout-banner-stryker-wrapper {
+  margin: 0px;
+  padding: 0px;
+  width: 100vw;
+}
 /* Hidden by default so the banner never flashes in before the cookie check. */
 .callout-banner-stryker {
   display: none;
@@ -8,9 +13,11 @@
   align-items: center;
   gap: 16px;
   width: 100%;
+  margin: 0px;
   padding: 14px 24px;
   background-color: #3170d4;
   color: var(--stryker-white, #fff);
+  cursor: default;
 }
 
 .callout-banner-stryker .callout-banner-stryker-content {
@@ -37,6 +44,7 @@
 .callout-banner-stryker .callout-banner-stryker-content a:any-link {
   color: var(--stryker-white, #fff);
   text-decoration: underline;
+  cursor: pointer;
 }
 
 .callout-banner-stryker .callout-banner-stryker-close {
@@ -49,13 +57,15 @@
   background: transparent;
   border: 0;
   border-radius: 0;
-  color: var(--stryker-white, #fff);
+  color: var(--stryker-black, #000);
   cursor: pointer;
+  margin-right: 50px;
 }
 
 .callout-banner-stryker .callout-banner-stryker-close:hover {
-  color: var(--stryker-white, #fff);
+  color: var(--stryker-black, #000);
   opacity: 0.8;
+  cursor: pointer;
 }
 
 @media (width < 900px) {
