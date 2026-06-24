@@ -46,21 +46,23 @@ var CustomImportScript = (() => {
       const main = document.createElement("div");
       const childBlock = (name, cells) => WebImporter.Blocks.createBlock(document, { name, cells });
       const blockNames = [];
+      const MEDIA = "https://media-assets.stryker.com/is/image/stryker";
+      const RES = "https://www.stryker.com/content/dam/stryker/acute-care/products/ibedwireless/resources";
       main.append(WebImporter.Blocks.createBlock(document, {
         name: "home-hero-stryker",
         cells: [
           ["Acute Care"],
-          ["iBed Wireless"],
-          ["Connected, confident care. iBed Wireless brings bed data to the systems your team already uses."],
-          [anchor(document, "/stryker/home", "Request info")],
-          ["Request information"],
-          [img(document, PLACE(900, 620, "iBed Wireless"), "iBed Wireless bed")]
+          ["Connected solutions"],
+          ["Bringing people and information together for enhanced patient care."],
+          [anchor(document, "/stryker/home", "Contact an expert")],
+          ["Contact an expert"],
+          [img(document, `${MEDIA}/nurse-arms-crossed_prime-conect_procuity-bed_1920x640?$max_width_1440$`, "Nurse standing with hospital beds")]
         ]
       }));
       blockNames.push("home-hero-stryker");
       main.append(document.createElement("hr"));
-      const docCard = (title) => [
-        img(document, PLACE(220, 280, title), title),
+      const docCard = (title, thumb) => [
+        img(document, thumb, title),
         "Download",
         anchor(document, "/stryker/home", "Download"),
         el(document, "div", `<p>${title}</p>`)
@@ -69,9 +71,9 @@ var CustomImportScript = (() => {
         [""],
         ["3"],
         ["default"],
-        docCard("Connected Solutions Beds Brochure Web.pdf"),
-        docCard("Connected Solutions Stretcher Brochure Web.pdf"),
-        docCard("iBed Wireless Spec Sheet")
+        docCard("Connected Solutions Beds Brochure Web.pdf", `${RES}/Connected%20Solutions%20Beds%20Brochure%20Web.pdf.thumb.319.319.png`),
+        docCard("Connected Solutions Stretcher Brochure Web.pdf", `${RES}/Connected%20Solutions%20Stretcher%20Brochure%20Web.pdf.thumb.319.319.png`),
+        docCard("iBed Wireless Spec Sheet", `${RES}/iBed%20Wireless_SS_Mkt%20Lit-1371%20Rev%20C.pdf.thumb.319.319.png`)
       ]);
       const tabProductInfo = childBlock("tabbed-content-tab-stryker", [["Product Information"], [productInfoCards]]);
       const relatedCard = (title, sub) => [
@@ -108,7 +110,7 @@ var CustomImportScript = (() => {
       main.append(WebImporter.Blocks.createBlock(document, {
         name: "cross-promo-stryker",
         cells: [
-          [img(document, PLACE(420, 240, "ProCare Services"), "ProCare Services")],
+          [img(document, `${MEDIA}/ProCare?$preset_666_392$`, "ProCare for acute care")],
           ["ProCare Services"],
           [anchor(document, "/stryker/home", "ProCare")],
           ["Read more"],

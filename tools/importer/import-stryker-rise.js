@@ -57,9 +57,9 @@ export default {
         ['RISE Neurotechnology Cart'],
         [el(document, 'div', '<p>The customizable RISE Neurotechnology Cart accommodates unique demands of the RISE Ecosystem in ENT and Neurosurgery.</p>')],
         ['Click and drag the cart for a 360 view or use the arrows below to rotate.'],
-        [img(document, PLACE(500, 600, 'RISE Cart 1'), 'RISE Cart view 1')],
-        [img(document, PLACE(500, 600, 'RISE Cart 2'), 'RISE Cart view 2')],
-        [img(document, PLACE(500, 600, 'RISE Cart 3'), 'RISE Cart view 3')],
+        [img(document, `${MEDIA}/iSuite-2929x1648?$max_width_1410$`, 'RISE Neurotechnology Cart view 1')],
+        [img(document, `${MEDIA}/Connectivity-Neurotech-cart-OR-hub?$max_width_1410$`, 'RISE Neurotechnology Cart view 2')],
+        [img(document, `${MEDIA}/Centralized-control-v3?$max_width_1440$`, 'RISE Neurotechnology Cart view 3')],
         ['Flex arm for custom positioning'],
         ['IV hooks'],
         ['Keyboard and mouse tray'],
@@ -73,8 +73,8 @@ export default {
 
     // Features section: Visualization image collection
     main.append(document.createElement('hr'));
-    const galleryItem = (title, body) => childBlock('image-gallery-item-stryker', [
-      [img(document, PLACE(560, 360, title), title)],
+    const galleryItem = (slug, title, body) => childBlock('image-gallery-item-stryker', [
+      [img(document, `${MEDIA}/${slug}?$max_width_auto$`, title)],
       [el(document, 'div', `<h3>${title}</h3><p>${body}</p>`)],
       [''],
     ]);
@@ -83,10 +83,10 @@ export default {
       cells: [
         ['Visualization,'],
         ['reimagined'],
-        [galleryItem('Tone mode', 'Balance brightness and illuminate shadows across the field of view by enhancing posterior lighting without compromising foreground detail.')],
-        [galleryItem('Full frame HDR', 'High dynamic range (HDR), is designed to provide more detail in shadows and highlights of the image.')],
-        [galleryItem('Experience one billion colors', '62.5x more colors.')],
-        [galleryItem('Fluorescence imaging', 'Experience clearer delineation of fluorescence signal designed for improved visualization of critical anatomy and perfusion.')],
+        [galleryItem('Tone-mode', 'Tone mode', 'Balance brightness and illuminate shadows across the field of view by enhancing posterior lighting without compromising foreground detail.')],
+        [galleryItem('Full-frame-HDR', 'Full frame HDR', 'High dynamic range (HDR), is designed to provide more detail in shadows and highlights of the image.')],
+        [galleryItem('One-billion-colors', 'Experience one billion colors', '62.5x more colors.')],
+        [galleryItem('Fluorescence-imaging-v2', 'Fluorescence imaging', 'Experience clearer delineation of fluorescence signal designed for improved visualization of critical anatomy and perfusion.')],
       ],
     }));
     blockNames.push('image-collection-stryker');

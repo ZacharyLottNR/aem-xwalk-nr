@@ -79,9 +79,22 @@ var CustomImportScript = (() => {
       ];
       blocks.push(["overview-stryker", [
         ["Our", "focus", el(document, "div", ""), el(document, "div", "")],
-        focusCard(`${MEDIA}/Test_Images_Portfolio_2?$max_width_1440$`, "Medical and Surgical", "Empowering people for powerful outcomes", "By putting people at the heart of every innovation, we optimize pathways across the continuum of care."),
-        focusCard(`${MEDIA}/mako-column-photo-v2?$max_width_1440$`, "Orthopaedics and Spine", "Leading what's next", "Our Orthopaedics portfolio is a culmination of powerful solutions that maximize clinical, financial and operational outcomes."),
-        focusCard(`${MEDIA}/Test_Images_Portfolio_4?$max_width_1440$`, "Neurotechnology", "Better connected", "By delivering access to meaningful innovation, operational efficiency and the simplification of a single partner.")
+        focusCard(`${MEDIA}/Test_Images_Portfolio_2?$max_width_1440$`, "Medical and Surgical", "Empowering people for powerful outcomes", "By putting people at the heart of every innovation, we optimize pathways across the continuum of care \u2014 for the excellence of care delivery, the safety and wellbeing of care teams and the outcomes of patients."),
+        focusCard(`${MEDIA}/mako-column-photo-v2?$max_width_1440$`, "Orthopaedics and Spine", "Leading what's next", "Our Orthopaedics portfolio is a culmination of powerful solutions that maximize clinical, financial and operational outcomes. From iconic innovations to reliable platforms, from decision-driving data to medical education, we help move procedures and patients forward."),
+        focusCard(`${MEDIA}/Test_Images_Portfolio_4?$max_width_1440$`, "Neurotechnology", "Better connected", "By delivering access to meaningful innovation, operational efficiency and the simplification of a single partner, we provide the power of a deeper understanding to help you better serve the needs of your patients and improve clinical and economic outcomes."),
+        focusCard(`${MEDIA}/services-ourFocus?$max_width_1440$`, "Services", "Maximizing your investment", "From flexible financial options to sustainable options for reprocessing single-use devices to world class technicians trained to maintain and support your equipment\u2014we're here so you can focus on what matters most, your patients."),
+        focusCard(`${MEDIA}/care-settings-v3?$max_width_1440$`, "Care settings", "Supporting you exactly where you need to be", "Healthcare doesn't only happen in the hospital. Are you outfitting your ambulatory surgery center (ASC), looking for emergency response devices for an office or caring for a loved one at home? We have solutions to meet your needs right where you are."),
+        focusCard(`${MEDIA}/trainingAndEducation-ourFocus?$max_width_1440$`, "Training and education", "Advancing product and procedural knowledge", "Our partnership goes beyond delivering the latest technology and solutions. We offer a wide range of training and education options to help ensure you're making the most of your time and investment.")
+      ]]);
+      blocks.push(["text-and-media-stryker", [
+        [img(document, `${MEDIA}/PeopleGraphic_V5?$max_width_1440$`, "Group photo")],
+        [""],
+        [""],
+        ["People are at the heart of what we do,"],
+        ["and by valuing our differences, we are stronger together."],
+        [el(document, "div", "")],
+        ["advanced"],
+        ["media-right"]
       ]]);
       blocks.push(["get-to-know-us-stryker", [
         [img(document, `${MEDIA}/MakingAnImpact-greenGrad-desktopV4?$max_width_1440$`, "Corporate responsibility")],
