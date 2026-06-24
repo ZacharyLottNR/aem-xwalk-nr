@@ -130,19 +130,23 @@ export default {
       main.append(block);
     });
 
-    // 7. Quick links (nested container)
+    // 7. Quick links — container + items (2-level, round-trips through md2jcr).
+    // Each item is [linkLabel, linkUrl]; a blank URL makes the item a column
+    // header. The first row is the block heading.
     main.append(document.createElement('hr'));
-    const quickLinkList = (category, links) => {
-      const cells = [[category]];
-      links.forEach(([text, href]) => cells.push([text, anchor(document, href, href)]));
-      return childBlock('quick-link-lists-stryker', cells);
+    const quickItems = [['Quick links']];
+    const quickGroup = (category, links) => {
+      quickItems.push([category, '']); // header item (blank URL)
+      links.forEach(([text, href]) => quickItems.push([text, anchor(document, href, href)]));
     };
-    main.append(childBlock('quick-links-stryker', [
-      [quickLinkList('Portfolio', [['Medical and Surgical Equipment', '/stryker/home'], ['Orthopaedics', '/stryker/home'], ['Neurotechnology', '/stryker/home']])],
-      [quickLinkList('Offerings', [['Services', '/stryker/home'], ['Care Settings', '/stryker/home'], ['Training and Education', '/stryker/home']])],
-      [quickLinkList('Our company', [['Contact Us', '/stryker/home'], ['Investor Relations', 'https://investors.stryker.com/'], ['Comprehensive Report', '/stryker/home']])],
-      [quickLinkList('More information', [['Advanced Digital Healthcare', '/stryker/home'], ['Ambulatory Surgery Centers', '/stryker/home'], ['Training and Education', '/stryker/home'], ['Accessibility Statement', '/stryker/home'], ['Patients', 'https://patients.stryker.com/index.html']])],
-    ]));
+    quickGroup('Portfolio', [['Medical and Surgical Equipment', '/stryker/home'], ['Orthopaedics', '/stryker/home'], ['Neurotechnology', '/stryker/home']]);
+    quickGroup('Offerings', [['Services', '/stryker/home'], ['Care Settings', '/stryker/home'], ['Training and Education', '/stryker/home']]);
+    quickGroup('Our company', [['Contact Us', '/stryker/home'], ['Investor Relations', 'https://investors.stryker.com/'], ['Comprehensive Report', '/stryker/home']]);
+    quickGroup('More information', [['Advanced Digital Healthcare', '/stryker/home'], ['Ambulatory Surgery Centers', '/stryker/home'], ['Training and Education', '/stryker/home'], ['Accessibility Statement', '/stryker/home'], ['Patients', 'https://patients.stryker.com/index.html']]);
+    main.append(WebImporter.Blocks.createBlock(document, {
+      name: 'quick-links-stryker',
+      cells: quickItems,
+    }));
 
     // Page metadata
     main.append(document.createElement('hr'));

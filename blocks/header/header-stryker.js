@@ -5,8 +5,14 @@ const isDesktop = window.matchMedia('(min-width: 900px)');
 
 function navPathFromMeta() {
   const navMeta = getMetadata('nav');
-  // Stryker fragments live under /content/stryker/; keep the path as authored.
-  return navMeta ? new URL(navMeta, window.location).pathname : '/content/stryker/nav';
+  let navPath = navMeta ? new URL(navMeta, window.location).pathname : '/stryker/nav';
+  // Published EDS (.aem.page) serves fragments without the /content mountpoint
+  // prefix; strip it so the fragment resolves on both local and published.
+  navPath = navPath.replace(/^\/content\/aem-boilerplate-nr/, '');
+  if (navPath.startsWith('/content/') && !navPath.startsWith('/content/dam/')) {
+    navPath = navPath.replace(/^\/content/, '');
+  }
+  return navPath;
 }
 
 function cleanHref(a) {
@@ -42,8 +48,21 @@ export default async function decorate(block) {
 
   const brand = document.createElement('div');
   brand.className = 'nav-stryker-brand';
-  const brandSrc = brandSec?.querySelector('a, p');
-  if (brandSrc) brand.append(brandSrc);
+  const brandLink = brandSec?.querySelector('a');
+  if (brandLink) {
+    // EDS button-decoration turns the image-only brand link into a .button;
+    // strip that so it renders as the plain logo link.
+    brandLink.classList.remove('button');
+    brandLink.closest('p')?.classList.remove('button-container');
+    // If the optimized <picture> was dropped, restore the logo image.
+    if (!brandLink.querySelector('img')) {
+      const logo = document.createElement('img');
+      logo.src = '/icons/stryker-logo.svg';
+      logo.alt = 'Stryker';
+      brandLink.append(logo);
+    }
+    brand.append(brandLink);
+  }
 
   const utility = document.createElement('nav');
   utility.className = 'nav-stryker-utility';
@@ -104,6 +123,19 @@ export default async function decorate(block) {
     cleanHref(topList); // no-op safety
     const currentPath = window.location.pathname.replace(/\.html$/, '');
 
+    // EDS auto-wraps standalone links in <p>; unwrap so the top-level link is a
+    // direct child of the <li> (matches our selectors + CSS, avoids button look).
+    topList.querySelectorAll(':scope > li > p').forEach((p) => {
+      if (p.children.length === 1 && p.firstElementChild.tagName === 'A') {
+        p.replaceWith(p.firstElementChild);
+      }
+    });
+
+    // EDS button-decoration adds .button to standalone links, giving them the
+    // teal CTA background. Strip it from every nav link so they render plain.
+    topList.querySelectorAll('a.button').forEach((a) => a.classList.remove('button'));
+    topList.querySelectorAll('.button-container').forEach((el) => el.classList.remove('button-container'));
+
     [...topList.children].forEach((li) => {
       const link = li.querySelector(':scope > a');
       const submenu = li.querySelector(':scope > ul');
@@ -148,8 +180,11 @@ export default async function decorate(block) {
         }
       }
 
-      // Active state for the current section.
-      if (link && link.getAttribute('href') === currentPath) {
+      // Active state for the current section. Skip placeholder links that point
+      // at the home page itself, so unresolved nav items (e.g. /stryker/home)
+      // don't all light up as "active" on the home page.
+      const href = link?.getAttribute('href');
+      if (href && href === currentPath && !/\/(home|index)$/.test(href)) {
         li.classList.add('is-active');
       }
     });

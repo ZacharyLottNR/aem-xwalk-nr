@@ -9,19 +9,67 @@
             "resourceType": "core/franklin/components/block/v1/block",
             "template": {
               "name": "Quick Links Stryker",
+              "model": "quick-links-stryker",
               "filter": "quick-links-stryker"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Quick Link",
+      "id": "quick-links-stryker-item",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Quick Link",
+              "model": "quick-links-stryker-item"
             }
           }
         }
       }
     }
   ],
-  "models": [],
+  "models": [
+    {
+      "id": "quick-links-stryker",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "heading",
+          "label": "Heading",
+          "value": "Quick links"
+        }
+      ]
+    },
+    {
+      "id": "quick-links-stryker-item",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "linkLabel",
+          "label": "Link Text",
+          "description": "The link text. If the URL is left blank, this item is treated as a column header instead of a link."
+        },
+        {
+          "component": "aem-content",
+          "valueType": "string",
+          "name": "linkUrl",
+          "label": "Link URL",
+          "description": "Leave blank to make this item a column header."
+        }
+      ]
+    }
+  ],
   "filters": [
     {
       "id": "quick-links-stryker",
       "components": [
-        "quick-link-lists-stryker"
+        "quick-links-stryker-item"
       ]
     }
   ]

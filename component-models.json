@@ -5879,30 +5879,33 @@
     ]
   },
   {
-    "id": "quick-link-lists-stryker",
+    "id": "quick-links-stryker",
     "fields": [
       {
         "component": "text",
         "valueType": "string",
-        "name": "category",
-        "label": "Category Name"
+        "name": "heading",
+        "label": "Heading",
+        "value": "Quick links"
       }
     ]
   },
   {
-    "id": "quick-link-lists-stryker-item",
+    "id": "quick-links-stryker-item",
     "fields": [
       {
         "component": "text",
         "valueType": "string",
         "name": "linkLabel",
-        "label": "Link Name"
+        "label": "Link Text",
+        "description": "The link text. If the URL is left blank, this item is treated as a column header instead of a link."
       },
       {
         "component": "aem-content",
         "valueType": "string",
         "name": "linkUrl",
-        "label": "Link URL"
+        "label": "Link URL",
+        "description": "Leave blank to make this item a column header."
       }
     ]
   },

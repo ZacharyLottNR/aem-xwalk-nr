@@ -198,17 +198,16 @@ var CustomImportScript = (() => {
         [el(document, "div", "<p><strong>References</strong></p><ol><li>As compared to previous Stryker offering</li><li>1937000</li><li>1000904469</li><li>COMMS-COMSO-WHPR-1532602</li></ol><p>ENDO-GSNPS-SYK-2116500</p><p>Last Updated July/2025</p>")]
       ]]);
       const childBlock = (name, cells) => WebImporter.Blocks.createBlock(document, { name, cells });
-      const quickLinkList = (category, links) => {
-        const cells = [[category]];
-        links.forEach(([text, href]) => cells.push([text, anchor(document, href, href)]));
-        return childBlock("quick-link-lists-stryker", cells);
+      const quickItems = [["Quick links"]];
+      const quickGroup = (category, links) => {
+        quickItems.push([category, ""]);
+        links.forEach(([text, href]) => quickItems.push([text, anchor(document, href, href)]));
       };
-      blocks.push(["quick-links-stryker", [
-        [quickLinkList("Portfolio", [["Medical and Surgical Equipment", "https://www.stryker.com/ms"], ["Orthopaedics", "https://www.stryker.com/ortho"], ["Neurotechnology", "https://www.stryker.com/neuro"]])],
-        [quickLinkList("Offerings", [["Services", "https://www.stryker.com/services"], ["Care Settings", "https://www.stryker.com/care"], ["Training and Education", "https://www.stryker.com/training"]])],
-        [quickLinkList("Our company", [["Contact Us", "https://www.stryker.com/contact"], ["Investor Relations", "https://www.stryker.com/investors"], ["Comprehensive Report", "https://www.stryker.com/report"]])],
-        [quickLinkList("More information", [["Advanced Digital Healthcare", "https://www.stryker.com/adh"], ["Patients", "https://www.stryker.com/patients"]])]
-      ]]);
+      quickGroup("Portfolio", [["Medical and Surgical Equipment", "https://www.stryker.com/ms"], ["Orthopaedics", "https://www.stryker.com/ortho"], ["Neurotechnology", "https://www.stryker.com/neuro"]]);
+      quickGroup("Offerings", [["Services", "https://www.stryker.com/services"], ["Care Settings", "https://www.stryker.com/care"], ["Training and Education", "https://www.stryker.com/training"]]);
+      quickGroup("Our company", [["Contact Us", "https://www.stryker.com/contact"], ["Investor Relations", "https://www.stryker.com/investors"], ["Comprehensive Report", "https://www.stryker.com/report"]]);
+      quickGroup("More information", [["Advanced Digital Healthcare", "https://www.stryker.com/adh"], ["Patients", "https://www.stryker.com/patients"]]);
+      blocks.push(["quick-links-stryker", quickItems]);
       const galleryItem = (title, body, url) => {
         const cells = [
           [img(document, IMG(560, 360, title), title)],

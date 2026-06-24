@@ -672,13 +672,21 @@ body.theme-stryker header nav.nav-stryker-utility {
     gap: 20px;
   }
 
-  /* The titled group spans the remaining width; its links flow into columns */
+  /* The titled group spans the remaining width; its links flow column-by-column
+     (top-to-bottom, then wrap) like the source, via CSS multi-column. */
   .nav-stryker .nav-stryker-group-titled {
     flex: 1;
   }
 
   .nav-stryker .nav-stryker-group-titled > ul {
-    grid-template-columns: repeat(3, 1fr);
+    display: block;
+    column-count: 3;
+    column-gap: 32px;
+  }
+
+  .nav-stryker .nav-stryker-group-titled > ul > li {
+    break-inside: avoid;
+    margin-bottom: 20px;
   }
 }
 

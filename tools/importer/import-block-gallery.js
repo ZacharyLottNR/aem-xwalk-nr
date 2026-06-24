@@ -235,18 +235,18 @@ export default {
     // omitted: it needs a live form definition, not synthetic block-table content.
     const childBlock = (name, cells) => WebImporter.Blocks.createBlock(document, { name, cells });
 
-    // quick-links-stryker → quick-link-lists-stryker children (category + links)
-    const quickLinkList = (category, links) => {
-      const cells = [[category]];
-      links.forEach(([text, href]) => cells.push([text, anchor(document, href, href)]));
-      return childBlock('quick-link-lists-stryker', cells);
+    // quick-links-stryker — container + items. Each item is [linkLabel, linkUrl];
+    // a blank URL makes the item a column header. First row is the heading.
+    const quickItems = [['Quick links']];
+    const quickGroup = (category, links) => {
+      quickItems.push([category, '']);
+      links.forEach(([text, href]) => quickItems.push([text, anchor(document, href, href)]));
     };
-    blocks.push(['quick-links-stryker', [
-      [quickLinkList('Portfolio', [['Medical and Surgical Equipment', 'https://www.stryker.com/ms'], ['Orthopaedics', 'https://www.stryker.com/ortho'], ['Neurotechnology', 'https://www.stryker.com/neuro']])],
-      [quickLinkList('Offerings', [['Services', 'https://www.stryker.com/services'], ['Care Settings', 'https://www.stryker.com/care'], ['Training and Education', 'https://www.stryker.com/training']])],
-      [quickLinkList('Our company', [['Contact Us', 'https://www.stryker.com/contact'], ['Investor Relations', 'https://www.stryker.com/investors'], ['Comprehensive Report', 'https://www.stryker.com/report']])],
-      [quickLinkList('More information', [['Advanced Digital Healthcare', 'https://www.stryker.com/adh'], ['Patients', 'https://www.stryker.com/patients']])],
-    ]]);
+    quickGroup('Portfolio', [['Medical and Surgical Equipment', 'https://www.stryker.com/ms'], ['Orthopaedics', 'https://www.stryker.com/ortho'], ['Neurotechnology', 'https://www.stryker.com/neuro']]);
+    quickGroup('Offerings', [['Services', 'https://www.stryker.com/services'], ['Care Settings', 'https://www.stryker.com/care'], ['Training and Education', 'https://www.stryker.com/training']]);
+    quickGroup('Our company', [['Contact Us', 'https://www.stryker.com/contact'], ['Investor Relations', 'https://www.stryker.com/investors'], ['Comprehensive Report', 'https://www.stryker.com/report']]);
+    quickGroup('More information', [['Advanced Digital Healthcare', 'https://www.stryker.com/adh'], ['Patients', 'https://www.stryker.com/patients']]);
+    blocks.push(['quick-links-stryker', quickItems]);
 
     // image-collection-stryker → image-gallery-item-stryker children (img, text, optional link)
     const galleryItem = (title, body, url) => {
