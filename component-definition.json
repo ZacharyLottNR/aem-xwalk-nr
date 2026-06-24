@@ -14,20 +14,7 @@
                 "template": {}
               }
             }
-          },
-          "richTextConfig": {
-            "toolbar": [
-              "bold",
-              "italic",
-              "underline",
-              "strikethrough",
-              "link",
-              "unlink",
-              "list-ol",
-              "list-ul"
-            ]
-          },
-          "model": "text"
+          }
         },
         {
           "title": "Title",
@@ -128,67 +115,6 @@
           }
         },
         {
-          "title": "Experience Fragment",
-          "id": "experience-fragment",
-          "plugins": {
-            "xwalk": {
-              "page": {
-                "resourceType": "core/franklin/components/block/v1/block",
-                "template": {
-                  "name": "Experience Fragment",
-                  "model": "experience-fragment"
-                }
-              }
-            }
-          }
-        },
-        {
-          "title": "Layout",
-          "id": "layout",
-          "plugins": {
-            "xwalk": {
-              "page": {
-                "resourceType": "core/franklin/components/columns/v1/columns",
-                "template": {
-                  "name": "Layout",
-                  "columns": "2",
-                  "rows": "1",
-                  "model": "layout"
-                }
-              }
-            }
-          }
-        },
-        {
-          "title": "AI Generate",
-          "id": "ai-generate",
-          "plugins": {
-            "xwalk": {
-              "page": {
-                "resourceType": "core/franklin/components/block/v1/block",
-                "template": {
-                  "name": "AI Generate",
-                  "model": "ai-generate"
-                }
-              }
-            }
-          }
-        },
-        {
-          "title": "Theme Redirect",
-          "id": "theme-redirect",
-          "plugins": {
-            "xwalk": {
-              "page": {
-                "resourceType": "core/franklin/components/block/v1/block",
-                "template": {
-                  "name": "Theme Redirect"
-                }
-              }
-            }
-          }
-        },
-        {
           "title": "Asset Detail",
           "id": "asset-detail",
           "plugins": {
@@ -203,42 +129,15 @@
           }
         },
         {
-          "title": "Video Detail",
-          "id": "video-detail",
+          "title": "Callout Banner Stryker",
+          "id": "callout-banner-stryker",
           "plugins": {
             "xwalk": {
               "page": {
                 "resourceType": "core/franklin/components/block/v1/block",
                 "template": {
-                  "name": "Video Detail"
-                }
-              }
-            }
-          }
-        },
-        {
-          "title": "Document Detail",
-          "id": "document-detail",
-          "plugins": {
-            "xwalk": {
-              "page": {
-                "resourceType": "core/franklin/components/block/v1/block",
-                "template": {
-                  "name": "Document Detail"
-                }
-              }
-            }
-          }
-        },
-        {
-          "title": "Presentation Detail",
-          "id": "presentation-detail",
-          "plugins": {
-            "xwalk": {
-              "page": {
-                "resourceType": "core/franklin/components/block/v1/block",
-                "template": {
-                  "name": "Presentation Detail"
+                  "name": "Callout Banner Stryker",
+                  "model": "callout-banner-stryker"
                 }
               }
             }
@@ -365,21 +264,6 @@
           }
         },
         {
-          "title": "Super Text",
-          "id": "super-text",
-          "plugins": {
-            "xwalk": {
-              "page": {
-                "resourceType": "core/franklin/components/block/v1/block",
-                "template": {
-                  "name": "Super Text",
-                  "model": "super-text"
-                }
-              }
-            }
-          }
-        },
-        {
           "title": "Cards Recent",
           "id": "cards-recent",
           "plugins": {
@@ -419,6 +303,37 @@
                 "template": {
                   "name": "Card",
                   "model": "card"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Cards Stryker",
+          "id": "cards-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Cards Stryker",
+                  "model": "cards-stryker",
+                  "filter": "cards-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Card",
+          "id": "cards-stryker-card",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Card",
+                  "model": "cards-stryker-card"
                 }
               }
             }
@@ -559,6 +474,36 @@
           }
         },
         {
+          "title": "Content Break Stryker",
+          "id": "content-break-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Content Break Stryker",
+                  "model": "content-break-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Cross Promo Stryker",
+          "id": "cross-promo-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Cross Promo Stryker",
+                  "model": "cross-promo-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Embed Calendar",
           "id": "embed-calendar",
           "plugins": {
@@ -583,6 +528,21 @@
                 "template": {
                   "name": "Embed Video",
                   "model": "embed-video"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Adaptive Form (Stryker)",
+          "id": "form-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "fd/franklin/components/form/v1/form",
+                "template": {
+                  "fieldType": "form",
+                  "fd:version": "2.1"
                 }
               }
             }
@@ -1093,6 +1053,21 @@
           }
         },
         {
+          "title": "Get To Know Us Stryker",
+          "id": "get-to-know-us-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Get To Know Us Stryker",
+                  "model": "get-to-know-us-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Hero Ai",
           "id": "hero-ai",
           "plugins": {
@@ -1153,6 +1128,190 @@
           }
         },
         {
+          "title": "Home Video Hero Stryker",
+          "id": "home-video-hero-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Home Video Hero Stryker",
+                  "model": "home-video-hero-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Image Collection Stryker",
+          "id": "image-collection-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Image Collection Stryker",
+                  "model": "image-collection-stryker",
+                  "filter": "image-collection-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Image Gallery Item Stryker",
+          "id": "image-gallery-item-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Image Gallery Item Stryker",
+                  "model": "image-gallery-item-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Image Gallery Stryker",
+          "id": "image-gallery-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Image Gallery Stryker",
+                  "model": "image-gallery-stryker",
+                  "filter": "image-gallery-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Gallery Image",
+          "id": "image-gallery-stryker-item",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Gallery Image",
+                  "model": "image-gallery-stryker-item"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Legal Text Stryker",
+          "id": "legal-text-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Legal Text Stryker",
+                  "model": "legal-text-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Product Preview Stryker",
+          "id": "product-preview-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Product Preview Stryker",
+                  "model": "product-preview-stryker",
+                  "filter": "product-preview-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Product Frame",
+          "id": "product-preview-stryker-frame",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Product Frame",
+                  "model": "product-preview-stryker-frame"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Feature",
+          "id": "product-preview-stryker-feature",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Feature",
+                  "model": "product-preview-stryker-feature"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Quick Link List Stryker",
+          "id": "quick-link-lists-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Quick Link List Stryker",
+                  "model": "quick-link-lists-stryker",
+                  "filter": "quick-link-lists-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Quick Link",
+          "id": "quick-link-lists-stryker-item",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Quick Link",
+                  "model": "quick-link-lists-stryker-item"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Quick Links Stryker",
+          "id": "quick-links-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Quick Links Stryker",
+                  "filter": "quick-links-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Search Asset",
           "id": "search-asset",
           "plugins": {
@@ -1163,6 +1322,67 @@
                   "name": "Search Asset",
                   "model": "search-asset",
                   "filter": "search-asset"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Tabbed Content Stryker",
+          "id": "tabbed-content-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Tabbed Content Stryker",
+                  "filter": "tabbed-content-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Tab",
+          "id": "tabbed-content-tab-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Tab",
+                  "model": "tabbed-content-tab-stryker",
+                  "filter": "tabbed-content-tab-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Text And Media Stryker",
+          "id": "text-and-media-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Text And Media Stryker",
+                  "model": "text-and-media-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Video Stryker",
+          "id": "video-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Video Stryker",
+                  "model": "video-stryker"
                 }
               }
             }

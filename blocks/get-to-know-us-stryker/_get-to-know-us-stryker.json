@@ -1,0 +1,96 @@
+{
+  "definitions": [
+    {
+      "title": "Get To Know Us Stryker",
+      "id": "get-to-know-us-stryker",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Get To Know Us Stryker",
+              "model": "get-to-know-us-stryker"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "get-to-know-us-stryker",
+      "fields": [
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "image",
+          "label": "Image",
+          "multi": false
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "imageAlt",
+          "label": "Image Alt",
+          "value": ""
+        },
+        {
+          "component": "richtext",
+          "valueType": "string",
+          "name": "text",
+          "label": "Text",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "buttonText",
+          "label": "Button Text"
+        },
+        {
+          "component": "aem-content",
+          "valueType": "string",
+          "name": "buttonLink",
+          "label": "Button Link"
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "layout",
+          "label": "Layout",
+          "value": "standard",
+          "options": [
+            {
+              "name": "Standard (text left, image right)",
+              "value": "standard"
+            },
+            {
+              "name": "Banner (image left, text right, background band)",
+              "value": "banner"
+            },
+            {
+              "name": "Full bleed (full-width image, text overlaid right)",
+              "value": "fullbleed"
+            }
+          ]
+        },
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "backgroundImage",
+          "label": "Background Image (Banner layout)",
+          "description": "Full-width band behind the block. Used only in Banner layout; falls back to a dark color if empty.",
+          "multi": false
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "backgroundImageAlt",
+          "label": "Background Image Alt",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "filters": []
+}

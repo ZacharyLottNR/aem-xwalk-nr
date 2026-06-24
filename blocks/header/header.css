@@ -344,3 +344,403 @@ body.theme-dark header nav .nav-hamburger button {
   background-color: var(--background-color);
   color: var(--text-color);
 }
+
+/* ===================== Stryker header ===================== */
+.nav-stryker {
+  font-family: var(--stryker-heading-font);
+}
+
+body.theme-stryker header {
+  /* The global header height (--nav-height) clips the two-row Stryker nav. */
+  height: auto;
+  background-color: var(--stryker-white, #fff);
+  border-bottom: 1px solid var(--stryker-border, #d9d9d9);
+}
+
+body.theme-stryker header .nav-wrapper,
+body.theme-stryker header .nav-stryker {
+  max-width: none;
+}
+
+/* Neutralize the boilerplate `header nav` grid/flex + max-width so the Stryker
+   utility and main <nav> elements span full width and lay out on their own. */
+body.theme-stryker header nav.nav-stryker-main,
+body.theme-stryker header nav.nav-stryker-utility {
+  display: block;
+  max-width: none;
+  height: auto;
+  padding: 0;
+  gap: 0;
+}
+
+body.theme-stryker header nav.nav-stryker-main {
+  margin: 0;
+}
+
+/* Keep margin-left: auto so the utility group is pushed to the right; only
+   reset the other margins the boilerplate `header nav` rule introduced. */
+body.theme-stryker header nav.nav-stryker-utility {
+  margin: 0 0 0 auto;
+}
+
+/* Global utility bar */
+.nav-stryker .nav-stryker-global {
+  border-bottom: 1px solid var(--stryker-border, #d9d9d9);
+}
+
+.nav-stryker .nav-stryker-global-inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 12px 16px;
+}
+
+.nav-stryker .nav-stryker-brand {
+  flex: 0 0 auto;
+}
+
+.nav-stryker .nav-stryker-brand p { margin: 0; }
+
+.nav-stryker .nav-stryker-brand img {
+  display: block;
+  width: 140px;
+  height: auto;
+}
+
+.nav-stryker .nav-stryker-utility {
+  margin-left: auto;
+}
+
+.nav-stryker .nav-stryker-utility ul {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Pipe separators between utility links (and after the last one) */
+.nav-stryker .nav-stryker-utility li {
+  display: flex;
+  align-items: center;
+}
+
+.nav-stryker .nav-stryker-utility li::after {
+  content: '|';
+  margin: 0 14px;
+  color: var(--stryker-border, #d9d9d9);
+}
+
+.nav-stryker .nav-stryker-utility a:any-link {
+  font-size: 13px;
+  color: var(--stryker-gray, #58595b);
+  text-decoration: none;
+}
+
+.nav-stryker .nav-stryker-utility a:hover {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+.nav-stryker .nav-stryker-locale a:any-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--stryker-gray, #58595b);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-stryker .nav-stryker-locale a:hover {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+/* Globe icon before the locale label */
+.nav-stryker .nav-stryker-globe {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border-radius: 50%;
+  border: 1.5px solid currentcolor;
+  background:
+    linear-gradient(currentcolor, currentcolor) center / 100% 1.5px no-repeat,
+    linear-gradient(currentcolor, currentcolor) center / 1.5px 100% no-repeat;
+}
+
+/* Search field (visual only) */
+.nav-stryker .nav-stryker-search {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.nav-stryker .nav-stryker-search input {
+  width: 220px;
+  height: 40px;
+  padding: 0 40px 0 14px;
+  font-family: var(--stryker-body-font);
+  font-size: 14px;
+  color: var(--stryker-gray, #58595b);
+  background-color: var(--stryker-light-gray, #f2f2f2);
+  border: 1px solid var(--stryker-border, #d9d9d9);
+  border-radius: 0;
+  appearance: none;
+}
+
+.nav-stryker .nav-stryker-search input::placeholder {
+  color: var(--stryker-gray, #58595b);
+}
+
+.nav-stryker .nav-stryker-search-icon {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  background-color: var(--stryker-teal, #4c7d7a);
+  mask: url('/icons/search.svg') center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* Hamburger hidden on desktop */
+.nav-stryker .nav-stryker-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.nav-stryker .nav-stryker-hamburger span {
+  display: block;
+  height: 2px;
+  width: 24px;
+  background-color: var(--stryker-black, #000);
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+/* Main nav bar (yellow band) */
+.nav-stryker .nav-stryker-main {
+  background-color: #ffb500;
+}
+
+.nav-stryker .nav-stryker-main-inner {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.nav-stryker .nav-stryker-main-inner > ul {
+  display: flex;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-stryker .nav-stryker-item {
+  position: relative;
+}
+
+.nav-stryker .nav-stryker-item > a:any-link {
+  display: block;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--stryker-black, #000);
+  text-decoration: none;
+}
+
+.nav-stryker .nav-stryker-item > a:hover {
+  color: var(--stryker-black, #000);
+  background-color: rgb(0 0 0 / 8%);
+}
+
+/* Active section + open-menu indicator — dark box with white text */
+.nav-stryker .nav-stryker-item.is-active > a,
+.nav-stryker .nav-stryker-has-menu.is-open > a {
+  background-color: var(--stryker-gray, #58595b);
+  color: var(--stryker-white, #fff);
+}
+
+/* Megamenu panel */
+.nav-stryker .nav-stryker-panel {
+  display: none;
+}
+
+.nav-stryker .nav-stryker-has-menu.is-open .nav-stryker-panel {
+  display: block;
+}
+
+.nav-stryker .nav-stryker-panel-inner {
+  padding: 32px 24px;
+}
+
+.nav-stryker .nav-stryker-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-stryker .nav-stryker-panel a:any-link {
+  text-transform: none;
+}
+
+.nav-stryker .nav-stryker-panel a:hover {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+/* Top-level links within a column group are bold */
+.nav-stryker .nav-stryker-group > ul > li > a:any-link {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--stryker-black, #000);
+  text-decoration: none;
+}
+
+/* Titled group ("Our Business"): bold heading, regular-weight link list */
+.nav-stryker .nav-stryker-group-titled > p {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--stryker-black, #000);
+}
+
+.nav-stryker .nav-stryker-group-titled > ul > li > a:any-link {
+  font-weight: 400;
+}
+
+/* Desktop: full-width panel below the yellow bar, light-gray like the source */
+@media (width >= 900px) {
+  .nav-stryker .nav-stryker-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: var(--stryker-light-gray, #f2f2f2);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+  }
+
+  .nav-stryker .nav-stryker-main {
+    position: relative;
+  }
+
+  /* Anchor the full-width panel to the main bar, not the individual item */
+  .nav-stryker .nav-stryker-item {
+    position: static;
+  }
+
+  .nav-stryker .nav-stryker-panel-inner {
+    max-width: var(--stryker-max-width, 1280px);
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* The submenu wrapper lays its column groups in a row */
+  .nav-stryker .nav-stryker-panel-inner > ul {
+    display: flex;
+    flex: 1;
+    align-items: flex-start;
+    gap: 32px;
+  }
+
+  /* Each simple group is one column */
+  .nav-stryker .nav-stryker-group {
+    flex: 0 0 auto;
+    min-width: 200px;
+  }
+
+  .nav-stryker .nav-stryker-group > ul {
+    display: grid;
+    gap: 20px;
+  }
+
+  /* The titled group spans the remaining width; its links flow into columns */
+  .nav-stryker .nav-stryker-group-titled {
+    flex: 1;
+  }
+
+  .nav-stryker .nav-stryker-group-titled > ul {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Tablet / mobile: drawer */
+@media (width < 900px) {
+  .nav-stryker .nav-stryker-hamburger {
+    display: flex;
+    order: -1;
+  }
+
+  .nav-stryker .nav-stryker-utility,
+  .nav-stryker .nav-stryker-locale,
+  .nav-stryker .nav-stryker-search {
+    display: none;
+  }
+
+  .nav-stryker .nav-stryker-brand {
+    margin-left: 8px;
+  }
+
+  .nav-stryker .nav-stryker-main {
+    display: none;
+  }
+
+  header.nav-stryker-open .nav-stryker-main {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    overflow-y: auto;
+    background-color: var(--stryker-white, #fff);
+    padding-top: 16px;
+  }
+
+  header.nav-stryker-open .nav-stryker-utility,
+  header.nav-stryker-open .nav-stryker-locale {
+    display: block;
+  }
+
+  .nav-stryker .nav-stryker-main-inner > ul {
+    flex-direction: column;
+  }
+
+  .nav-stryker .nav-stryker-item > a:any-link {
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--stryker-border, #d9d9d9);
+  }
+
+  /* Submenus collapsed by default; expand the open item */
+  .nav-stryker .nav-stryker-panel {
+    display: none;
+    position: static;
+    border: 0;
+    box-shadow: none;
+    min-width: 0;
+  }
+
+  .nav-stryker .nav-stryker-has-menu.is-open .nav-stryker-panel {
+    display: block;
+  }
+
+  .nav-stryker .nav-stryker-panel-inner {
+    padding: 8px 24px 8px 40px;
+  }
+}

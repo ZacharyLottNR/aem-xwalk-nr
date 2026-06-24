@@ -1,0 +1,103 @@
+.overview-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 48px 24px 0;
+  border-bottom: 2px solid var(--stryker-black, #000);
+}
+
+/* Header */
+.overview-stryker .overview-stryker-title {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1.1;
+  margin: 0 0 20px;
+}
+
+.overview-stryker .overview-stryker-title-black {
+  color: var(--stryker-black, #000);
+}
+
+.overview-stryker .overview-stryker-title-gold {
+  color: #f0a500;
+}
+
+.overview-stryker .overview-stryker-primer {
+  font-family: var(--stryker-body-font);
+  font-size: 22px;
+  line-height: 1.35;
+  color: var(--stryker-black, #000);
+  margin: 0 0 20px;
+}
+
+.overview-stryker .overview-stryker-richtext {
+  font-family: var(--stryker-body-font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--stryker-black, #000);
+  margin: 0 0 48px;
+}
+
+.overview-stryker .overview-stryker-richtext p {
+  margin: 0 0 1em;
+}
+
+/* Info cards */
+.overview-stryker .overview-stryker-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+  padding-bottom: 56px;
+}
+
+.overview-stryker .overview-stryker-card-image {
+  margin-bottom: 16px;
+  line-height: 0;
+  border-left: 6px solid #f0a500;
+}
+
+.overview-stryker .overview-stryker-card-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+.overview-stryker .overview-stryker-card-title {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+  font-size: 22px;
+  color: #f0a500;
+  margin: 0 0 4px;
+}
+
+/* Bold sub-line under the amber title (first strong in the description) */
+.overview-stryker .overview-stryker-card-desc > p:first-child strong {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+  color: var(--stryker-black, #000);
+}
+
+.overview-stryker .overview-stryker-card-desc {
+  font-family: var(--stryker-body-font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--stryker-black, #000);
+}
+
+.overview-stryker .overview-stryker-card-desc p {
+  margin: 0 0 1em;
+}
+
+@media (width < 900px) {
+  .overview-stryker .overview-stryker-title {
+    font-size: 30px;
+  }
+
+  .overview-stryker .overview-stryker-primer {
+    font-size: 18px;
+  }
+
+  .overview-stryker .overview-stryker-cards {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}

@@ -22,13 +22,6 @@
         "label": "Keywords"
       },
       {
-        "component": "text",
-        "valueType": "string",
-        "name": "logo",
-        "label": "Logo Image",
-        "description": "DAM path to logo image (e.g. /content/dam/asset-share-commons/en/site/Logo-light.png)"
-      },
-      {
         "component": "select",
         "valueType": "string",
         "name": "theme",
@@ -43,6 +36,13 @@
             "value": "dark"
           }
         ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "logo",
+        "label": "Logo Image",
+        "description": "DAM path to logo image (e.g. /content/dam/asset-share-commons/en/site/Logo-light.png)"
       },
       {
         "component": "text",
@@ -73,139 +73,6 @@
         "component": "text",
         "name": "imageAlt",
         "label": "Alt Text"
-      }
-    ]
-  },
-  {
-    "id": "ai-generate",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "prompt",
-        "label": "Prompt",
-        "valueType": "string"
-      },
-      {
-        "component": "select",
-        "name": "format",
-        "label": "Output Format",
-        "valueType": "string",
-        "options": [
-          { "name": "Plain Text", "value": "text" },
-          { "name": "HTML", "value": "html" }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "experience-fragment",
-    "fields": [
-      {
-        "component": "aem-content",
-        "name": "xfPath",
-        "label": "Experience Fragment",
-        "valueType": "string",
-        "validation": {
-          "rootPath": "/content/experience-fragments"
-        }
-      }
-    ]
-  },
-  {
-    "id": "layout",
-    "fields": [
-      {
-        "component": "select",
-        "name": "columns",
-        "label": "Columns",
-        "valueType": "number",
-        "options": [
-          { "name": "1", "value": 1 },
-          { "name": "2", "value": 2 },
-          { "name": "3", "value": 3 },
-          { "name": "4", "value": 4 }
-        ]
-      },
-      {
-        "component": "select",
-        "name": "classes",
-        "label": "Layout",
-        "valueType": "string",
-        "options": [
-          { "name": "1 Column (100%)", "value": "layout-1-col" },
-          { "name": "2 Columns (50/50)", "value": "layout-2-col-50-50" },
-          { "name": "2 Columns (75/25)", "value": "layout-2-col-75-25" },
-          { "name": "2 Columns (66/33)", "value": "layout-2-col-66-33" },
-          { "name": "3 Columns (33/33/33)", "value": "layout-3-col" },
-          { "name": "4 Columns (25/25/25/25)", "value": "layout-4-col" }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "super-text",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "content",
-        "label": "Text",
-        "valueType": "string"
-      },
-      {
-        "component": "multiselect",
-        "name": "classes",
-        "label": "Additional Formatting",
-        "options": [
-          { "name": "Align Left", "value": "align-left" },
-          { "name": "Align Center", "value": "align-center" },
-          { "name": "Align Right", "value": "align-right" },
-          { "name": "Align Justify", "value": "align-justify" },
-          { "name": "Indent 1", "value": "indent-1" },
-          { "name": "Indent 2", "value": "indent-2" },
-          { "name": "Indent 3", "value": "indent-3" },
-          { "name": "Indent 4", "value": "indent-4" },
-          { "name": "Outdent 1", "value": "outdent-1" },
-          { "name": "Outdent 2", "value": "outdent-2" },
-          { "name": "Outdent 3", "value": "outdent-3" },
-          { "name": "Outdent 4", "value": "outdent-4" },
-          { "name": "Max-Width Narrow (600px)", "value": "max-w-narrow" },
-          { "name": "Max-Width Medium (800px)", "value": "max-w-medium" },
-          { "name": "Max-Width Full", "value": "max-w-full" }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "text",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "text",
-        "label": "Text",
-        "valueType": "string"
-      },
-      {
-        "component": "select",
-        "name": "classes",
-        "label": "Alignment",
-        "options": [
-          {
-            "name": "Left",
-            "value": "text-left"
-          },
-          {
-            "name": "Center",
-            "value": "text-center"
-          },
-          {
-            "name": "Right",
-            "value": "text-right"
-          },
-          {
-            "name": "Justify",
-            "value": "text-justify"
-          }
-        ]
       }
     ]
   },
@@ -306,22 +173,6 @@
           {
             "name": "Highlight",
             "value": "highlight"
-          },
-          {
-            "name": "Text Left",
-            "value": "text-left"
-          },
-          {
-            "name": "Text Center",
-            "value": "text-center"
-          },
-          {
-            "name": "Text Right",
-            "value": "text-right"
-          },
-          {
-            "name": "Text Justify",
-            "value": "text-justify"
           }
         ]
       }
@@ -359,21 +210,14 @@
     ]
   },
   {
-    "id": "card",
+    "id": "callout-banner-stryker",
     "fields": [
       {
-        "component": "reference",
-        "valueType": "string",
-        "name": "image",
-        "label": "Image",
-        "multi": false
-      },
-      {
         "component": "richtext",
+        "valueType": "string",
         "name": "text",
-        "value": "",
-        "label": "Text",
-        "valueType": "string"
+        "label": "Banner Text",
+        "value": ""
       }
     ]
   },
@@ -450,6 +294,112 @@
         "value": "",
         "label": "Text",
         "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "card",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "richtext",
+        "name": "text",
+        "value": "",
+        "label": "Text",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "cards-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "columns",
+        "label": "Columns",
+        "value": "3",
+        "options": [
+          {
+            "name": "3 Columns",
+            "value": "3"
+          },
+          {
+            "name": "4 Columns",
+            "value": "4"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "style",
+        "label": "Style",
+        "value": "default",
+        "options": [
+          {
+            "name": "Default",
+            "value": "default"
+          },
+          {
+            "name": "News",
+            "value": "news"
+          },
+          {
+            "name": "Product",
+            "value": "product"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cards-stryker-card",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "ctaText",
+        "label": "CTA Text"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "ctaUrl",
+        "label": "CTA URL"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "value": ""
       }
     ]
   },
@@ -599,6 +549,63 @@
     ]
   },
   {
+    "id": "content-break-stryker",
+    "fields": []
+  },
+  {
+    "id": "cross-promo-stryker",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "ctaText",
+        "label": "CTA Text",
+        "value": "Read more"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "alignment",
+        "label": "Alignment",
+        "value": "center",
+        "options": [
+          {
+            "name": "Left",
+            "value": "left"
+          },
+          {
+            "name": "Center",
+            "value": "center"
+          },
+          {
+            "name": "Right",
+            "value": "right"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "embed-calendar",
     "fields": [
       {
@@ -645,6 +652,32 @@
         "valueType": "string",
         "name": "embed_uri",
         "label": "URI"
+      }
+    ]
+  },
+  {
+    "id": "form-stryker",
+    "fields": [
+      {
+        "component": "container",
+        "name": "basic",
+        "label": "Use the Edit Form Properties extension to configure Adaptive Form properties, including Submit Action, Prefill, and Thank-You options.",
+        "description": "Visit https://www.adobe.com/go/learn_aemforms_cs_properties_ext for more details.",
+        "collapsible": false,
+        "fields": [
+          {
+            "component": "text",
+            "name": "customFunctionsPath",
+            "label": "Form Specific Custom Functions Path",
+            "valueType": "string"
+          },
+          {
+            "component": "text",
+            "name": "style",
+            "label": "Form Specific styles path",
+            "valueType": "string"
+          }
+        ]
       }
     ]
   },
@@ -5367,6 +5400,80 @@
     ]
   },
   {
+    "id": "get-to-know-us-stryker",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "buttonText",
+        "label": "Button Text"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "buttonLink",
+        "label": "Button Link"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "layout",
+        "label": "Layout",
+        "value": "standard",
+        "options": [
+          {
+            "name": "Standard (text left, image right)",
+            "value": "standard"
+          },
+          {
+            "name": "Banner (image left, text right, background band)",
+            "value": "banner"
+          },
+          {
+            "name": "Full bleed (full-width image, text overlaid right)",
+            "value": "fullbleed"
+          }
+        ]
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "backgroundImage",
+        "label": "Background Image (Banner layout)",
+        "description": "Full-width band behind the block. Used only in Banner layout; falls back to a dark color if empty.",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "backgroundImageAlt",
+        "label": "Background Image Alt",
+        "value": ""
+      }
+    ]
+  },
+  {
     "id": "hero-ai",
     "fields": [
       {
@@ -5471,6 +5578,216 @@
     ]
   },
   {
+    "id": "home-video-hero-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "video",
+        "label": "Video URL",
+        "description": "Full-width background video URL. Plays muted and looping; hidden on mobile."
+      }
+    ]
+  },
+  {
+    "id": "image-collection-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "headingHighlight",
+        "label": "Heading (highlight, amber)"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading (rest)"
+      }
+    ]
+  },
+  {
+    "id": "image-gallery-item-stryker",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Learn More Link",
+        "description": "Optional. No link is shown if left empty."
+      }
+    ]
+  },
+  {
+    "id": "image-gallery-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "description",
+        "label": "Description"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "ctaText",
+        "label": "CTA Text"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "ctaUrl",
+        "label": "CTA URL"
+      }
+    ]
+  },
+  {
+    "id": "image-gallery-stryker-item",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "id": "legal-text-stryker",
+    "fields": [
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Legal Text",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "id": "product-preview-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "titleLead",
+        "label": "Title (lead, black)"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "titleHighlight",
+        "label": "Title (highlight, amber)"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "description",
+        "label": "Description",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "instruction",
+        "label": "Instruction Text"
+      }
+    ]
+  },
+  {
+    "id": "product-preview-stryker-frame",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Frame Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Frame Alt",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "id": "product-preview-stryker-feature",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "feature",
+        "label": "Feature"
+      }
+    ]
+  },
+  {
+    "id": "quick-link-lists-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "category",
+        "label": "Category Name"
+      }
+    ]
+  },
+  {
+    "id": "quick-link-lists-stryker-item",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "linkText",
+        "label": "Link Name"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "linkUrl",
+        "label": "Link URL"
+      }
+    ]
+  },
+  {
     "id": "search-asset",
     "fields": [
       {
@@ -5496,6 +5813,126 @@
             ]
           }
         ]
+      }
+    ]
+  },
+  {
+    "id": "tabbed-content-tab-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "name",
+        "label": "Tab Name",
+        "description": "The tab does not render if left empty."
+      }
+    ]
+  },
+  {
+    "id": "text-and-media-stryker",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "description": "Used when no video URL is set.",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "video",
+        "label": "Video URL",
+        "description": "Optional. Direct video file or YouTube URL. Takes precedence over the image."
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "headingHighlight",
+        "label": "Heading (highlight)",
+        "description": "Colored amber in the Advanced theme."
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading (rest)"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "body",
+        "label": "Body",
+        "value": ""
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "theme",
+        "label": "Theme",
+        "value": "basic",
+        "options": [
+          {
+            "name": "Basic",
+            "value": "basic"
+          },
+          {
+            "name": "Advanced",
+            "value": "advanced"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "layout",
+        "label": "Layout",
+        "value": "media-left",
+        "options": [
+          {
+            "name": "Media Left",
+            "value": "media-left"
+          },
+          {
+            "name": "Media Right",
+            "value": "media-right"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "video-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "video",
+        "label": "Video URL",
+        "description": "Direct video file (mp4/webm) or a YouTube URL. Does not autoplay."
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "poster",
+        "label": "Poster Image",
+        "description": "Optional thumbnail shown before play (direct video files only).",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "posterAlt",
+        "label": "Poster Alt",
+        "value": ""
       }
     ]
   }

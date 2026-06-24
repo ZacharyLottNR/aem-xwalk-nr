@@ -395,6 +395,7 @@ body.theme-light {
   --asc-input-text: rgb(80 80 80);
   --asc-button-bg: rgb(224 225 226);
   --asc-button-text: rgb(0 0 0 / 60%);
+
   background-color: rgb(250 250 250);
 }
 
@@ -420,21 +421,11 @@ body.theme-dark {
   --asc-button-text: rgb(208 208 208);
   --brand-primary: rgb(237 28 37);
   --brand-accent: rgb(237 28 37);
+
   background-color: var(--background-color);
   color: var(--text-color);
 }
 
-body.theme-dark main h1,
-body.theme-dark main h2,
-body.theme-dark main h3,
-body.theme-dark main h4,
-body.theme-dark main h5,
-body.theme-dark main h6,
-body.theme-dark main p,
-body.theme-dark main div,
-body.theme-dark main span {
-  color: rgb(250 250 250);
-}
 
 body.theme-light .button-container.nav-tools a {
   padding: 15px 21px;

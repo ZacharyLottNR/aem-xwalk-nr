@@ -12,13 +12,13 @@ function buildDetailUrl(hit) {
   const detailType = getDetailType(type);
   const path = hit.detailPath || hit.path || '';
   const loc = window.location.pathname;
-  let themeMatch = loc.match(/(\/asset-share-commons\/en\/(?:dark|light))/);
+  const themeMatch = loc.match(/(\/asset-share-commons\/en\/(?:dark|light))/);
   const ascMatch = loc.match(/(\/asset-share-commons\/en)/);
   let basePath;
   if (themeMatch != null) {
-    basePath = themeMatch[0];
+    [basePath] = themeMatch;
   } else if (ascMatch) {
-    basePath = `${ascMatch[1]}/light`;//Default to light theme
+    basePath = `${ascMatch[1]}/light`; // Default to light theme
   } else {
     basePath = loc.replace(/\/[^/]*$/, '');
   }

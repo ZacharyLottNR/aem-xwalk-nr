@@ -1,0 +1,89 @@
+.cross-promo-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+}
+
+.cross-promo-stryker.cross-promo-stryker-left {
+  justify-content: flex-start;
+}
+
+.cross-promo-stryker.cross-promo-stryker-center {
+  justify-content: center;
+}
+
+.cross-promo-stryker.cross-promo-stryker-right {
+  justify-content: flex-end;
+}
+
+.cross-promo-stryker .cross-promo-stryker-tile {
+  display: block;
+  width: 420px;
+  max-width: 100%;
+  text-decoration: none;
+}
+
+.cross-promo-stryker .cross-promo-stryker-media {
+  line-height: 0;
+}
+
+.cross-promo-stryker .cross-promo-stryker-media img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Purple "Read more" bar with gold arrow circle */
+.cross-promo-stryker .cross-promo-stryker-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #6b2c7f;
+  padding: 12px 16px 12px 20px;
+}
+
+.cross-promo-stryker .cross-promo-stryker-cta-text {
+  font-family: var(--stryker-heading-font);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--stryker-white, #fff);
+}
+
+.cross-promo-stryker .cross-promo-stryker-cta-arrow {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #f0a500;
+  position: relative;
+}
+
+.cross-promo-stryker .cross-promo-stryker-cta-arrow::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid var(--stryker-white, #fff);
+  border-right: 2px solid var(--stryker-white, #fff);
+  transform: translate(-65%, -50%) rotate(45deg);
+}
+
+.cross-promo-stryker .cross-promo-stryker-tile:hover .cross-promo-stryker-cta {
+  background-color: #59256a;
+}
+
+/* Full width on tablet and mobile */
+@media (width < 900px) {
+  .cross-promo-stryker {
+    padding: 16px;
+  }
+
+  .cross-promo-stryker .cross-promo-stryker-tile {
+    width: 100%;
+  }
+}

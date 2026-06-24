@@ -21,22 +21,7 @@
       "accordion-filter",
       "columns-statistics",
       "asset-detail",
-      "cart-page",
-      "cards-recent",
-      "super-text",
-      "video-detail",
-      "document-detail",
-      "presentation-detail",
-      "theme-redirect",
-      "layout",
-      "ai-generate",
-      "experience-fragment"
-    ]
-  },
-  {
-    "id": "layout",
-    "components": [
-      "column"
+      "cart-page"
     ]
   },
   {
@@ -77,6 +62,12 @@
     "id": "cards-service",
     "components": [
       "card"
+    ]
+  },
+  {
+    "id": "cards-stryker",
+    "components": [
+      "cards-stryker-card"
     ]
   },
   {
@@ -176,6 +167,36 @@
     ]
   },
   {
+    "id": "form-stryker",
+    "components": [
+      "captcha",
+      "checkbox",
+      "checkbox-group",
+      "date-input",
+      "drop-down",
+      "email",
+      "file-input",
+      "form-accordion",
+      "form-button",
+      "form-fragment",
+      "form-image",
+      "form-modal",
+      "form-reset-button",
+      "form-submit-button",
+      "number-input",
+      "panel",
+      "password",
+      "plain-text",
+      "radio-group",
+      "rating",
+      "telephone-input",
+      "text-input",
+      "tnc",
+      "wizard",
+      "range"
+    ]
+  },
+  {
     "id": "form",
     "components": [
       "captcha",
@@ -203,6 +224,57 @@
       "tnc",
       "wizard",
       "range"
+    ]
+  },
+  {
+    "id": "image-collection-stryker",
+    "components": [
+      "image-gallery-item-stryker"
+    ]
+  },
+  {
+    "id": "image-gallery-stryker",
+    "components": [
+      "image-gallery-stryker-item"
+    ]
+  },
+  {
+    "id": "product-preview-stryker",
+    "components": [
+      "product-preview-stryker-frame",
+      "product-preview-stryker-feature"
+    ]
+  },
+  {
+    "id": "quick-link-lists-stryker",
+    "components": [
+      "quick-link-lists-stryker-item"
+    ]
+  },
+  {
+    "id": "quick-links-stryker",
+    "components": [
+      "quick-link-lists-stryker"
+    ]
+  },
+  {
+    "id": "tabbed-content-stryker",
+    "components": [
+      "tabbed-content-tab-stryker"
+    ]
+  },
+  {
+    "id": "tabbed-content-tab-stryker",
+    "components": [
+      "text",
+      "image",
+      "title",
+      "button",
+      "cards-stryker",
+      "video-stryker",
+      "image-collection-stryker",
+      "text-and-media-stryker",
+      "legal-text-stryker"
     ]
   }
 ]

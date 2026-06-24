@@ -1,0 +1,65 @@
+/*
+ * Stryker form styling. Reuses the OOTB form engine + base form.css (loaded by
+ * form-stryker.js) and overrides brand variables / specifics. Scoped to
+ * .form.form-stryker so it always wins over the base "main .form" rules.
+ */
+
+main .form.form-stryker {
+  --form-label-color: #000;
+  --form-label-font-weight: 700;
+  --form-error-color: #9a1f2e;
+  --form-input-background-color: #e9e9e9;
+  --form-input-border-color: transparent;
+  --form-button-color: #fff;
+  --form-button-background-color: var(--stryker-teal, #4c7d7a);
+  --form-button-background-hover-color: var(--stryker-teal-dark, #3a615f);
+  --form-button-padding: 12px 28px;
+  --form-submit-width: auto;
+}
+
+/* Bold serif labels with dark-red required asterisk */
+main .form.form-stryker label,
+main .form.form-stryker fieldset.checkbox-group-wrapper legend,
+main .form.form-stryker fieldset.radio-group-wrapper legend {
+  font-family: var(--stryker-body-font);
+  font-weight: 700;
+  color: #000;
+}
+
+main .form.form-stryker [data-required="true"] > label::after,
+main .form.form-stryker label.required::after {
+  color: var(--form-error-color);
+}
+
+/* Grey-filled inputs, no visible border */
+main .form.form-stryker input,
+main .form.form-stryker textarea,
+main .form.form-stryker select {
+  background-color: var(--form-input-background-color);
+  border: 1px solid var(--form-input-border-color);
+  border-radius: 0;
+  color: #000;
+}
+
+main .form.form-stryker input:hover,
+main .form.form-stryker select:hover {
+  border-color: var(--stryker-border, #d9d9d9);
+}
+
+/* Teal submit button, sized to content (not full width) */
+main .form.form-stryker button {
+  font-family: var(--stryker-heading-font);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: auto;
+  border-radius: 0;
+}
+
+main .form.form-stryker .submit-wrapper {
+  width: auto;
+}
+
+/* Privacy-policy inline links use the teal brand color */
+main .form.form-stryker a:any-link {
+  color: var(--stryker-teal, #4c7d7a);
+}

@@ -1,0 +1,140 @@
+.product-preview-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.product-preview-stryker .product-preview-stryker-title {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+  font-size: 32px;
+  margin: 0 0 24px;
+  line-height: 1.1;
+}
+
+.product-preview-stryker .product-preview-stryker-title-lead {
+  color: var(--stryker-black, #000);
+}
+
+.product-preview-stryker .product-preview-stryker-title-highlight {
+  color: #f0a500;
+}
+
+.product-preview-stryker .product-preview-stryker-description {
+  font-family: var(--stryker-body-font);
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--stryker-black, #000);
+  margin: 0 0 16px;
+}
+
+.product-preview-stryker .product-preview-stryker-instruction {
+  font-family: var(--stryker-body-font);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--stryker-black, #000);
+  margin: 0 0 24px;
+}
+
+/* 360 viewer */
+.product-preview-stryker .product-preview-stryker-viewer {
+  margin: 0 0 32px;
+}
+
+.product-preview-stryker .product-preview-stryker-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.product-preview-stryker .product-preview-stryker-stage.is-dragging {
+  cursor: grabbing;
+}
+
+.product-preview-stryker .product-preview-stryker-frame {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-preview-stryker .product-preview-stryker-frame.is-active {
+  display: flex;
+}
+
+.product-preview-stryker .product-preview-stryker-frame img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.product-preview-stryker .product-preview-stryker-controls {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.product-preview-stryker .product-preview-stryker-controls button {
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid var(--stryker-border, #d9d9d9);
+  color: var(--stryker-black, #000);
+  border-radius: 0;
+  padding: 0;
+}
+
+.product-preview-stryker .product-preview-stryker-controls button:hover {
+  border-color: var(--stryker-teal, #4c7d7a);
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+/* Feature list: multi-column, bulleted */
+.product-preview-stryker .product-preview-stryker-features {
+  list-style: none;
+  margin: 0;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--stryker-border, #d9d9d9);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px 40px;
+}
+
+.product-preview-stryker .product-preview-stryker-features li {
+  position: relative;
+  padding-left: 18px;
+  font-family: var(--stryker-body-font);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--stryker-black, #000);
+}
+
+.product-preview-stryker .product-preview-stryker-features li::before {
+  content: "\2022";
+  position: absolute;
+  left: 0;
+  color: var(--stryker-black, #000);
+}
+
+@media (width < 900px) {
+  .product-preview-stryker .product-preview-stryker-features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width < 600px) {
+  .product-preview-stryker .product-preview-stryker-features {
+    grid-template-columns: 1fr;
+  }
+}

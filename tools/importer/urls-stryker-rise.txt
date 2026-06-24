@@ -1,0 +1,2 @@
+# Synthetic; DOM ignored.
+https://example.com/

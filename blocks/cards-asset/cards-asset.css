@@ -130,7 +130,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 
 .cards-asset-card-actions button:hover {
@@ -157,6 +157,7 @@ body.theme-dark .cards-asset-card-actions button {
   color: var(--asc-text-subtle, #999);
 }
 
+/* stylelint-disable no-descending-specificity */
 .cards-asset-card-actions button:first-child {
   border-left: 0 solid var(--asc-border, #e8e8e8);
   border-right: 0 solid var(--asc-border, #e8e8e8);
@@ -168,6 +169,7 @@ body.theme-dark .cards-asset-card-actions button {
   border-right: 0 solid var(--asc-border, #e8e8e8);
   border-radius: 0 3px 3px 0;
 }
+/* stylelint-enable no-descending-specificity */
 
 body.theme-dark .cards-asset-card-actions button:first-child {
   border-left: 0 solid var(--brand-light-gray, #e8e8e8);
