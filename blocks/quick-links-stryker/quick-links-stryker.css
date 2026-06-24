@@ -19,9 +19,42 @@
   align-items: start;
 }
 
-/* Nested list blocks sit in the grid; strip block-wrapper spacing */
-.quick-links-stryker .quick-links-stryker-grid > .quick-link-lists-stryker {
+.quick-links-stryker .quick-links-stryker-category {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--stryker-black, #000);
+  margin: 0 0 16px;
+}
+
+.quick-links-stryker .quick-links-stryker-links {
+  list-style: none;
   margin: 0;
+  padding: 0;
+}
+
+.quick-links-stryker .quick-links-stryker-links li {
+  margin: 0 0 12px;
+}
+
+.quick-links-stryker .quick-links-stryker-link:any-link {
+  font-family: var(--stryker-heading-font);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--stryker-teal, #4c7d7a);
+  line-height: 1.4;
+}
+
+.quick-links-stryker .quick-links-stryker-link:any-link::after {
+  content: " \25B6";
+  font-size: 9px;
+}
+
+.quick-links-stryker .quick-links-stryker-link:any-link:hover {
+  color: var(--stryker-teal-dark, #3a615f);
 }
 
 /* Tablet: 2 columns */

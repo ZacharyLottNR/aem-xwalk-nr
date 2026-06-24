@@ -5879,38 +5879,15 @@
     ]
   },
   {
-    "id": "quick-link-lists-stryker",
+    "id": "quick-links-stryker",
     "fields": [
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "category",
-        "label": "Category Name"
-      },
       {
         "component": "richtext",
         "valueType": "string",
-        "name": "links",
-        "label": "Links (manual list)",
-        "description": "Optional. Author a bulleted list of links here to use instead of the nested Quick Link items. Leave empty to use the nested items.",
+        "name": "body",
+        "label": "Quick Links",
+        "description": "Author each category as a heading followed by a bulleted list of links.",
         "value": ""
-      }
-    ]
-  },
-  {
-    "id": "quick-link-lists-stryker-item",
-    "fields": [
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "linkLabel",
-        "label": "Link Name"
-      },
-      {
-        "component": "aem-content",
-        "valueType": "string",
-        "name": "linkUrl",
-        "label": "Link URL"
       }
     ]
   },

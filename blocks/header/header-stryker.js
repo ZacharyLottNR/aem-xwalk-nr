@@ -180,8 +180,11 @@ export default async function decorate(block) {
         }
       }
 
-      // Active state for the current section.
-      if (link && link.getAttribute('href') === currentPath) {
+      // Active state for the current section. Skip placeholder links that point
+      // at the home page itself, so unresolved nav items (e.g. /stryker/home)
+      // don't all light up as "active" on the home page.
+      const href = link?.getAttribute('href');
+      if (href && href === currentPath && !/\/(home|index)$/.test(href)) {
         li.classList.add('is-active');
       }
     });
