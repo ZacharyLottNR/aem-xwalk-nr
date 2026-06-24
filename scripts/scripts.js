@@ -123,6 +123,55 @@ export function resolveNestedBlocks(container, blockName) {
 }
 
 /**
+ * Stryker image hover tooltip. Mirrors the source site, where content images
+ * carry a `title` that surfaces as a dark pill on hover. A single delegated
+ * handler covers every block regardless of when its images are decorated, and
+ * we suppress the slow native tooltip by moving `title` into a data attribute.
+ * @param {Element} root the element to scope the handler to (defaults to body)
+ */
+export function enableStrykerImageTooltips(root = document.body) {
+  if (root.dataset.strykerTooltips === 'on') return;
+  root.dataset.strykerTooltips = 'on';
+
+  const pill = document.createElement('div');
+  pill.className = 'stryker-img-tooltip';
+  pill.setAttribute('role', 'tooltip');
+  pill.hidden = true;
+  document.body.append(pill);
+
+  // Tooltip text: explicit title (preferred) or the image alt, mirroring the
+  // source where title == alt. Only content images inside a block qualify.
+  const tipText = (t) => {
+    if (!t || t.tagName !== 'IMG' || !t.closest('main .block')) return '';
+    return t.dataset.tooltip || t.title || t.alt || '';
+  };
+
+  const move = (e) => {
+    pill.style.left = `${e.clientX}px`;
+    pill.style.top = `${e.clientY}px`;
+  };
+
+  root.addEventListener('mouseover', (e) => {
+    const img = e.target;
+    const text = tipText(img);
+    if (!text) return;
+    if (img.title) {
+      img.dataset.tooltip = img.title;
+      img.removeAttribute('title'); // suppress the slow native tooltip
+    }
+    pill.textContent = text;
+    pill.hidden = false;
+    move(e);
+  });
+  root.addEventListener('mousemove', (e) => {
+    if (!pill.hidden && tipText(e.target)) move(e);
+  });
+  root.addEventListener('mouseout', (e) => {
+    if (tipText(e.target)) pill.hidden = true;
+  });
+}
+
+/**
  * load fonts.css and set a session storage flag
  */
 async function loadFonts() {
@@ -206,6 +255,10 @@ async function loadLazy(doc) {
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
+
+  if (document.body.classList.contains('theme-stryker')) {
+    enableStrykerImageTooltips(doc.body);
+  }
 }
 
 /**
