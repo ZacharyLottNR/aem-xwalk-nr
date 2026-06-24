@@ -21,7 +21,27 @@
       "accordion-filter",
       "columns-statistics",
       "asset-detail",
-      "cart-page"
+      "cart-page",
+      "callout-banner-stryker",
+      "cards-stryker",
+      "content-break-stryker",
+      "cross-promo-stryker",
+      "get-to-know-us-stryker",
+      "home-hero-stryker",
+      "home-video-hero-stryker",
+      "image-collection-stryker",
+      "image-gallery-stryker",
+      "legal-text-stryker",
+      "overview-stryker",
+      "product-preview-stryker",
+      "quick-links-stryker",
+      "section-anchor-stryker",
+      "section-banner-stryker",
+      "social-cta-stryker",
+      "tabbed-content-stryker",
+      "text-and-media-stryker",
+      "video-stryker",
+      "form-stryker"
     ]
   },
   {
