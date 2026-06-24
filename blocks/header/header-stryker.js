@@ -48,8 +48,21 @@ export default async function decorate(block) {
 
   const brand = document.createElement('div');
   brand.className = 'nav-stryker-brand';
-  const brandSrc = brandSec?.querySelector('a, p');
-  if (brandSrc) brand.append(brandSrc);
+  const brandLink = brandSec?.querySelector('a');
+  if (brandLink) {
+    // EDS button-decoration turns the image-only brand link into a .button;
+    // strip that so it renders as the plain logo link.
+    brandLink.classList.remove('button');
+    brandLink.closest('p')?.classList.remove('button-container');
+    // If the optimized <picture> was dropped, restore the logo image.
+    if (!brandLink.querySelector('img')) {
+      const logo = document.createElement('img');
+      logo.src = '/icons/stryker-logo.svg';
+      logo.alt = 'Stryker';
+      brandLink.append(logo);
+    }
+    brand.append(brandLink);
+  }
 
   const utility = document.createElement('nav');
   utility.className = 'nav-stryker-utility';
@@ -109,6 +122,14 @@ export default async function decorate(block) {
   if (topList) {
     cleanHref(topList); // no-op safety
     const currentPath = window.location.pathname.replace(/\.html$/, '');
+
+    // EDS auto-wraps standalone links in <p>; unwrap so the top-level link is a
+    // direct child of the <li> (matches our selectors + CSS, avoids button look).
+    topList.querySelectorAll(':scope > li > p').forEach((p) => {
+      if (p.children.length === 1 && p.firstElementChild.tagName === 'A') {
+        p.replaceWith(p.firstElementChild);
+      }
+    });
 
     [...topList.children].forEach((li) => {
       const link = li.querySelector(':scope > a');
