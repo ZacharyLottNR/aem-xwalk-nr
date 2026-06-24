@@ -5,8 +5,14 @@ const isDesktop = window.matchMedia('(min-width: 900px)');
 
 function navPathFromMeta() {
   const navMeta = getMetadata('nav');
-  // Stryker fragments live under /content/stryker/; keep the path as authored.
-  return navMeta ? new URL(navMeta, window.location).pathname : '/content/stryker/nav';
+  let navPath = navMeta ? new URL(navMeta, window.location).pathname : '/stryker/nav';
+  // Published EDS (.aem.page) serves fragments without the /content mountpoint
+  // prefix; strip it so the fragment resolves on both local and published.
+  navPath = navPath.replace(/^\/content\/aem-boilerplate-nr/, '');
+  if (navPath.startsWith('/content/') && !navPath.startsWith('/content/dam/')) {
+    navPath = navPath.replace(/^\/content/, '');
+  }
+  return navPath;
 }
 
 function cleanHref(a) {

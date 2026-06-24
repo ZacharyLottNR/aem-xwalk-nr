@@ -16,8 +16,13 @@ function cleanHref(a) {
 
 export default async function decorate(block) {
   const footerMeta = getMetadata('footer');
-  // Stryker fragments live under /content/stryker/; keep the path as authored.
-  const footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : '/content/stryker/footer';
+  let footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : '/stryker/footer';
+  // Published EDS (.aem.page) serves fragments without the /content mountpoint
+  // prefix; strip it so the fragment resolves on both local and published.
+  footerPath = footerPath.replace(/^\/content\/aem-boilerplate-nr/, '');
+  if (footerPath.startsWith('/content/') && !footerPath.startsWith('/content/dam/')) {
+    footerPath = footerPath.replace(/^\/content/, '');
+  }
   const fragment = await loadFragment(footerPath);
   if (!fragment) return;
 

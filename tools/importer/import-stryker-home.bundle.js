@@ -126,9 +126,11 @@ var CustomImportScript = (() => {
       });
       main.append(document.createElement("hr"));
       const quickLinkList = (category, links) => {
-        const cells = [[category]];
-        links.forEach(([text, href]) => cells.push([text, anchor(document, href, href)]));
-        return childBlock("quick-link-lists-stryker", cells);
+        const ul = links.map(([text, href]) => `<li><a href="${href}">${text}</a></li>`).join("");
+        return childBlock("quick-link-lists-stryker", [
+          [category],
+          [el(document, "div", `<ul>${ul}</ul>`)]
+        ]);
       };
       main.append(childBlock("quick-links-stryker", [
         [quickLinkList("Portfolio", [["Medical and Surgical Equipment", "/stryker/home"], ["Orthopaedics", "/stryker/home"], ["Neurotechnology", "/stryker/home"]])],

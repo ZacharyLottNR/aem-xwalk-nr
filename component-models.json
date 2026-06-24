@@ -5886,6 +5886,14 @@
         "valueType": "string",
         "name": "category",
         "label": "Category Name"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "links",
+        "label": "Links (manual list)",
+        "description": "Optional. Author a bulleted list of links here to use instead of the nested Quick Link items. Leave empty to use the nested items.",
+        "value": ""
       }
     ]
   },

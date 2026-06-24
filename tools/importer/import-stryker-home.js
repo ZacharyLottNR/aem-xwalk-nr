@@ -132,10 +132,17 @@ export default {
 
     // 7. Quick links (nested container)
     main.append(document.createElement('hr'));
+    // Use the manual-list field (category + a richtext <ul> of links). Unlike
+    // nested item blocks, the richtext list survives the md2jcr/JCR round-trip
+    // so the quick links render on the published site too.
     const quickLinkList = (category, links) => {
-      const cells = [[category]];
-      links.forEach(([text, href]) => cells.push([text, anchor(document, href, href)]));
-      return childBlock('quick-link-lists-stryker', cells);
+      const ul = links
+        .map(([text, href]) => `<li><a href="${href}">${text}</a></li>`)
+        .join('');
+      return childBlock('quick-link-lists-stryker', [
+        [category],
+        [el(document, 'div', `<ul>${ul}</ul>`)],
+      ]);
     };
     main.append(childBlock('quick-links-stryker', [
       [quickLinkList('Portfolio', [['Medical and Surgical Equipment', '/stryker/home'], ['Orthopaedics', '/stryker/home'], ['Neurotechnology', '/stryker/home']])],
