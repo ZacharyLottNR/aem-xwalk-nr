@@ -125,19 +125,18 @@ var CustomImportScript = (() => {
         main.append(block);
       });
       main.append(document.createElement("hr"));
+      const quickItems = [["Quick links"]];
       const quickGroup = (category, links) => {
-        const ul = links.map(([text, href]) => `<li><a href="${href}">${text}</a></li>`).join("");
-        return `<p><strong>${category}</strong></p><ul>${ul}</ul>`;
+        quickItems.push([category, ""]);
+        links.forEach(([text, href]) => quickItems.push([text, anchor(document, href, href)]));
       };
-      const quickLinksBody = [
-        quickGroup("Portfolio", [["Medical and Surgical Equipment", "/stryker/home"], ["Orthopaedics", "/stryker/home"], ["Neurotechnology", "/stryker/home"]]),
-        quickGroup("Offerings", [["Services", "/stryker/home"], ["Care Settings", "/stryker/home"], ["Training and Education", "/stryker/home"]]),
-        quickGroup("Our company", [["Contact Us", "/stryker/home"], ["Investor Relations", "https://investors.stryker.com/"], ["Comprehensive Report", "/stryker/home"]]),
-        quickGroup("More information", [["Advanced Digital Healthcare", "/stryker/home"], ["Ambulatory Surgery Centers", "/stryker/home"], ["Training and Education", "/stryker/home"], ["Accessibility Statement", "/stryker/home"], ["Patients", "https://patients.stryker.com/index.html"]])
-      ].join("");
+      quickGroup("Portfolio", [["Medical and Surgical Equipment", "/stryker/home"], ["Orthopaedics", "/stryker/home"], ["Neurotechnology", "/stryker/home"]]);
+      quickGroup("Offerings", [["Services", "/stryker/home"], ["Care Settings", "/stryker/home"], ["Training and Education", "/stryker/home"]]);
+      quickGroup("Our company", [["Contact Us", "/stryker/home"], ["Investor Relations", "https://investors.stryker.com/"], ["Comprehensive Report", "/stryker/home"]]);
+      quickGroup("More information", [["Advanced Digital Healthcare", "/stryker/home"], ["Ambulatory Surgery Centers", "/stryker/home"], ["Training and Education", "/stryker/home"], ["Accessibility Statement", "/stryker/home"], ["Patients", "https://patients.stryker.com/index.html"]]);
       main.append(WebImporter.Blocks.createBlock(document, {
         name: "quick-links-stryker",
-        cells: [[el(document, "div", quickLinksBody)]]
+        cells: quickItems
       }));
       main.append(document.createElement("hr"));
       main.append(WebImporter.Blocks.createBlock(document, {

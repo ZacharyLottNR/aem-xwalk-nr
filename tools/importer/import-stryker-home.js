@@ -130,25 +130,22 @@ export default {
       main.append(block);
     });
 
-    // 7. Quick links — single flat block. One richtext cell holds each category
-    // as a heading followed by its bulleted link list. Flat (no nested blocks)
-    // so it round-trips cleanly through md2jcr/JCR and renders on publish.
+    // 7. Quick links — container + items (2-level, round-trips through md2jcr).
+    // Each item is [linkLabel, linkUrl]; a blank URL makes the item a column
+    // header. The first row is the block heading.
     main.append(document.createElement('hr'));
+    const quickItems = [['Quick links']];
     const quickGroup = (category, links) => {
-      const ul = links.map(([text, href]) => `<li><a href="${href}">${text}</a></li>`).join('');
-      // Bold paragraph (not <h3>) for the category: md2jcr's richtext resolver
-      // greedily captures paragraph + list content, but skips leading headings.
-      return `<p><strong>${category}</strong></p><ul>${ul}</ul>`;
+      quickItems.push([category, '']); // header item (blank URL)
+      links.forEach(([text, href]) => quickItems.push([text, anchor(document, href, href)]));
     };
-    const quickLinksBody = [
-      quickGroup('Portfolio', [['Medical and Surgical Equipment', '/stryker/home'], ['Orthopaedics', '/stryker/home'], ['Neurotechnology', '/stryker/home']]),
-      quickGroup('Offerings', [['Services', '/stryker/home'], ['Care Settings', '/stryker/home'], ['Training and Education', '/stryker/home']]),
-      quickGroup('Our company', [['Contact Us', '/stryker/home'], ['Investor Relations', 'https://investors.stryker.com/'], ['Comprehensive Report', '/stryker/home']]),
-      quickGroup('More information', [['Advanced Digital Healthcare', '/stryker/home'], ['Ambulatory Surgery Centers', '/stryker/home'], ['Training and Education', '/stryker/home'], ['Accessibility Statement', '/stryker/home'], ['Patients', 'https://patients.stryker.com/index.html']]),
-    ].join('');
+    quickGroup('Portfolio', [['Medical and Surgical Equipment', '/stryker/home'], ['Orthopaedics', '/stryker/home'], ['Neurotechnology', '/stryker/home']]);
+    quickGroup('Offerings', [['Services', '/stryker/home'], ['Care Settings', '/stryker/home'], ['Training and Education', '/stryker/home']]);
+    quickGroup('Our company', [['Contact Us', '/stryker/home'], ['Investor Relations', 'https://investors.stryker.com/'], ['Comprehensive Report', '/stryker/home']]);
+    quickGroup('More information', [['Advanced Digital Healthcare', '/stryker/home'], ['Ambulatory Surgery Centers', '/stryker/home'], ['Training and Education', '/stryker/home'], ['Accessibility Statement', '/stryker/home'], ['Patients', 'https://patients.stryker.com/index.html']]);
     main.append(WebImporter.Blocks.createBlock(document, {
       name: 'quick-links-stryker',
-      cells: [[el(document, 'div', quickLinksBody)]],
+      cells: quickItems,
     }));
 
     // Page metadata

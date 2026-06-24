@@ -5882,12 +5882,30 @@
     "id": "quick-links-stryker",
     "fields": [
       {
-        "component": "richtext",
+        "component": "text",
         "valueType": "string",
-        "name": "body",
-        "label": "Quick Links",
-        "description": "Author each category as a heading followed by a bulleted list of links.",
-        "value": ""
+        "name": "heading",
+        "label": "Heading",
+        "value": "Quick links"
+      }
+    ]
+  },
+  {
+    "id": "quick-links-stryker-item",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "linkLabel",
+        "label": "Link Text",
+        "description": "The link text. If the URL is left blank, this item is treated as a column header instead of a link."
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "linkUrl",
+        "label": "Link URL",
+        "description": "Leave blank to make this item a column header."
       }
     ]
   },

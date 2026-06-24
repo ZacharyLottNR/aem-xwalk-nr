@@ -252,6 +252,12 @@
     ]
   },
   {
+    "id": "quick-links-stryker",
+    "components": [
+      "quick-links-stryker-item"
+    ]
+  },
+  {
     "id": "social-cta-stryker",
     "components": [
       "social-cta-stryker-item"
