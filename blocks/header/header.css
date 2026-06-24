@@ -546,9 +546,9 @@ body.theme-stryker header .nav-stryker {
   background-color: rgb(0 0 0 / 8%);
 }
 
-/* Active section indicator — dark box with white text */
+/* Active section + open-menu indicator — dark box with white text */
 .nav-stryker .nav-stryker-item.is-active > a,
-.nav-stryker .nav-stryker-has-menu:hover > a {
+.nav-stryker .nav-stryker-has-menu.is-open > a {
   background-color: var(--stryker-gray, #58595b);
   color: var(--stryker-white, #fff);
 }
@@ -556,6 +556,10 @@ body.theme-stryker header .nav-stryker {
 /* Megamenu panel */
 .nav-stryker .nav-stryker-panel {
   display: none;
+}
+
+.nav-stryker .nav-stryker-has-menu.is-open .nav-stryker-panel {
+  display: block;
 }
 
 .nav-stryker .nav-stryker-panel-inner {
@@ -566,19 +570,35 @@ body.theme-stryker header .nav-stryker {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 20px;
 }
 
 .nav-stryker .nav-stryker-panel a:any-link {
+  text-transform: none;
+}
+
+.nav-stryker .nav-stryker-panel a:hover {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+/* Top-level links within a column group are bold */
+.nav-stryker .nav-stryker-group > ul > li > a:any-link {
+  display: block;
   font-size: 15px;
   font-weight: 700;
   color: var(--stryker-black, #000);
   text-decoration: none;
 }
 
-.nav-stryker .nav-stryker-panel a:hover {
-  color: var(--stryker-teal, #4c7d7a);
+/* Titled group ("Our Business"): bold heading, regular-weight link list */
+.nav-stryker .nav-stryker-group-titled > p {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--stryker-black, #000);
+}
+
+.nav-stryker .nav-stryker-group-titled > ul > li > a:any-link {
+  font-weight: 400;
 }
 
 /* Desktop: full-width panel below the yellow bar, light-gray like the source */
@@ -605,16 +625,37 @@ body.theme-stryker header .nav-stryker {
   .nav-stryker .nav-stryker-panel-inner {
     max-width: var(--stryker-max-width, 1280px);
     margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
   }
 
-  .nav-stryker .nav-stryker-panel ul {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px 32px;
+  /* The submenu wrapper lays its column groups in a row */
+  .nav-stryker .nav-stryker-panel-inner > ul {
+    display: flex;
+    flex: 1;
+    align-items: flex-start;
+    gap: 32px;
   }
 
-  .nav-stryker .nav-stryker-has-menu:hover .nav-stryker-panel,
-  .nav-stryker .nav-stryker-has-menu:focus-within .nav-stryker-panel {
-    display: block;
+  /* Each simple group is one column */
+  .nav-stryker .nav-stryker-group {
+    flex: 0 0 auto;
+    min-width: 200px;
+  }
+
+  .nav-stryker .nav-stryker-group > ul {
+    display: grid;
+    gap: 20px;
+  }
+
+  /* The titled group spans the remaining width; its links flow into columns */
+  .nav-stryker .nav-stryker-group-titled {
+    flex: 1;
+  }
+
+  .nav-stryker .nav-stryker-group-titled > ul {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 

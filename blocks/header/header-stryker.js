@@ -115,19 +115,35 @@ export default async function decorate(block) {
         panel.className = 'nav-stryker-panel';
         const panelInner = document.createElement('div');
         panelInner.className = 'nav-stryker-panel-inner';
+        // The submenu's direct children are column groups; a group with a
+        // leading heading (<p>/<strong>) spans wider and lists its links in
+        // sub-columns, matching the source "Our Business" layout.
+        submenu.querySelectorAll(':scope > li').forEach((group) => {
+          group.classList.add('nav-stryker-group');
+          if (group.querySelector(':scope > p, :scope > strong, :scope > h2, :scope > h3')) {
+            group.classList.add('nav-stryker-group-titled');
+          }
+        });
         panelInner.append(submenu);
         panel.append(panelInner);
         li.append(panel);
 
-        // Desktop: toggle on hover via CSS; also support keyboard + click.
+        // Open the megamenu on click (desktop + mobile), like the source.
         if (link) {
           link.setAttribute('aria-haspopup', 'true');
           link.setAttribute('aria-expanded', 'false');
           link.addEventListener('click', (e) => {
-            if (isDesktop.matches) return; // desktop uses hover
             e.preventDefault();
-            const open = li.classList.toggle('is-open');
-            link.setAttribute('aria-expanded', open ? 'true' : 'false');
+            const willOpen = !li.classList.contains('is-open');
+            // close any other open menu first
+            mainBar.querySelectorAll('.nav-stryker-has-menu.is-open').forEach((other) => {
+              if (other !== li) {
+                other.classList.remove('is-open');
+                other.querySelector(':scope > a')?.setAttribute('aria-expanded', 'false');
+              }
+            });
+            li.classList.toggle('is-open', willOpen);
+            link.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
           });
         }
       }
@@ -141,6 +157,17 @@ export default async function decorate(block) {
     mainInner.append(topList);
   }
   mainBar.append(mainInner);
+
+  // Close any open megamenu when clicking outside it.
+  const closeAllMenus = () => {
+    mainBar.querySelectorAll('.nav-stryker-has-menu.is-open').forEach((li) => {
+      li.classList.remove('is-open');
+      li.querySelector(':scope > a')?.setAttribute('aria-expanded', 'false');
+    });
+  };
+  document.addEventListener('click', (e) => {
+    if (!mainBar.contains(e.target)) closeAllMenus();
+  });
 
   header.append(globalBar, mainBar);
   block.append(header);
@@ -165,22 +192,16 @@ export default async function decorate(block) {
     else openMenu();
   });
 
-  // On mobile, top-level items with a submenu expand/collapse in place.
-  mainBar.querySelectorAll('.nav-stryker-has-menu > a').forEach((a) => {
-    a.addEventListener('click', (e) => {
-      if (isDesktop.matches) return;
-      e.preventDefault();
-      a.parentElement.classList.toggle('is-open');
-    });
-  });
-
   // Reset menu state when crossing the desktop breakpoint.
   isDesktop.addEventListener('change', () => {
     closeMenu();
-    mainBar.querySelectorAll('.is-open').forEach((el) => el.classList.remove('is-open'));
+    closeAllMenus();
   });
 
   window.addEventListener('keydown', (e) => {
-    if (e.code === 'Escape') closeMenu();
+    if (e.code === 'Escape') {
+      closeMenu();
+      closeAllMenus();
+    }
   });
 }
