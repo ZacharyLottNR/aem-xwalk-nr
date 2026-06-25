@@ -109,23 +109,20 @@
 
 /* ===================== Super themes ===================== */
 
-/* Full-bleed background image with the text overlaid on one half */
+/* Image at the content width with the text overlaid on one half. The image
+   sits in normal flow so the block's height matches the image height. */
 .text-and-media-stryker.text-and-media-stryker-super-left,
 .text-and-media-stryker.text-and-media-stryker-super-right {
   position: relative;
   display: block;
-  width: 100vw;
-  max-width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
   padding: 0;
 }
 
-/* Image fills the section as the background; an aspect-ratio keeps height */
 .text-and-media-stryker.text-and-media-stryker-super-left .text-and-media-stryker-media,
 .text-and-media-stryker.text-and-media-stryker-super-right .text-and-media-stryker-media {
-  position: absolute;
-  inset: 0;
+  position: relative;
   z-index: 0;
 }
 
@@ -134,34 +131,33 @@
 .text-and-media-stryker.text-and-media-stryker-super-left .text-and-media-stryker-media video,
 .text-and-media-stryker.text-and-media-stryker-super-right .text-and-media-stryker-media video {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  display: block;
 }
 
-/* Text overlay sits in one half, vertically centered, within the content width */
+/* Text overlay sits in one half, vertically centered, over the image */
 .text-and-media-stryker.text-and-media-stryker-super-left .text-and-media-stryker-text,
 .text-and-media-stryker.text-and-media-stryker-super-right .text-and-media-stryker-text {
-  position: relative;
+  position: absolute;
+  top: 0;
+  bottom: 0;
   z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   box-sizing: border-box;
-  width: min(50%, calc(var(--stryker-max-width, 1280px) / 2));
-  min-height: 420px;
+  width: 50%;
   padding: 48px;
-  margin: 0 auto;
 }
 
-/* Left theme: text on the left edge of the centered content area */
+/* Left theme: text on the left half */
 .text-and-media-stryker.text-and-media-stryker-super-left .text-and-media-stryker-text {
-  margin-left: max(24px, calc(50% - var(--stryker-max-width, 1280px) / 2));
+  left: 0;
 }
 
-/* Right theme: text on the right edge of the centered content area */
+/* Right theme: text on the right half */
 .text-and-media-stryker.text-and-media-stryker-super-right .text-and-media-stryker-text {
-  margin-right: max(24px, calc(50% - var(--stryker-max-width, 1280px) / 2));
-  margin-left: auto;
+  right: 0;
   text-align: right;
 }
 
@@ -195,8 +191,8 @@
 
   .text-and-media-stryker.text-and-media-stryker-super-left .text-and-media-stryker-text,
   .text-and-media-stryker.text-and-media-stryker-super-right .text-and-media-stryker-text {
+    position: static;
     width: 100%;
-    margin: 0;
     padding: 32px 24px;
     text-align: left;
   }
