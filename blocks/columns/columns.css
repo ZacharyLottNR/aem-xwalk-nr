@@ -43,3 +43,29 @@
     order: unset;
   }
 }
+
+/* Flattened text-and-media-stryker authored inside a column: image on top,
+   bold heading beneath, like the source design. */
+.columns > div > .columns-text-media {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.columns > div > .columns-text-media p {
+  margin: 0;
+}
+
+.columns > div > .columns-text-media p:has(picture) {
+  width: 100%;
+  line-height: 0;
+}
+
+.columns > div > .columns-text-media strong {
+  font-family: var(--stryker-heading-font, inherit);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.2;
+  color: var(--stryker-black, #000);
+}
