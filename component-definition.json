@@ -504,6 +504,21 @@
           }
         },
         {
+          "title": "Double Text And Media Stryker",
+          "id": "double-text-and-media-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Double Text And Media Stryker",
+                  "model": "double-text-and-media-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Embed Calendar",
           "id": "embed-calendar",
           "plugins": {

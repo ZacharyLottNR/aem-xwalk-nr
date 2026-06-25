@@ -61,6 +61,7 @@
         "cards-stryker",
         "content-break-stryker",
         "cross-promo-stryker",
+        "double-text-and-media-stryker",
         "get-to-know-us-stryker",
         "home-hero-stryker",
         "home-video-hero-stryker",

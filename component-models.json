@@ -624,6 +624,53 @@
     ]
   },
   {
+    "id": "double-text-and-media-stryker",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "imageOne",
+        "label": "Image 1",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageOneAlt",
+        "label": "Image 1 Alt",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "textOne",
+        "label": "Text 1",
+        "value": ""
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "imageTwo",
+        "label": "Image 2",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageTwoAlt",
+        "label": "Image 2 Alt",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "textTwo",
+        "label": "Text 2",
+        "value": ""
+      }
+    ]
+  },
+  {
     "id": "embed-calendar",
     "fields": [
       {
