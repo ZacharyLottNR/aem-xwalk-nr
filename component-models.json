@@ -5934,6 +5934,18 @@
     ]
   },
   {
+    "id": "right-justified-text-stryker",
+    "fields": [
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "value": ""
+      }
+    ]
+  },
+  {
     "id": "search-asset",
     "fields": [
       {

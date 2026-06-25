@@ -193,7 +193,7 @@
   border: 0;
   border-radius: 4px;
   overflow: hidden;
-  box-shadow: 0 2px 12px 0 rgb(0 0 0 / 15%);
+  box-shadow: unset;
 }
 
 .overview-stryker-product .overview-stryker-card-image::before {

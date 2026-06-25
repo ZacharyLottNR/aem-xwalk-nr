@@ -12,6 +12,10 @@
   margin-right: calc(50% - 50vw);
 }
 
+body.theme-stryker main > .section > div.home-video-hero-stryker-wrapper {
+  max-width: none;
+}
+
 .home-video-hero-stryker .home-video-hero-stryker-video {
   display: block;
   width: 100%;
