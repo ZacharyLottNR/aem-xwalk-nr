@@ -10,7 +10,22 @@ import {
   loadSection,
   loadSections,
   loadCSS,
+  toClassName,
 } from './aem.js';
+
+/**
+ * Sets an id anchor on each section that has a non-empty section name, so the
+ * section can be linked to via #section-name.
+ * @param {Element} main The main element
+ */
+export function decorateSectionAnchors(main) {
+  main.querySelectorAll(':scope > .section').forEach((section) => {
+    const name = section.dataset.name?.trim();
+    if (name && !section.id) {
+      section.id = toClassName(name);
+    }
+  });
+}
 
 /**
  * Moves all the attributes from a given elmenet to another given element.
@@ -207,6 +222,7 @@ export function decorateMain(main) {
   decorateIcons(main);
   buildAutoBlocks(main);
   decorateSections(main);
+  decorateSectionAnchors(main);
   decorateBlocks(main);
 }
 

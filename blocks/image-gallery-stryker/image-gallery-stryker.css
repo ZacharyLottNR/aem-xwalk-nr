@@ -1,8 +1,13 @@
-.image-gallery-stryker-wrapper {
+main .section.image-gallery-stryker-container > .image-gallery-stryker-wrapper {
   background-color: var(--stryker-light-gray, #f2f2f2);
+  width: auto;
+  max-width: none;
+  margin: 0;
 }
 
 .image-gallery-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
   padding: 48px;
 }
 

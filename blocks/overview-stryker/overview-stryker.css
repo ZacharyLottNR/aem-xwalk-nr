@@ -109,9 +109,11 @@
 .overview-stryker .overview-stryker-card-cta:any-link {
   display: inline-block;
   margin-top: 8px;
-  font-family: var(--stryker-body-font);
-  font-size: 14px;
-  font-weight: 400;
+  font-family: var(--stryker-heading-font);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
   color: #4c7d7a;
   text-decoration: none;
 }
@@ -138,4 +140,86 @@
     grid-template-columns: 1fr;
     gap: 32px;
   }
+}
+
+/* ===================== Product theme ===================== */
+
+/* Header: eyebrow + big gold title on the left, primer beside it, body below */
+.overview-stryker-product .overview-stryker-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px 40px;
+  padding-bottom: 8px;
+}
+
+.overview-stryker-product .overview-stryker-title {
+  margin: 0;
+}
+
+.overview-stryker-product .overview-stryker-title-black {
+  display: block;
+  font-family: var(--stryker-body-font);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.2;
+  color: #6d6e71;
+}
+
+.overview-stryker-product .overview-stryker-title-gold {
+  display: block;
+  font-size: 96px;
+  line-height: 1;
+  color: #f0a500;
+}
+
+.overview-stryker-product .overview-stryker-primer {
+  font-family: var(--stryker-body-font);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.2;
+  color: #6d6e71;
+  margin: 0 0 8px;
+}
+
+.overview-stryker-product .overview-stryker-richtext {
+  flex-basis: 100%;
+  font-size: 16px;
+  margin: 12px 0 48px;
+}
+
+/* Cards: soft-shadowed rounded image, dark bold title, plain bulleted list */
+.overview-stryker-product .overview-stryker-card-image {
+  border: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px 0 rgb(0 0 0 / 15%);
+}
+
+.overview-stryker-product .overview-stryker-card-image::before {
+  content: none;
+}
+
+.overview-stryker-product .overview-stryker-card-content {
+  background: transparent;
+  box-shadow: none;
+  padding: 20px 0 0;
+}
+
+.overview-stryker-product .overview-stryker-card-title {
+  font-size: 20px;
+  color: #3a4250;
+}
+
+.overview-stryker-product .overview-stryker-card-desc {
+  font-size: 15px;
+}
+
+.overview-stryker-product .overview-stryker-card-desc ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.overview-stryker-product .overview-stryker-card-desc li {
+  margin: 0 0 4px;
 }

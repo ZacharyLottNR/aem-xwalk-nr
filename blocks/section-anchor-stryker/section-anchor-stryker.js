@@ -6,6 +6,22 @@ function slug(text) {
     .replace(/^-+|-+$/g, '');
 }
 
+// Resolve the anchor target for a section: prefer an explicit section name
+// (Content Tree label), then fall back to the first heading with an id (these
+// are the anchors actually authored on the page, e.g. <h2 id="connectivity">).
+function anchorFor(section) {
+  const name = section.dataset.name?.trim();
+  if (name) {
+    if (!section.id) section.id = slug(name);
+    return { id: section.id, label: name };
+  }
+  const heading = section.querySelector('h1[id], h2[id], h3[id], h4[id]');
+  if (heading) {
+    return { id: heading.id, label: heading.textContent.trim() };
+  }
+  return null;
+}
+
 export default function decorate(block) {
   block.textContent = '';
 
@@ -28,23 +44,22 @@ export default function decorate(block) {
   const linkedSections = [];
 
   laterSections.forEach((section) => {
-    const name = section.dataset.name?.trim();
-    if (!name) return;
-
-    if (!section.id) section.id = slug(name);
+    const anchor = anchorFor(section);
+    if (!anchor) return;
 
     const link = document.createElement('a');
     link.className = 'section-anchor-stryker-link';
-    link.href = `#${section.id}`;
-    link.textContent = name;
+    link.href = `#${anchor.id}`;
+    link.textContent = anchor.label;
     link.addEventListener('click', (e) => {
       e.preventDefault();
       section.scrollIntoView({ behavior: 'smooth' });
-      window.history.replaceState(null, '', `#${section.id}`);
+      window.history.replaceState(null, '', `#${anchor.id}`);
     });
     nav.append(link);
-    linkBySectionId.set(section.id, link);
+    linkBySectionId.set(anchor.id, link);
     linkedSections.push(section);
+    section.dataset.anchorId = anchor.id;
   });
 
   if (!nav.children.length) return;
@@ -65,7 +80,7 @@ export default function decorate(block) {
     });
     // Highlight the topmost section currently in view
     const topmost = linkedSections.find((section) => visible.has(section));
-    if (topmost) setActive(topmost.id);
+    if (topmost) setActive(topmost.dataset.anchorId);
   }, {
     rootMargin: '-30% 0px -60% 0px',
     threshold: 0,

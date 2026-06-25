@@ -16,9 +16,18 @@ export default function decorate(block) {
   const primerCell = innerCell(rows[2]);
   const richTextCell = innerCell(rows[3]);
 
-  const cardRows = rows.slice(4);
+  // The optional theme field sits between the body and the card rows. Older
+  // content predates it, so detect it: a theme row has no <picture> and its
+  // text is one of the known theme values; otherwise cards start at row 4.
+  const themeRow = rows[4];
+  const themeText = innerCell(themeRow)?.textContent?.trim().toLowerCase() || '';
+  const hasThemeRow = themeRow && !themeRow.querySelector('picture')
+    && ['default', 'product'].includes(themeText);
+  const themeVal = hasThemeRow && themeText === 'product' ? 'product' : 'default';
+  const cardRows = rows.slice(hasThemeRow ? 5 : 4);
 
   block.textContent = '';
+  block.classList.add(`overview-stryker-${themeVal}`);
 
   // Header
   const header = document.createElement('div');
