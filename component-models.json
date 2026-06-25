@@ -550,7 +550,25 @@
   },
   {
     "id": "content-break-stryker",
-    "fields": []
+    "fields": [
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "theme",
+        "label": "Theme",
+        "value": "big",
+        "options": [
+          {
+            "name": "Big",
+            "value": "big"
+          },
+          {
+            "name": "Little",
+            "value": "little"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "cross-promo-stryker",

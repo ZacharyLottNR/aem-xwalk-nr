@@ -1,8 +1,17 @@
-.content-break-stryker {
+/* Big theme: full-bleed yellow bar */
+.content-break-stryker.content-break-stryker-big {
   position: relative;
   left: 50%;
   width: 100vw;
   margin-left: -50vw;
   height: 35px;
   background-color: #fdb913;
+}
+
+/* Little theme: 1280px-wide, 1px grey line, centered */
+.content-break-stryker.content-break-stryker-little {
+  max-width: var(--stryker-max-width, 1280px);
+  height: 1px;
+  margin: 0 auto;
+  background-color: var(--stryker-gray, #58595b);
 }
