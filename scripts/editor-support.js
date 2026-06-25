@@ -109,8 +109,18 @@ function attachEventListeners(main) {
     'aue:content-copy',
   ].forEach((eventType) => main?.addEventListener(eventType, async (event) => {
     event.stopPropagation();
-    promiseChanges$ = applyChanges(event);
-    const applied = await promiseChanges$;
+    let applied = false;
+    try {
+      promiseChanges$ = applyChanges(event);
+      applied = await promiseChanges$;
+    } catch (e) {
+      // A decoration error must not trigger a reload: on reload the same
+      // unappliable event re-fires, which would spin into an infinite
+      // refresh loop in the Universal Editor.
+      // eslint-disable-next-line no-console
+      console.error('applyChanges failed', e);
+      applied = true;
+    }
     if (!applied) window.location.reload();
   }));
 }
