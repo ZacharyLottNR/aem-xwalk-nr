@@ -52,7 +52,9 @@ export default function decorate(block) {
   const headingHighlight = innerCell(rows[2])?.textContent?.trim() || '';
   const headingText = innerCell(rows[3])?.textContent?.trim() || '';
   const bodyCell = innerCell(rows[4]);
-  const themeVal = innerCell(rows[5])?.textContent?.trim().toLowerCase() === 'advanced' ? 'advanced' : 'basic';
+  const THEMES = ['basic', 'advanced', 'super-left', 'super-right'];
+  const rawTheme = innerCell(rows[5])?.textContent?.trim().toLowerCase();
+  const themeVal = THEMES.includes(rawTheme) ? rawTheme : 'basic';
   const layoutVal = innerCell(rows[6])?.textContent?.trim().toLowerCase() === 'media-right' ? 'media-right' : 'media-left';
 
   block.textContent = '';

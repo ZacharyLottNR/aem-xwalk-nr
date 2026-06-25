@@ -106,3 +106,103 @@
     font-size: 32px;
   }
 }
+
+/* ===================== Super themes ===================== */
+
+/* Full-bleed background image with the text overlaid on one half */
+.text-and-media-stryker.text-and-media-stryker-super-left,
+.text-and-media-stryker.text-and-media-stryker-super-right {
+  position: relative;
+  display: block;
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 0;
+}
+
+/* Image fills the section as the background; an aspect-ratio keeps height */
+.text-and-media-stryker-super-left .text-and-media-stryker-media,
+.text-and-media-stryker-super-right .text-and-media-stryker-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.text-and-media-stryker-super-left .text-and-media-stryker-media img,
+.text-and-media-stryker-super-right .text-and-media-stryker-media img,
+.text-and-media-stryker-super-left .text-and-media-stryker-media video,
+.text-and-media-stryker-super-right .text-and-media-stryker-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Text overlay sits in one half, vertically centered, within the content width */
+.text-and-media-stryker-super-left .text-and-media-stryker-text,
+.text-and-media-stryker-super-right .text-and-media-stryker-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  width: min(50%, calc(var(--stryker-max-width, 1280px) / 2));
+  min-height: 420px;
+  padding: 48px;
+  margin: 0 auto;
+}
+
+/* Left theme: text on the left edge of the centered content area */
+.text-and-media-stryker-super-left .text-and-media-stryker-text {
+  margin-left: max(24px, calc(50% - var(--stryker-max-width, 1280px) / 2));
+}
+
+/* Right theme: text on the right edge of the centered content area */
+.text-and-media-stryker-super-right .text-and-media-stryker-text {
+  margin-right: max(24px, calc(50% - var(--stryker-max-width, 1280px) / 2));
+  margin-left: auto;
+  text-align: right;
+}
+
+/* Heading: large two-color stylized type like the screenshots */
+.text-and-media-stryker-super-left .text-and-media-stryker-heading,
+.text-and-media-stryker-super-right .text-and-media-stryker-heading {
+  font-family: var(--stryker-heading-font);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.1;
+  color: var(--stryker-black, #000);
+  margin: 0 0 16px;
+}
+
+.text-and-media-stryker-super-left .text-and-media-stryker-heading-highlight,
+.text-and-media-stryker-super-right .text-and-media-stryker-heading-highlight {
+  font-weight: 700;
+  color: #f0a500;
+}
+
+.text-and-media-stryker-super-left .text-and-media-stryker-body,
+.text-and-media-stryker-super-right .text-and-media-stryker-body {
+  font-size: 15px;
+}
+
+@media (width < 900px) {
+  .text-and-media-stryker.text-and-media-stryker-super-left,
+  .text-and-media-stryker.text-and-media-stryker-super-right {
+    display: block;
+  }
+
+  .text-and-media-stryker-super-left .text-and-media-stryker-text,
+  .text-and-media-stryker-super-right .text-and-media-stryker-text {
+    width: 100%;
+    margin: 0;
+    padding: 32px 24px;
+    text-align: left;
+  }
+
+  .text-and-media-stryker-super-left .text-and-media-stryker-heading,
+  .text-and-media-stryker-super-right .text-and-media-stryker-heading {
+    font-size: 32px;
+  }
+}

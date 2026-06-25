@@ -6091,6 +6091,14 @@
           {
             "name": "Advanced",
             "value": "advanced"
+          },
+          {
+            "name": "Super (Left)",
+            "value": "super-left"
+          },
+          {
+            "name": "Super (Right)",
+            "value": "super-right"
           }
         ]
       },
