@@ -6,14 +6,18 @@ function slug(text) {
     .replace(/^-+|-+$/g, '');
 }
 
-// Resolve the anchor target for a section from its authored name (the
-// Content Tree "Section Name" / section-metadata "name" field). Only named
-// sections appear in the nav, so authors control exactly which sections link.
+// Resolve the anchor target for a section from its authored "Anchor Label"
+// section-metadata field. Unlike the section "name" (a Content-Tree-only
+// label that EDS does not emit to the page), anchorLabel serializes to the
+// rendered markup, so the block can read it. Only sections with an anchor
+// label appear in the nav, giving authors explicit control.
 function anchorFor(section) {
-  const name = section.dataset.name?.trim();
-  if (!name) return null;
-  if (!section.id) section.id = slug(name);
-  return { id: section.id, label: name };
+  // Section metadata keys are normalized to lowercase, so the "anchorLabel"
+  // field surfaces as dataset.anchorlabel (not camelCase).
+  const label = (section.dataset.anchorlabel || section.dataset.anchorLabel)?.trim();
+  if (!label) return null;
+  if (!section.id) section.id = slug(label);
+  return { id: section.id, label };
 }
 
 export default function decorate(block) {

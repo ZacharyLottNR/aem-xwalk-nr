@@ -166,6 +166,12 @@
         "description": "The label shown for this section in the Content Tree"
       },
       {
+        "component": "text",
+        "name": "anchorLabel",
+        "label": "Anchor Label",
+        "description": "If set, this section appears in a Section Anchor nav using this label"
+      },
+      {
         "component": "multiselect",
         "name": "style",
         "label": "Style",
