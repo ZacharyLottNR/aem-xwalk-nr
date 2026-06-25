@@ -1,0 +1,69 @@
+{
+  "definitions": [
+    {
+      "title": "Double Text And Media Stryker",
+      "id": "double-text-and-media-stryker",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Double Text And Media Stryker",
+              "model": "double-text-and-media-stryker"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "double-text-and-media-stryker",
+      "fields": [
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "imageOne",
+          "label": "Image 1",
+          "multi": false
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "imageOneAlt",
+          "label": "Image 1 Alt",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "textOne",
+          "label": "Text 1",
+          "value": ""
+        },
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "imageTwo",
+          "label": "Image 2",
+          "multi": false
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "imageTwoAlt",
+          "label": "Image 2 Alt",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "textTwo",
+          "label": "Text 2",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "filters": []
+}

@@ -22,7 +22,15 @@ export async function loadFragment(path) {
   if (path && path.startsWith('/')) {
     // eslint-disable-next-line no-param-reassign
     path = path.replace(/(\.plain)?\.html/, '');
-    const resp = await fetch(`${path}.plain.html`);
+    let resp;
+    try {
+      resp = await fetch(`${path}.plain.html`);
+    } catch (e) {
+      // Network failure (e.g. fragment not reachable in the author env).
+      // Fail gracefully so callers can degrade instead of throwing, which
+      // would otherwise surface as an uncaught error during decoration.
+      return null;
+    }
     if (resp.ok) {
       const main = document.createElement('main');
       main.innerHTML = await resp.text();

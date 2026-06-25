@@ -99,6 +99,33 @@ async function applyChanges(event) {
   return false;
 }
 
+// Reloading is the intended fallback when a change can't be applied in place
+// (e.g. adding/moving items). But if a reload re-fires the same unappliable
+// event we can spin into an infinite loop. Guard with a short-lived counter:
+// allow a few rapid reloads, then stop and let the editor settle.
+const RELOAD_GUARD_KEY = 'aue-reload-guard';
+const RELOAD_GUARD_WINDOW = 5000;
+const RELOAD_GUARD_MAX = 3;
+
+function reloadWithGuard() {
+  let count = 0;
+  try {
+    const raw = window.sessionStorage.getItem(RELOAD_GUARD_KEY);
+    if (raw) {
+      const { ts, n } = JSON.parse(raw);
+      if (Date.now() - ts < RELOAD_GUARD_WINDOW) count = n;
+    }
+    if (count >= RELOAD_GUARD_MAX) {
+      // eslint-disable-next-line no-console
+      console.error('Skipping reload to avoid a Universal Editor refresh loop.');
+      return;
+    }
+    const next = JSON.stringify({ ts: Date.now(), n: count + 1 });
+    window.sessionStorage.setItem(RELOAD_GUARD_KEY, next);
+  } catch (e) { /* sessionStorage unavailable; fall through to reload */ }
+  window.location.reload();
+}
+
 function attachEventListeners(main) {
   [
     'aue:content-patch',
@@ -109,9 +136,19 @@ function attachEventListeners(main) {
     'aue:content-copy',
   ].forEach((eventType) => main?.addEventListener(eventType, async (event) => {
     event.stopPropagation();
-    promiseChanges$ = applyChanges(event);
-    const applied = await promiseChanges$;
-    if (!applied) window.location.reload();
+    let applied = false;
+    try {
+      promiseChanges$ = applyChanges(event);
+      applied = await promiseChanges$;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('applyChanges failed', e);
+    }
+    if (applied) {
+      try { window.sessionStorage.removeItem(RELOAD_GUARD_KEY); } catch (e) { /* ignore */ }
+    } else {
+      reloadWithGuard();
+    }
   }));
 }
 

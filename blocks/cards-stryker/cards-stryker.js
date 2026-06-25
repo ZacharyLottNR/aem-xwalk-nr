@@ -12,11 +12,18 @@ export default function decorate(block) {
   let style = 'default';
   const cardRows = [];
 
-  // Classify rows independently of authored order: card rows contain an image;
-  // the remaining single-value rows carry heading / columns / style.
+  // Classify rows independently of authored order: card rows have the multi-
+  // cell card shape (image, cta text, cta url, text); the block-level fields
+  // (heading / columns / style) are single-cell rows. Keying on cell count
+  // (not on a <picture>) keeps a card classified even if its image failed to
+  // import and left a bare link instead of an optimized picture.
   rows.forEach((row) => {
-    if (row.querySelector('picture')) {
-      cardRows.push(row);
+    if (row.children.length > 1) {
+      // Skip empty card rows: stray/placeholder item nodes can serialize as a
+      // multi-cell row with no image, text, or links.
+      const hasContent = row.querySelector('img, picture, a')
+        || row.textContent.trim() !== '';
+      if (hasContent) cardRows.push(row);
       return;
     }
     const text = row.textContent.trim();
@@ -52,10 +59,11 @@ export default function decorate(block) {
     moveInstrumentation(row, li);
 
     const picture = imageCell?.querySelector('picture');
-    if (picture) {
+    const img = imageCell?.querySelector('img');
+    if (picture || img) {
       const imageWrap = document.createElement('div');
       imageWrap.className = 'cards-stryker-card-image';
-      imageWrap.append(picture);
+      imageWrap.append(picture || img);
       li.append(imageWrap);
     }
 
