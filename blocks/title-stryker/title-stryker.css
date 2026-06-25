@@ -1,0 +1,60 @@
+.title-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.title-stryker .title-stryker-title {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0;
+}
+
+/* Sizes */
+.title-stryker h1.title-stryker-title {
+  font-size: 56px;
+}
+
+.title-stryker h2.title-stryker-title {
+  font-size: 40px;
+}
+
+.title-stryker h3.title-stryker-title {
+  font-size: 28px;
+}
+
+/* Colors (gold is the default) */
+.title-stryker-gold .title-stryker-title {
+  color: #f0a500;
+}
+
+.title-stryker-black .title-stryker-title {
+  color: var(--stryker-black, #000);
+}
+
+.title-stryker-white .title-stryker-title {
+  color: var(--stryker-white, #fff);
+}
+
+.title-stryker-gray .title-stryker-title {
+  color: var(--stryker-gray, #58595b);
+}
+
+.title-stryker-teal .title-stryker-title {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+@media (width < 900px) {
+  .title-stryker h1.title-stryker-title {
+    font-size: 40px;
+  }
+
+  .title-stryker h2.title-stryker-title {
+    font-size: 30px;
+  }
+
+  .title-stryker h3.title-stryker-title {
+    font-size: 24px;
+  }
+}
