@@ -6,15 +6,18 @@ function slug(text) {
     .replace(/^-+|-+$/g, '');
 }
 
-// Resolve the anchor target for a section from its authored "Anchor Label"
-// section-metadata field. Unlike the section "name" (a Content-Tree-only
-// label that EDS does not emit to the page), anchorLabel serializes to the
-// rendered markup, so the block can read it. Only sections with an anchor
-// label appear in the nav, giving authors explicit control.
+// Resolve the anchor target for a section from a Title Stryker block heading.
+// Major sections lead with a `title-stryker` block, while sub-sections do not,
+// so this naturally limits the nav to the page's primary sections. An explicit
+// "Anchor Label" section field still wins when set.
 function anchorFor(section) {
   // Section metadata keys are normalized to lowercase, so the "anchorLabel"
   // field surfaces as dataset.anchorlabel (not camelCase).
-  const label = (section.dataset.anchorlabel || section.dataset.anchorLabel)?.trim();
+  let label = (section.dataset.anchorlabel || section.dataset.anchorLabel)?.trim();
+  if (!label) {
+    const heading = section.querySelector('.title-stryker h1, .title-stryker h2, .title-stryker h3');
+    label = heading?.textContent.trim();
+  }
   if (!label) return null;
   if (!section.id) section.id = slug(label);
   return { id: section.id, label };
