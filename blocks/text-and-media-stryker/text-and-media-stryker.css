@@ -153,11 +153,13 @@
 /* Left theme: text on the left half */
 .text-and-media-stryker.text-and-media-stryker-super-left .text-and-media-stryker-text {
   left: 0;
+  top: 322px;
 }
 
 /* Right theme: text on the right half */
 .text-and-media-stryker.text-and-media-stryker-super-right .text-and-media-stryker-text {
   right: 0;
+  top: 322px;
   text-align: right;
 }
 
