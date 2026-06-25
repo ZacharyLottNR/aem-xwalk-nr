@@ -5815,6 +5815,13 @@
         "name": "description",
         "label": "Description",
         "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "linkUrl",
+        "label": "Link URL",
+        "description": "Optional. When set, a \"Learn more\" link is shown."
       }
     ]
   },

@@ -67,6 +67,7 @@ export default function decorate(block) {
     const imageCell = cells[0];
     const titleCell = cells[1];
     const descCell = cells[2];
+    const linkCell = cells[3];
 
     const card = document.createElement('div');
     card.className = 'overview-stryker-card';
@@ -80,20 +81,35 @@ export default function decorate(block) {
       card.append(imgWrap);
     }
 
+    const content = document.createElement('div');
+    content.className = 'overview-stryker-card-content';
+
     const titleText = titleCell?.textContent?.trim();
     if (titleText) {
       const t = document.createElement('h3');
       t.className = 'overview-stryker-card-title';
       t.textContent = titleText;
-      card.append(t);
+      content.append(t);
     }
 
     if (descCell?.textContent?.trim()) {
       const d = document.createElement('div');
       d.className = 'overview-stryker-card-desc';
       d.innerHTML = innerCell(descCell).innerHTML;
-      card.append(d);
+      content.append(d);
     }
+
+    const linkHref = linkCell?.querySelector('a')?.getAttribute('href')
+      || linkCell?.textContent?.trim();
+    if (linkHref) {
+      const cta = document.createElement('a');
+      cta.className = 'overview-stryker-card-cta';
+      cta.href = linkHref;
+      cta.textContent = 'Learn more';
+      content.append(cta);
+    }
+
+    if (content.children.length) card.append(content);
 
     cards.append(card);
   });

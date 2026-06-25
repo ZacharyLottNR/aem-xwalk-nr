@@ -50,13 +50,34 @@
 }
 
 .overview-stryker .overview-stryker-card-image {
-  margin-bottom: 16px;
+  position: relative;
   line-height: 0;
+  border: 1px solid var(--stryker-gray, #d9d9d9);
+}
+
+.overview-stryker .overview-stryker-card-image::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 6px;
+  background: #f0a500;
+  z-index: 1;
 }
 
 .overview-stryker .overview-stryker-card-image img {
   max-width: 100%;
   height: auto;
+}
+
+/* White content box that overlaps the image with a soft shadow */
+.overview-stryker .overview-stryker-card-content {
+  position: relative;
+  background: var(--stryker-white, #fff);
+  box-shadow: 0 0 10px 0 rgb(0 0 0 / 30%);
+  padding: 20px 24px 28px;
+  margin: 0;
 }
 
 .overview-stryker .overview-stryker-card-title {
@@ -83,6 +104,25 @@
 
 .overview-stryker .overview-stryker-card-desc p {
   margin: 0 0 1em;
+}
+
+.overview-stryker .overview-stryker-card-cta:any-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: var(--stryker-body-font);
+  font-size: 14px;
+  font-weight: 400;
+  color: #4c7d7a;
+  text-decoration: none;
+}
+
+.overview-stryker .overview-stryker-card-cta::after {
+  content: ' \25B6';
+  font-size: 0.7em;
+}
+
+.overview-stryker .overview-stryker-card-cta:hover {
+  text-decoration: underline;
 }
 
 @media (width < 900px) {
