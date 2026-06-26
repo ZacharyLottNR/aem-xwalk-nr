@@ -62,7 +62,7 @@
 }
 
 .section-anchor-stryker .section-anchor-stryker-link.active:any-link {
-  background-color: #f0a500;
+  background-color: var(--stryker-amber, #ffb500);
   color: #000;
 }
 

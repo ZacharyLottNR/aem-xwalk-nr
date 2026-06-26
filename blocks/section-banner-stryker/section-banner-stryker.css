@@ -1,5 +1,5 @@
 .section-banner-stryker {
-  background-color: #f0a500;
+  background-color: var(--stryker-amber, #ffb500);
   width: 100%;
 }
 

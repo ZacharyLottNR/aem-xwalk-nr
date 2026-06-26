@@ -50,7 +50,7 @@
   font-family: var(--stryker-heading-font);
   font-size: 52px;
   font-weight: 700;
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
   margin: 0 0 16px;
   line-height: 1.05;
 }
@@ -73,7 +73,7 @@
   text-transform: uppercase;
   text-decoration: none;
   color: var(--stryker-black, #000);
-  background-color: #f0a500;
+  background-color: var(--stryker-amber, #ffb500);
   padding: 14px 28px;
   transition: background-color 0.2s;
 }

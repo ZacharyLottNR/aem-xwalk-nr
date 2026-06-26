@@ -26,7 +26,7 @@
 
 /* Colors (gold is the default) */
 .title-stryker-gold .title-stryker-title {
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
 }
 
 .title-stryker-black .title-stryker-title {

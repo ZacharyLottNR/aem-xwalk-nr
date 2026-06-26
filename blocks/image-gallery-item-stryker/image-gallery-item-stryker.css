@@ -30,7 +30,8 @@
 .image-gallery-item-stryker .image-gallery-item-stryker-text h4 {
   font-family: var(--stryker-heading-font);
   font-weight: 700;
-  font-size: 17px;
+  font-size: 24px;
+  line-height: 1.1;
   color: var(--stryker-black, #000);
   margin: 0 0 8px;
 }

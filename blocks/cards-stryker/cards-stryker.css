@@ -12,7 +12,7 @@
   font-family: var(--stryker-heading-font);
   font-weight: 700;
   font-size: 40px;
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
   margin: 0 0 32px;
 }
 
@@ -131,7 +131,7 @@
   font-family: var(--stryker-heading-font);
   font-weight: 700;
   font-size: 20px;
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
   margin-bottom: 8px;
 }
 

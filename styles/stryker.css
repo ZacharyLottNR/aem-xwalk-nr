@@ -8,6 +8,7 @@ body.theme-stryker {
   /* brand colors */
   --stryker-teal: #4c7d7a;
   --stryker-teal-dark: #3a615f;
+  --stryker-amber: #ffb500;
   --stryker-black: #000;
   --stryker-white: #fff;
   --stryker-gray: #58595b;

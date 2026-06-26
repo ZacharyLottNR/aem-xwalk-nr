@@ -50,7 +50,7 @@
   right: 24px;
   bottom: -1px;
   height: 3px;
-  background-color: #f0a500;
+  background-color: var(--stryker-amber, #ffb500);
 }
 
 .tabbed-content-stryker .tabbed-content-stryker-panel[hidden] {

@@ -17,7 +17,7 @@
 }
 
 .product-preview-stryker .product-preview-stryker-title-highlight {
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
 }
 
 .product-preview-stryker .product-preview-stryker-description {

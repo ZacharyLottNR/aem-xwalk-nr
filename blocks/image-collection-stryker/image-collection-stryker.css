@@ -6,15 +6,16 @@
 
 .image-collection-stryker .image-collection-stryker-heading {
   font-family: var(--stryker-heading-font);
-  font-weight: 400;
-  font-size: 32px;
+  font-weight: 700;
+  font-size: 42px;
+  line-height: 1.35;
   color: var(--stryker-black, #000);
   margin: 0 0 32px;
 }
 
 .image-collection-stryker .image-collection-stryker-heading-highlight {
   font-weight: 700;
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
 }
 
 .image-collection-stryker .image-collection-stryker-grid {

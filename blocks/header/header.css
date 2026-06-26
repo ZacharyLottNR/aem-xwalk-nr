@@ -530,7 +530,7 @@ body.theme-stryker header nav.nav-stryker-utility {
 
 /* Main nav bar (yellow band) */
 .nav-stryker .nav-stryker-main {
-  background-color: #ffb500;
+  background-color: var(--stryker-amber, #ffb500);
 }
 
 .nav-stryker .nav-stryker-main-inner {

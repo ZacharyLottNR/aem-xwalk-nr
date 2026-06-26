@@ -70,20 +70,20 @@
 /* Advanced theme: large two-color stylized heading, lighter body */
 .text-and-media-stryker.text-and-media-stryker-advanced .text-and-media-stryker-heading {
   font-family: var(--stryker-heading-font);
-  font-weight: 400;
-  font-size: 40px;
-  line-height: 1.1;
+  font-weight: 700;
+  font-size: 49px;
+  line-height: 1.35;
   color: var(--stryker-black, #000);
   margin: 0 0 16px;
 }
 
 .text-and-media-stryker.text-and-media-stryker-advanced .text-and-media-stryker-heading-highlight {
   font-weight: 700;
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
 }
 
 .text-and-media-stryker.text-and-media-stryker-advanced .text-and-media-stryker-body {
-  font-size: 15px;
+  font-size: 14px;
 }
 
 @media (width < 900px) {
@@ -103,7 +103,7 @@
   }
 
   .text-and-media-stryker.text-and-media-stryker-advanced .text-and-media-stryker-heading {
-    font-size: 32px;
+    font-size: 38px;
   }
 }
 
@@ -167,9 +167,9 @@
 .text-and-media-stryker.text-and-media-stryker-super-left .text-and-media-stryker-heading,
 .text-and-media-stryker.text-and-media-stryker-super-right .text-and-media-stryker-heading {
   font-family: var(--stryker-heading-font);
-  font-weight: 400;
-  font-size: 40px;
-  line-height: 1.1;
+  font-weight: 700;
+  font-size: 49px;
+  line-height: 1.35;
   color: var(--stryker-black, #000);
   margin: 0 0 16px;
 }
@@ -177,12 +177,12 @@
 .text-and-media-stryker.text-and-media-stryker-super-left .text-and-media-stryker-heading-highlight,
 .text-and-media-stryker.text-and-media-stryker-super-right .text-and-media-stryker-heading-highlight {
   font-weight: 700;
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
 }
 
 .text-and-media-stryker.text-and-media-stryker-super-left .text-and-media-stryker-body,
 .text-and-media-stryker.text-and-media-stryker-super-right .text-and-media-stryker-body {
-  font-size: 15px;
+  font-size: 14px;
 }
 
 @media (width < 900px) {
@@ -201,7 +201,7 @@
 
   .text-and-media-stryker.text-and-media-stryker-super-left .text-and-media-stryker-heading,
   .text-and-media-stryker.text-and-media-stryker-super-right .text-and-media-stryker-heading {
-    font-size: 32px;
+    font-size: 38px;
   }
 }
 
@@ -219,16 +219,16 @@
 
 .text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-heading {
   font-family: var(--stryker-heading-font);
-  font-weight: 400;
-  font-size: 40px;
-  line-height: 1.1;
+  font-weight: 700;
+  font-size: 49px;
+  line-height: 1.35;
   color: var(--stryker-black, #000);
   margin: 0 0 24px;
 }
 
 .text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-heading-highlight {
   font-weight: 700;
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
 }
 
 .text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-media {
@@ -259,7 +259,7 @@
 
 @media (width < 900px) {
   .text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-heading {
-    font-size: 32px;
+    font-size: 38px;
   }
 
   /* Stack the body below the image instead of floating on small screens. */

@@ -5,7 +5,7 @@
   width: 100vw;
   margin-left: -50vw;
   height: 35px;
-  background-color: #fdb913;
+  background-color: var(--stryker-amber, #ffb500);
 }
 
 /* Little theme: 1280px-wide, 1px grey line, centered */

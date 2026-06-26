@@ -18,7 +18,7 @@
 }
 
 .overview-stryker .overview-stryker-title-gold {
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
 }
 
 .overview-stryker .overview-stryker-primer {
@@ -62,7 +62,7 @@
   bottom: 0;
   left: 0;
   width: 6px;
-  background: #f0a500;
+  background: var(--stryker-amber, #ffb500);
   z-index: 1;
 }
 
@@ -84,7 +84,7 @@
   font-family: var(--stryker-heading-font);
   font-weight: 700;
   font-size: 22px;
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
   margin: 0 0 4px;
 }
 
@@ -170,7 +170,7 @@
   display: block;
   font-size: 96px;
   line-height: 1;
-  color: #f0a500;
+  color: var(--stryker-amber, #ffb500);
 }
 
 .overview-stryker-product .overview-stryker-primer {
