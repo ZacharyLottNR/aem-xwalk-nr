@@ -36,8 +36,16 @@ export default function decorate(block) {
   const main = ownSection?.parentElement;
   if (!main) return;
 
-  // Make the containing section sticky at the top
-  ownSection.classList.add('section-anchor-stryker-container');
+  // The block is authored inside a section alongside other content. A sticky
+  // block can only travel within its containing section, so being the last
+  // child of a short section gives it no sticky range. Move the block's
+  // wrapper out to be a direct child of <main> (right after its section) so
+  // its sticky containing block spans the rest of the page — letting just the
+  // bar pin while the whole section no longer sticks.
+  const wrapper = block.closest('.section-anchor-stryker-wrapper') || block;
+  if (wrapper.parentElement !== main) {
+    ownSection.after(wrapper);
+  }
 
   // Sections that come after this block's section
   const allSections = [...main.querySelectorAll(':scope > .section')];

@@ -1,13 +1,11 @@
-/* Make the section containing the anchor block sticky at the top */
-.section.section-anchor-stryker-container {
+/* The block's wrapper is relocated to be a direct child of <main> by the JS.
+   Sticky lives on the wrapper (whose containing block is <main>) so the bar
+   pins at the top across the sections below it — only the bar is sticky, not
+   the section it was authored in. */
+main > .section-anchor-stryker-wrapper {
   position: sticky;
   top: 0;
   z-index: 10;
-  margin: 0;
-  padding: 0;
-}
-
-.section.section-anchor-stryker-container > div {
   max-width: none;
   margin: 0;
   padding: 0;
