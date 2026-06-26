@@ -20,7 +20,10 @@
 
 .section-anchor-stryker .section-anchor-stryker-nav {
   display: flex;
-  justify-content: center;
+
+  /* Center when the links fit; once they overflow, this keeps them packed
+     from the start so none get clipped past the scroll origin. */
+  justify-content: safe center;
   align-items: stretch;
   max-width: var(--stryker-max-width, 1280px);
   margin: 0 auto;
@@ -34,6 +37,7 @@
 
 .section-anchor-stryker .section-anchor-stryker-link:any-link {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   padding: 22px 40px;
