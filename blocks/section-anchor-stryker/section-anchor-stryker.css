@@ -7,8 +7,11 @@ main > .section-anchor-stryker-wrapper {
   top: 0;
   z-index: 10;
   max-width: none;
-  margin: 0;
   padding: 0;
+
+  /* Pull up to close the preceding section's 40px bottom margin so the bar
+     sits flush against the video hero above it. */
+  margin: -40px 0 0;
 }
 
 .section-anchor-stryker {
