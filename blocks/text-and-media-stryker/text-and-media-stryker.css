@@ -204,3 +204,68 @@
     font-size: 32px;
   }
 }
+
+/* ===================== Super theme ===================== */
+
+/* Heading top-left, full-bleed-ish image below, body in a white shadow box
+   floating at the bottom-right, mostly over the image. */
+.text-and-media-stryker.text-and-media-stryker-super {
+  position: relative;
+  display: block;
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-heading {
+  font-family: var(--stryker-heading-font);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.1;
+  color: var(--stryker-black, #000);
+  margin: 0 0 24px;
+}
+
+.text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-heading-highlight {
+  font-weight: 700;
+  color: #f0a500;
+}
+
+.text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-media {
+  line-height: 0;
+}
+
+/* Body floats in a white shadow box at the bottom-right, overlapping the
+   image and extending below its bottom edge. */
+.text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-text {
+  position: absolute;
+  right: 24px;
+  bottom: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(40%, 420px);
+  background: var(--stryker-white, #fff);
+  box-shadow: 0 2px 16px rgb(0 0 0 / 20%);
+  padding: 24px 28px;
+}
+
+.text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-body {
+  font-size: 14px;
+}
+
+.text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-body :last-child {
+  margin-bottom: 0;
+}
+
+@media (width < 900px) {
+  .text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-heading {
+    font-size: 32px;
+  }
+
+  /* Stack the body below the image instead of floating on small screens. */
+  .text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-text {
+    position: static;
+    width: 100%;
+    margin-top: 16px;
+  }
+}

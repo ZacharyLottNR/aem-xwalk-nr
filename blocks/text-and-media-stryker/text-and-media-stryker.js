@@ -52,7 +52,7 @@ export default function decorate(block) {
   const headingHighlight = innerCell(rows[2])?.textContent?.trim() || '';
   const headingText = innerCell(rows[3])?.textContent?.trim() || '';
   const bodyCell = innerCell(rows[4]);
-  const THEMES = ['basic', 'advanced', 'super-left', 'super-right'];
+  const THEMES = ['basic', 'advanced', 'super', 'super-left', 'super-right'];
   const rawTheme = innerCell(rows[5])?.textContent?.trim().toLowerCase();
   const themeVal = THEMES.includes(rawTheme) ? rawTheme : 'basic';
   const layoutVal = innerCell(rows[6])?.textContent?.trim().toLowerCase() === 'media-right' ? 'media-right' : 'media-left';
@@ -101,7 +101,16 @@ export default function decorate(block) {
     textCol.append(body);
   }
 
-  block.append(mediaCol, textCol);
+  if (themeVal === 'super') {
+    // Heading sits above the image (top-left); the body floats in a box over
+    // the image. Promote the heading to a direct child so it stacks above the
+    // media, and keep the body in its own wrapper for the overlay box.
+    const heading = textCol.querySelector('.text-and-media-stryker-heading');
+    if (heading) block.append(heading);
+    block.append(mediaCol, textCol);
+  } else {
+    block.append(mediaCol, textCol);
+  }
 
   optimizeBlockImage(mediaCol.querySelector('picture > img'), createOptimizedPicture);
 }

@@ -6164,6 +6164,10 @@
             "value": "advanced"
           },
           {
+            "name": "Super",
+            "value": "super"
+          },
+          {
             "name": "Super (Left)",
             "value": "super-left"
           },
