@@ -239,7 +239,7 @@
    image and extending below its bottom edge. */
 .text-and-media-stryker.text-and-media-stryker-super .text-and-media-stryker-text {
   position: absolute;
-  right: 24px;
+  right: 54px;
   bottom: 0;
   z-index: 1;
   box-sizing: border-box;
