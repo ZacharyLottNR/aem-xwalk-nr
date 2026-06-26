@@ -5710,6 +5710,28 @@
         "name": "video",
         "label": "Video URL",
         "description": "Full-width background video URL. Plays muted and looping; hidden on mobile."
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "align",
+        "label": "Video Alignment",
+        "description": "Which part of the video shows when it is cropped to the block height.",
+        "value": "top",
+        "options": [
+          {
+            "name": "Top",
+            "value": "top"
+          },
+          {
+            "name": "Center",
+            "value": "center"
+          },
+          {
+            "name": "Bottom",
+            "value": "bottom"
+          }
+        ]
       }
     ]
   },

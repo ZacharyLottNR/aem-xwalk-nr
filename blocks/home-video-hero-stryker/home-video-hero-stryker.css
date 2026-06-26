@@ -4,12 +4,29 @@
   overflow: hidden;
   line-height: 0;
 
+  /* Flex lets the oversized (16:9) media be vertically aligned within the
+     cropped block height. */
+  display: flex;
+
   /* Break out of the section's max-width container to span the full viewport. */
   width: 100vw;
   max-width: 100vw;
   max-height: 450px;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
+}
+
+/* Vertical alignment of the cropped video within the block. */
+.home-video-hero-stryker.home-video-hero-stryker-align-top {
+  align-items: flex-start;
+}
+
+.home-video-hero-stryker.home-video-hero-stryker-align-center {
+  align-items: center;
+}
+
+.home-video-hero-stryker.home-video-hero-stryker-align-bottom {
+  align-items: flex-end;
 }
 
 body.theme-stryker main > .section > div.home-video-hero-stryker-wrapper {

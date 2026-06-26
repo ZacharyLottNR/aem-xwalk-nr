@@ -56,12 +56,20 @@ function buildVideo(url) {
   return video;
 }
 
+const ALIGNMENTS = ['top', 'center', 'bottom'];
+
 export default function decorate(block) {
-  const link = block.querySelector('a');
-  const cell = block.querySelector(':scope > div > div') || block.querySelector(':scope > div');
-  const videoUrl = link?.href || cell?.textContent?.trim();
+  const rows = [...block.children];
+  // Cell order: 0: video URL, 1: alignment.
+  const videoCell = rows[0]?.querySelector(':scope > div') || rows[0];
+  const alignText = rows[1]?.querySelector(':scope > div')?.textContent?.trim().toLowerCase();
+  const align = ALIGNMENTS.includes(alignText) ? alignText : 'top';
+
+  const link = videoCell?.querySelector('a');
+  const videoUrl = link?.href || videoCell?.textContent?.trim();
 
   block.textContent = '';
+  block.classList.add(`home-video-hero-stryker-align-${align}`);
 
   if (!videoUrl) return;
 
