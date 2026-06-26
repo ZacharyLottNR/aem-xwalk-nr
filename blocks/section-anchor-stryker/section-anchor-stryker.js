@@ -15,8 +15,14 @@ function anchorFor(section) {
   // field surfaces as dataset.anchorlabel (not camelCase).
   let label = (section.dataset.anchorlabel || section.dataset.anchorLabel)?.trim();
   if (!label) {
-    const heading = section.querySelector('.title-stryker h1, .title-stryker h2, .title-stryker h3');
-    label = heading?.textContent.trim();
+    const titleBlock = section.querySelector('.title-stryker');
+    if (titleBlock) {
+      // The anchor block can decorate before the title-stryker block does, so
+      // its <h2> may not exist yet. Prefer the decorated heading, but fall back
+      // to the raw first-cell text of the block table.
+      const heading = titleBlock.querySelector('h1, h2, h3');
+      label = (heading || titleBlock.querySelector(':scope > div > div'))?.textContent.trim();
+    }
   }
   if (!label) return null;
   if (!section.id) section.id = slug(label);
