@@ -266,12 +266,25 @@ export default {
       [galleryItem('Fluorescence imaging', 'Clearer delineation of fluorescence signal for improved visualization.', 'https://www.stryker.com/fluorescence')],
     ]]);
 
-    // tabbed-content-stryker → tabbed-content-tab-stryker children (name + content)
-    const tab = (name, contentEl) => childBlock('tabbed-content-tab-stryker', [[name], [contentEl]]);
+    // tabbed-content-stryker → flat tabbed-content-item-stryker leaves grouped by
+    // tab name. Cell order matches the model: tabName, image, text, link
+    // (imageAlt folds into the image). A YouTube link embeds the item as a video.
+    const tabItem = (tabName, title, body, linkText) => childBlock('tabbed-content-item-stryker', [
+      [tabName],
+      [img(document, 'https://placehold.co/400x300/eeeeee/333333?text=Item', title)],
+      [el(document, 'div', `<p>${title}</p><p>${body}</p>`)],
+      [anchor(document, 'https://www.stryker.com/', linkText)],
+    ]);
     blocks.push(['tabbed-content-stryker', [
-      [tab('Product Information', el(document, 'div', '<h3>Connected Solutions Beds Brochure</h3><p>Download the brochure to learn more.</p>'))],
-      [tab('Related Products', el(document, 'div', '<h3>ProCuity LE(X) / Z(X)</h3><p>For an enhanced MedSurg experience.</p>'))],
-      [tab('Videos', el(document, 'div', '<h3>iBed Vision</h3><p>Watch the overview video.</p>'))],
+      [''],
+      [tabItem('Product Information', 'Connected Solutions Beds Brochure', 'Download the brochure to learn more.', 'Download')],
+      [tabItem('Related Products', 'ProCuity LE(X) / Z(X)', 'For an enhanced MedSurg experience.', 'Learn More')],
+      [childBlock('tabbed-content-item-stryker', [
+        ['Videos'],
+        [''],
+        [el(document, 'div', '<p>iBed Vision</p>')],
+        [anchor(document, 'https://youtu.be/kRIuiIy_SCs', 'https://youtu.be/kRIuiIy_SCs')],
+      ])],
     ]]);
 
     // Build the page: a label + block table per entry, separated by section breaks.

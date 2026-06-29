@@ -8,17 +8,38 @@
 
 const PLACE = (w, h, t) => `https://placehold.co/${w}x${h}/eeeeee/333333?text=${encodeURIComponent(t)}`;
 
+// Fallbacks used when a source asset can't be resolved during import.
+const FALLBACK_IMAGE = 'https://author-p63260-e524717.adobeaemcloud.com/adobe/dynamicmedia/deliver/dm-aid--5df6d573-c301-41be-bd6e-f55a17edf39d/stryker-logo-thumbnail-1.jpg';
+const FALLBACK_VIDEO = 'https://youtu.be/kRIuiIy_SCs?si=BxJbaFO8GU6mARUS';
+
+// A url is usable only if it's a non-empty string with no unresolved tokens.
+function isUsableUrl(value) {
+  return typeof value === 'string'
+    && value.trim() !== ''
+    && !/\b(undefined|null|NaN)\b/.test(value);
+}
+
 function el(document, tag, html) {
   const node = document.createElement(tag);
   if (html != null) node.innerHTML = html;
   return node;
 }
 
+// Surfaces a problem inline so the page still renders with an explanation.
+function errorBlock(document, message) {
+  return el(document, 'div', `<p>something went wrong: ${message}</p>`);
+}
+
 function img(document, src, alt) {
   const i = document.createElement('img');
-  i.src = src;
+  i.src = isUsableUrl(src) ? src : FALLBACK_IMAGE;
   i.alt = alt || '';
   return i;
+}
+
+function videoAnchor(document, url, text) {
+  const href = isUsableUrl(url) ? url : FALLBACK_VIDEO;
+  return anchor(document, href, isUsableUrl(text) ? text : href);
 }
 
 function anchor(document, href, text) {
@@ -31,24 +52,30 @@ function anchor(document, href, text) {
 export default {
   transform: ({ document }) => {
     const main = document.createElement('div');
-    const childBlock = (name, cells) => WebImporter.Blocks.createBlock(document, { name, cells });
+    // Build a child block; if creation fails, emit an inline error node instead.
+    const childBlock = (name, cells) => {
+      try {
+        return WebImporter.Blocks.createBlock(document, { name, cells });
+      } catch (blockErr) {
+        return errorBlock(document, `failed to build the "${name}" block — ${blockErr.message}`);
+      }
+    };
     const blockNames = [];
 
     const MEDIA = 'https://media-assets.stryker.com/is/image/stryker';
+
+    try {
     const RES = 'https://www.stryker.com/content/dam/stryker/acute-care/products/ibedwireless/resources';
 
     // Hero (product) — eyebrow, heading, subtext, CTA, background image
-    main.append(WebImporter.Blocks.createBlock(document, {
-      name: 'home-hero-stryker',
-      cells: [
-        ['Acute Care'],
-        ['Connected solutions'],
-        ['Bringing people and information together for enhanced patient care.'],
-        [anchor(document, '/stryker/home', 'Contact an expert')],
-        ['Contact an expert'],
-        [img(document, `${MEDIA}/nurse-arms-crossed_prime-conect_procuity-bed_1920x640?$max_width_1440$`, 'Nurse standing with hospital beds')],
-      ],
-    }));
+    main.append(childBlock('home-hero-stryker', [
+      ['Acute Care'],
+      ['Connected solutions'],
+      ['Bringing people and information together for enhanced patient care.'],
+      [anchor(document, '/stryker/home', 'Contact an expert')],
+      ['Contact an expert'],
+      [img(document, `${MEDIA}/nurse-arms-crossed_prime-conect_procuity-bed_1920x640?$max_width_1440$`, 'Nurse standing with hospital beds')],
+    ]));
     blockNames.push('home-hero-stryker');
 
     // === OVERVIEW: Innovation that empowers outcomes ===
@@ -64,34 +91,28 @@ export default {
       anchor(document, '#', title),
       el(document, 'div', `<p><strong>${title}</strong></p><p>${body}</p>`),
     ];
-    main.append(WebImporter.Blocks.createBlock(document, {
-      name: 'cards-stryker',
-      cells: [
-        [''],
-        ['3'],
-        ['product'],
-        featCard('reduce-risk_icon_440x220', 'Focus on patient safety', 'Take a proactive approach to help prevent patient injuries, such as falls. With bed alarm notifications and an enhanced ability to monitor risk, our system can assist your hospital staff respond to patient safety risks quickly.'),
-        featCard('simplify-workflow_icon_440x220', 'Simplify workflows', 'With our connected solutions in your hospital, caregivers can access data-driven insights that aid in effective clinical decision-making, and help improve processes related to patient care protocols, asset management and asset maintenance.'),
-        featCard('Integrate_your_systems_icon_440x220', 'Integrate your systems', "Stryker's connected products are an open-architecture and adaptable solution that can work with dozens of third-party systems. Protect and enhance your hospital's investments by sharing and coordinating data across various electronic health records (EHR), nurse call systems, communication devices and applications."),
-      ],
-    }));
+    main.append(childBlock('cards-stryker', [
+      [''],
+      ['3'],
+      ['product'],
+      featCard('reduce-risk_icon_440x220', 'Focus on patient safety', 'Take a proactive approach to help prevent patient injuries, such as falls. With bed alarm notifications and an enhanced ability to monitor risk, our system can assist your hospital staff respond to patient safety risks quickly.'),
+      featCard('simplify-workflow_icon_440x220', 'Simplify workflows', 'With our connected solutions in your hospital, caregivers can access data-driven insights that aid in effective clinical decision-making, and help improve processes related to patient care protocols, asset management and asset maintenance.'),
+      featCard('Integrate_your_systems_icon_440x220', 'Integrate your systems', "Stryker's connected products are an open-architecture and adaptable solution that can work with dozens of third-party systems. Protect and enhance your hospital's investments by sharing and coordinating data across various electronic health records (EHR), nurse call systems, communication devices and applications."),
+    ]));
     blockNames.push('cards-stryker');
 
     // Vision / SEM / Secure Connect — alternating image + text blocks
     const featureBlock = (slug, alt, heading, paras, layout) => {
       main.append(document.createElement('hr'));
-      main.append(WebImporter.Blocks.createBlock(document, {
-        name: 'text-and-media-stryker',
-        cells: [
-          [img(document, `${MEDIA}/${slug}?$max_width_1440$`, alt)],
-          [''],
-          [''],
-          [heading],
-          [el(document, 'div', paras.map((p) => `<p>${p}</p>`).join(''))],
-          ['basic'],
-          [layout],
-        ],
-      }));
+      main.append(childBlock('text-and-media-stryker', [
+        [img(document, `${MEDIA}/${slug}?$max_width_1440$`, alt)],
+        [''],
+        [''],
+        [heading],
+        [el(document, 'div', paras.map((p) => `<p>${p}</p>`).join(''))],
+        ['basic'],
+        [layout],
+      ]));
       blockNames.push('text-and-media-stryker');
     };
     featureBlock('ibed-vision-doc-viewing-dashboard', "Stryker's Vision dashboard", 'Vision', [
@@ -108,64 +129,47 @@ export default {
 
     // Section banner CTA
     main.append(document.createElement('hr'));
-    main.append(WebImporter.Blocks.createBlock(document, {
-      name: 'section-banner-stryker',
-      cells: [[el(document, 'div', '<p>Interested in learning more? <strong>Talk to a rep today.</strong></p>')]],
-    }));
+    main.append(childBlock('section-banner-stryker', [
+      [el(document, 'div', '<p>Interested in learning more? <strong>Talk to a rep today.</strong></p>')],
+    ]));
     blockNames.push('section-banner-stryker');
 
     // Tabbed content: Product Information / Related Products / Videos
     main.append(document.createElement('hr'));
 
-    // Tab 1: Product Information — brochure PDF thumbnails as a card grid
-    const docCard = (title, thumb) => [
-      img(document, thumb, title),
-      'Download',
-      anchor(document, '/stryker/home', 'Download'),
-      el(document, 'div', `<p>${title}</p>`),
-    ];
-    const productInfoCards = childBlock('cards-stryker', [
+    // Each tab is a flat list of tabbed-content-item-stryker leaves. md2jcr only
+    // round-trips one level of block nesting, so items carry their own content as
+    // model fields (tabName groups them) rather than wrapping nested blocks.
+    // Cell order matches the model: tabName, image, text, link (imageAlt folds
+    // into the image). A YouTube link renders the item as a video player; any
+    // other link renders as a card CTA whose label is the anchor text.
+    const tabCard = (tabName, image, title, body, linkText) => childBlock('tabbed-content-item-stryker', [
+      [tabName],
+      [img(document, image, title)],
+      [el(document, 'div', `<p>${title}</p>${body ? `<p>${body}</p>` : ''}`)],
+      [anchor(document, '/stryker/home', linkText)],
+    ]);
+    const tabVideo = (tabName, title, url) => childBlock('tabbed-content-item-stryker', [
+      [tabName],
       [''],
-      ['3'],
-      ['default'],
-      docCard('Connected Solutions Beds Brochure Web.pdf', `${RES}/Connected%20Solutions%20Beds%20Brochure%20Web.pdf.thumb.319.319.png`),
-      docCard('Connected Solutions Stretcher Brochure Web.pdf', `${RES}/Connected%20Solutions%20Stretcher%20Brochure%20Web.pdf.thumb.319.319.png`),
-      docCard('iBed Wireless Spec Sheet', `${RES}/iBed%20Wireless_SS_Mkt%20Lit-1371%20Rev%20C.pdf.thumb.319.319.png`),
+      [el(document, 'div', `<p>${title}</p>`)],
+      [videoAnchor(document, url)],
     ]);
-    const tabProductInfo = childBlock('tabbed-content-tab-stryker', [['Product Information'], [productInfoCards]]);
-
-    // Tab 2: Related Products — product cards with Learn More
-    const relatedCard = (title, sub) => [
-      img(document, PLACE(400, 300, title), title),
-      'Learn More',
-      anchor(document, '/stryker/home', 'Learn More'),
-      el(document, 'div', `<p>${title}</p><p>${sub}</p>`),
-    ];
-    const relatedCards = childBlock('cards-stryker', [
-      [''],
-      ['3'],
-      ['default'],
-      relatedCard('ProCuity LE(X) / Z(X)', 'For an enhanced MedSurg experience'),
-      relatedCard('S3', 'Safe. Simple. Secure.'),
-      relatedCard('InTouch', 'Basic needs. Simplified care. Exceptional outcomes.'),
-    ]);
-    const tabRelated = childBlock('tabbed-content-tab-stryker', [['Related Products'], [relatedCards]]);
-
-    // Tab 3: Videos — two video players
-    const v1 = childBlock('video-stryker', [
-      [anchor(document, 'https://youtu.be/kRIuiIy_SCs', 'https://youtu.be/kRIuiIy_SCs')],
-      [img(document, PLACE(800, 450, 'NW15'), 'NW15 video')],
-    ]);
-    const v2 = childBlock('video-stryker', [
-      [anchor(document, 'https://youtu.be/kRIuiIy_SCs', 'https://youtu.be/kRIuiIy_SCs')],
-      [img(document, PLACE(800, 450, 'iBed Vision'), 'iBed Vision video')],
-    ]);
-    const tabVideos = childBlock('tabbed-content-tab-stryker', [['Videos'], [v1], [v2]]);
 
     main.append(childBlock('tabbed-content-stryker', [
-      [tabProductInfo],
-      [tabRelated],
-      [tabVideos],
+      // Block-level field row (heading; blank here) precedes the item rows.
+      [''],
+      // Tab 1: Product Information — brochure PDF thumbnails
+      [tabCard('Product Information', `${RES}/Connected%20Solutions%20Beds%20Brochure%20Web.pdf.thumb.319.319.png`, 'Connected Solutions Beds Brochure Web.pdf', '', 'Download')],
+      [tabCard('Product Information', `${RES}/Connected%20Solutions%20Stretcher%20Brochure%20Web.pdf.thumb.319.319.png`, 'Connected Solutions Stretcher Brochure Web.pdf', '', 'Download')],
+      [tabCard('Product Information', `${RES}/iBed%20Wireless_SS_Mkt%20Lit-1371%20Rev%20C.pdf.thumb.319.319.png`, 'iBed Wireless Spec Sheet', '', 'Download')],
+      // Tab 2: Related Products — product cards with Learn More
+      [tabCard('Related Products', PLACE(400, 300, 'ProCuity LE(X) / Z(X)'), 'ProCuity LE(X) / Z(X)', 'For an enhanced MedSurg experience', 'Learn More')],
+      [tabCard('Related Products', PLACE(400, 300, 'S3'), 'S3', 'Safe. Simple. Secure.', 'Learn More')],
+      [tabCard('Related Products', PLACE(400, 300, 'InTouch'), 'InTouch', 'Basic needs. Simplified care. Exceptional outcomes.', 'Learn More')],
+      // Tab 3: Videos — embedded players
+      [tabVideo('Videos', 'NW15', 'https://youtu.be/kRIuiIy_SCs')],
+      [tabVideo('Videos', 'iBed Vision', 'https://youtu.be/kRIuiIy_SCs')],
     ]));
     blockNames.push('tabbed-content-stryker');
 
@@ -177,24 +181,20 @@ export default {
       anchor(document, '/stryker/home', title),
       el(document, 'div', `<p><strong>${title}</strong></p><p>${body}</p>`),
     ];
-    main.append(WebImporter.Blocks.createBlock(document, {
-      name: 'cards-stryker',
-      cells: [
-        [''],
-        ['3'],
-        ['default'],
-        promoCard('ProCare?$preset_666_392$', 'ProCare for acute care', 'ProCare Services', 'Our expert medical device technicians help ensure your equipment is ready to perform when you need it. With preventive maintenance plans and tailored service support, we help you maximize the life of your equipment—and your investment.'),
-        promoCard('flex-financial-2550x750?$max_width_1440$', 'Flex Financial', 'Power to purchase', 'Through our Flex Financial business we can help you acquire our full portfolio of products and offer numerous payment structures that can be customized to meet your budgetary needs.'),
-      ],
-    }));
+    main.append(childBlock('cards-stryker', [
+      [''],
+      ['3'],
+      ['default'],
+      promoCard('ProCare?$preset_666_392$', 'ProCare for acute care', 'ProCare Services', 'Our expert medical device technicians help ensure your equipment is ready to perform when you need it. With preventive maintenance plans and tailored service support, we help you maximize the life of your equipment—and your investment.'),
+      promoCard('flex-financial-2550x750?$max_width_1440$', 'Flex Financial', 'Power to purchase', 'Through our Flex Financial business we can help you acquire our full portfolio of products and offer numerous payment structures that can be customized to meet your budgetary needs.'),
+    ]));
     blockNames.push('cards-stryker');
 
     // Legal references
     main.append(document.createElement('hr'));
-    main.append(WebImporter.Blocks.createBlock(document, {
-      name: 'legal-text-stryker',
-      cells: [[el(document, 'div', '<p>1. The features listed are only available when iBed Wireless is integrated with third party systems that bring data to EHRs, Handheld devices, Alert Management Systems, Nurse Call, or Asset Management Systems.</p><p>2. As outlined in the IFU, 99.99% efficiency is based on a 10 second time frame, as indicated with UL compliance.</p>')]],
-    }));
+    main.append(childBlock('legal-text-stryker', [
+      [el(document, 'div', '<p>1. The features listed are only available when iBed Wireless is integrated with third party systems that bring data to EHRs, Handheld devices, Alert Management Systems, Nurse Call, or Asset Management Systems.</p><p>2. As outlined in the IFU, 99.99% efficiency is based on a 10 second time frame, as indicated with UL compliance.</p>')],
+    ]));
     blockNames.push('legal-text-stryker');
 
     // Page metadata
@@ -214,5 +214,13 @@ export default {
       path: '/stryker/ibed-wireless',
       report: { title: 'iBed Wireless', template: 'stryker-ibed', blocks: blockNames },
     }];
+    } catch (err) {
+      main.append(errorBlock(document, err && err.message ? err.message : String(err)));
+      return [{
+        element: main,
+        path: '/stryker/ibed-wireless',
+        report: { title: 'iBed Wireless', template: 'stryker-ibed', blocks: blockNames.concat('error') },
+      }];
+    }
   },
 };

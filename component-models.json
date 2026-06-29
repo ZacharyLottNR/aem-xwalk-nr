@@ -6114,14 +6114,55 @@
     ]
   },
   {
-    "id": "tabbed-content-tab-stryker",
+    "id": "tabbed-content-item-stryker",
     "fields": [
       {
         "component": "text",
         "valueType": "string",
-        "name": "name",
+        "name": "tabName",
         "label": "Tab Name",
-        "description": "The tab does not render if left empty."
+        "description": "Items that share the same tab name are grouped under one tab. Required."
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Link",
+        "description": "Optional. A card CTA link, or a YouTube URL to embed the item as a video player."
+      }
+    ]
+  },
+  {
+    "id": "tabbed-content-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading",
+        "description": "Optional. Shown above the tabs.",
+        "value": ""
       }
     ]
   },
