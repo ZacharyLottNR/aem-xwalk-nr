@@ -137,39 +137,38 @@ export default {
     // Tabbed content: Product Information / Related Products / Videos
     main.append(document.createElement('hr'));
 
-    // Each tab is a flat list of tabbed-content-item-stryker leaves. md2jcr only
-    // round-trips one level of block nesting, so items carry their own content as
-    // model fields (tabName groups them) rather than wrapping nested blocks.
-    // Cell order matches the model: tabName, image, text, link (imageAlt folds
-    // into the image). A YouTube link renders the item as a video player; any
-    // other link renders as a card CTA whose label is the anchor text.
-    const tabCard = (tabName, image, title, body, linkText) => childBlock('tabbed-content-item-stryker', [
-      [tabName],
-      [img(document, image, title)],
-      [el(document, 'div', `<p>${title}</p>${body ? `<p>${body}</p>` : ''}`)],
-      [anchor(document, '/stryker/home', linkText)],
-    ]);
-    const tabVideo = (tabName, title, url) => childBlock('tabbed-content-item-stryker', [
-      [tabName],
-      [''],
-      [el(document, 'div', `<p>${title}</p>`)],
-      [videoAnchor(document, url)],
-    ]);
+    // Tabbed content mirrors cards-stryker: a single block whose first row is the
+    // block-level heading field, followed by one multi-cell row per item. Items
+    // sharing a tabName group under one tab. Item cell order matches the model:
+    // tabName, image, text, link (imageAlt folds into the image). A YouTube link
+    // renders as a video player; any other link renders a card CTA.
+    const tabCard = (tabName, image, title, body, linkText) => [
+      tabName,
+      img(document, image, title),
+      el(document, 'div', `<p>${title}</p>${body ? `<p>${body}</p>` : ''}`),
+      anchor(document, '/stryker/home', linkText),
+    ];
+    const tabVideo = (tabName, title, url) => [
+      tabName,
+      '',
+      el(document, 'div', `<p>${title}</p>`),
+      videoAnchor(document, url),
+    ];
 
     main.append(childBlock('tabbed-content-stryker', [
       // Block-level field row (heading; blank here) precedes the item rows.
       [''],
       // Tab 1: Product Information — brochure PDF thumbnails
-      [tabCard('Product Information', `${RES}/Connected%20Solutions%20Beds%20Brochure%20Web.pdf.thumb.319.319.png`, 'Connected Solutions Beds Brochure Web.pdf', '', 'Download')],
-      [tabCard('Product Information', `${RES}/Connected%20Solutions%20Stretcher%20Brochure%20Web.pdf.thumb.319.319.png`, 'Connected Solutions Stretcher Brochure Web.pdf', '', 'Download')],
-      [tabCard('Product Information', `${RES}/iBed%20Wireless_SS_Mkt%20Lit-1371%20Rev%20C.pdf.thumb.319.319.png`, 'iBed Wireless Spec Sheet', '', 'Download')],
+      tabCard('Product Information', `${RES}/Connected%20Solutions%20Beds%20Brochure%20Web.pdf.thumb.319.319.png`, 'Connected Solutions Beds Brochure Web.pdf', '', 'Download'),
+      tabCard('Product Information', `${RES}/Connected%20Solutions%20Stretcher%20Brochure%20Web.pdf.thumb.319.319.png`, 'Connected Solutions Stretcher Brochure Web.pdf', '', 'Download'),
+      tabCard('Product Information', `${RES}/iBed%20Wireless_SS_Mkt%20Lit-1371%20Rev%20C.pdf.thumb.319.319.png`, 'iBed Wireless Spec Sheet', '', 'Download'),
       // Tab 2: Related Products — product cards with Learn More
-      [tabCard('Related Products', PLACE(400, 300, 'ProCuity LE(X) / Z(X)'), 'ProCuity LE(X) / Z(X)', 'For an enhanced MedSurg experience', 'Learn More')],
-      [tabCard('Related Products', PLACE(400, 300, 'S3'), 'S3', 'Safe. Simple. Secure.', 'Learn More')],
-      [tabCard('Related Products', PLACE(400, 300, 'InTouch'), 'InTouch', 'Basic needs. Simplified care. Exceptional outcomes.', 'Learn More')],
+      tabCard('Related Products', PLACE(400, 300, 'ProCuity LE(X) / Z(X)'), 'ProCuity LE(X) / Z(X)', 'For an enhanced MedSurg experience', 'Learn More'),
+      tabCard('Related Products', PLACE(400, 300, 'S3'), 'S3', 'Safe. Simple. Secure.', 'Learn More'),
+      tabCard('Related Products', PLACE(400, 300, 'InTouch'), 'InTouch', 'Basic needs. Simplified care. Exceptional outcomes.', 'Learn More'),
       // Tab 3: Videos — embedded players
-      [tabVideo('Videos', 'NW15', 'https://youtu.be/kRIuiIy_SCs')],
-      [tabVideo('Videos', 'iBed Vision', 'https://youtu.be/kRIuiIy_SCs')],
+      tabVideo('Videos', 'NW15', 'https://youtu.be/kRIuiIy_SCs'),
+      tabVideo('Videos', 'iBed Vision', 'https://youtu.be/kRIuiIy_SCs'),
     ]));
     blockNames.push('tabbed-content-stryker');
 

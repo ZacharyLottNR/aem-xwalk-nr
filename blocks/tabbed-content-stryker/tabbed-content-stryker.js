@@ -1,47 +1,112 @@
-import { decorateBlock, loadBlock } from '../../scripts/aem.js';
-import { resolveNestedBlocks } from '../../scripts/scripts.js';
+import { createOptimizedPicture } from '../../scripts/aem.js';
+import { optimizeBlockImage } from '../../scripts/scripts.js';
 
 function innerCell(row) {
   return row?.querySelector(':scope > div') || row;
 }
 
-export default async function decorate(block) {
+// Normalize a YouTube watch/share URL to its embeddable form, or null if not YouTube.
+function youTubeEmbedUrl(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname === 'youtu.be') return `https://www.youtube.com/embed/${u.pathname.slice(1)}`;
+    if (u.hostname.endsWith('youtube.com') && u.searchParams.get('v')) {
+      return `https://www.youtube.com/embed/${u.searchParams.get('v')}`;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+// Build the rendered node for one item row.
+// Cell order matches the item model: 0 tabName, 1 image, 2 text, 3 link
+// (imageAlt folds into the image). A YouTube link renders an embedded player;
+// any other link renders a card CTA.
+function renderItem(cells) {
+  const imageCell = cells[1];
+  const textCell = cells[2];
+  const linkCell = cells[3];
+
+  const href = linkCell?.querySelector('a')?.href || linkCell?.textContent?.trim();
+  const embedUrl = href ? youTubeEmbedUrl(href) : null;
+
+  const item = document.createElement('div');
+  item.className = 'tabbed-content-item-stryker';
+
+  if (embedUrl) {
+    item.classList.add('tabbed-content-item-stryker-video-item');
+    const frame = document.createElement('div');
+    frame.className = 'tabbed-content-item-stryker-video';
+    const iframe = document.createElement('iframe');
+    iframe.src = embedUrl;
+    iframe.title = textCell?.textContent?.trim() || 'Video';
+    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.loading = 'lazy';
+    frame.append(iframe);
+    item.append(frame);
+    return item;
+  }
+
+  const picture = imageCell?.querySelector('picture');
+  if (picture) {
+    const media = document.createElement('div');
+    media.className = 'tabbed-content-item-stryker-media';
+    media.append(picture);
+    item.append(media);
+  }
+
+  if (textCell?.innerHTML.trim()) {
+    const text = document.createElement('div');
+    text.className = 'tabbed-content-item-stryker-text';
+    text.innerHTML = textCell.innerHTML;
+    item.append(text);
+  }
+
+  if (href) {
+    const link = document.createElement('a');
+    link.className = 'tabbed-content-item-stryker-link';
+    link.href = href;
+    link.textContent = linkCell?.querySelector('a')?.textContent?.trim() || 'Learn More';
+    item.append(link);
+  }
+
+  return item;
+}
+
+export default function decorate(block) {
   const rows = [...block.children];
 
-  // Block-level fields render first as single-cell rows; item sub-blocks arrive
-  // as an imported nested <table> (or an item block div in the Universal
-  // Editor). Split them apart before resolving the items.
-  const isItem = (row) => row.querySelector(':scope table, :scope picture, :scope img')
-    || row.classList.contains('tabbed-content-item-stryker')
-    || row.children.length > 1;
-  const fieldRows = [];
+  // The parent block has a single-cell heading row; item rows are multi-cell
+  // (tabName, image, text, link). Classify by cell count, like cards-stryker.
+  let heading = '';
   const itemRows = [];
-  rows.forEach((row) => (isItem(row) ? itemRows : fieldRows).push(row));
+  rows.forEach((row) => {
+    const cells = [...row.children];
+    if (cells.length > 1) {
+      itemRows.push(cells);
+    } else if (row.textContent.trim()) {
+      heading = row.textContent.trim();
+    }
+  });
 
-  const heading = innerCell(fieldRows[0])?.textContent?.trim() || '';
-
-  // Normalize item rows into item block divs (converts imported tables).
-  const container = document.createElement('div');
-  itemRows.forEach((row) => container.append(row));
-  const itemBlocks = resolveNestedBlocks(container, 'tabbed-content-item-stryker');
-
-  // First cell of each item is its tab name; read it, then strip it so the item
-  // only decorates its own content (image/text/link or video).
-  const items = itemBlocks.map((el) => {
-    const firstRow = el.children[0];
-    const tabName = innerCell(firstRow)?.textContent?.trim() || '';
-    firstRow?.remove();
-    return { el, tabName };
-  }).filter((it) => it.tabName);
-
-  await Promise.all(items.map(async ({ el }) => {
-    decorateBlock(el);
-    await loadBlock(el);
-  }));
+  // Group items by tab name, preserving first-seen order.
+  const order = [];
+  const groups = new Map();
+  itemRows.forEach((cells) => {
+    const tabName = innerCell(cells[0])?.textContent?.trim();
+    if (!tabName) return;
+    if (!groups.has(tabName)) {
+      groups.set(tabName, []);
+      order.push(tabName);
+    }
+    groups.get(tabName).push(renderItem(cells));
+  });
 
   block.textContent = '';
 
-  if (!items.length) return;
+  if (!order.length) return;
 
   if (heading) {
     const h = document.createElement('h2');
@@ -49,17 +114,6 @@ export default async function decorate(block) {
     h.textContent = heading;
     block.append(h);
   }
-
-  // Preserve first-seen order of tab names while grouping items under each.
-  const order = [];
-  const groups = new Map();
-  items.forEach((it) => {
-    if (!groups.has(it.tabName)) {
-      groups.set(it.tabName, []);
-      order.push(it.tabName);
-    }
-    groups.get(it.tabName).push(it.el);
-  });
 
   const tablist = document.createElement('div');
   tablist.className = 'tabbed-content-stryker-tablist';
@@ -107,4 +161,6 @@ export default async function decorate(block) {
   });
 
   block.append(tablist, panels);
+
+  block.querySelectorAll('.tabbed-content-item-stryker-media picture > img').forEach((img) => optimizeBlockImage(img, createOptimizedPicture));
 }
