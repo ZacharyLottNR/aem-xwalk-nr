@@ -20,13 +20,14 @@ function youTubeEmbedUrl(url) {
 }
 
 // Build the rendered node for one item row.
-// Cell order matches the item model: 0 tabName, 1 image, 2 text, 3 link
-// (imageAlt folds into the image). A YouTube link renders an embedded player;
-// any other link renders a card CTA.
+// Cell order matches the item model: 0 tabName, 1 image, 2 text, 3 linkText,
+// 4 link (imageAlt folds into the image). A YouTube link renders an embedded
+// player; any other link renders a card CTA whose label is linkText.
 function renderItem(cells) {
   const imageCell = cells[1];
   const textCell = cells[2];
-  const linkCell = cells[3];
+  const linkTextCell = cells[3];
+  const linkCell = cells[4];
 
   const href = linkCell?.querySelector('a')?.href || linkCell?.textContent?.trim();
   const embedUrl = href ? youTubeEmbedUrl(href) : null;
@@ -68,7 +69,9 @@ function renderItem(cells) {
     const link = document.createElement('a');
     link.className = 'tabbed-content-item-stryker-link';
     link.href = href;
-    link.textContent = linkCell?.querySelector('a')?.textContent?.trim() || 'Learn More';
+    link.textContent = linkTextCell?.textContent?.trim()
+      || linkCell?.querySelector('a')?.textContent?.trim()
+      || 'Learn More';
     item.append(link);
   }
 
@@ -141,7 +144,12 @@ export default function decorate(block) {
     panel.setAttribute('role', 'tabpanel');
     panel.setAttribute('aria-labelledby', `${id}-tab`);
     panel.hidden = i !== 0;
-    groups.get(tabName).forEach((el) => panel.append(el));
+    const tabItems = groups.get(tabName);
+    // A panel of only videos lays out 2-up (matches the source); card panels 3-up.
+    if (tabItems.every((el) => el.classList.contains('tabbed-content-item-stryker-video-item'))) {
+      panel.classList.add('tabbed-content-stryker-panel-videos');
+    }
+    tabItems.forEach((el) => panel.append(el));
 
     button.addEventListener('click', () => {
       tablist.querySelectorAll('.tabbed-content-stryker-tab').forEach((b) => {

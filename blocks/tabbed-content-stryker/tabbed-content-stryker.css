@@ -66,6 +66,10 @@
   gap: 32px;
 }
 
+.tabbed-content-stryker .tabbed-content-stryker-panel-videos {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .tabbed-content-stryker .tabbed-content-stryker-panel[hidden] {
   display: none;
 }
@@ -136,11 +140,6 @@
 
 .tabbed-content-stryker .tabbed-content-item-stryker-link:hover {
   color: var(--stryker-amber, #ffb500);
-}
-
-/* Video item spans the full panel width */
-.tabbed-content-stryker .tabbed-content-item-stryker-video-item {
-  grid-column: 1 / -1;
 }
 
 .tabbed-content-stryker .tabbed-content-item-stryker-video {

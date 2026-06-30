@@ -267,19 +267,22 @@ export default {
     ]]);
 
     // tabbed-content-stryker mirrors cards-stryker: a heading field row followed
-    // by one multi-cell row per item (tabName, image, text, link). Items sharing
-    // a tabName group under one tab; a YouTube link embeds the item as a video.
+    // by one multi-cell row per item (tabName, image, text, linkText, link).
+    // Items sharing a tabName group under one tab; a YouTube link embeds the
+    // item as a video. linkText carries the CTA label (the aem-content link
+    // field only keeps the URL).
     const tabItem = (tabName, title, body, linkText) => [
       tabName,
       img(document, 'https://placehold.co/400x300/eeeeee/333333?text=Item', title),
       el(document, 'div', `<p>${title}</p><p>${body}</p>`),
+      linkText,
       anchor(document, 'https://www.stryker.com/', linkText),
     ];
     blocks.push(['tabbed-content-stryker', [
       [''],
       tabItem('Product Information', 'Connected Solutions Beds Brochure', 'Download the brochure to learn more.', 'Download'),
       tabItem('Related Products', 'ProCuity LE(X) / Z(X)', 'For an enhanced MedSurg experience.', 'Learn More'),
-      ['Videos', '', el(document, 'div', '<p>iBed Vision</p>'), anchor(document, 'https://youtu.be/kRIuiIy_SCs', 'https://youtu.be/kRIuiIy_SCs')],
+      ['Videos', '', el(document, 'div', '<p>iBed Vision</p>'), '', anchor(document, 'https://youtu.be/kRIuiIy_SCs', 'https://youtu.be/kRIuiIy_SCs')],
     ]]);
 
     // Build the page: a label + block table per entry, separated by section breaks.

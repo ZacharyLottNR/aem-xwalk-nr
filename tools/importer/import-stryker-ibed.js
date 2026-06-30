@@ -6,8 +6,6 @@
  * Output: content/stryker/ibed-wireless.plain.html
  */
 
-const PLACE = (w, h, t) => `https://placehold.co/${w}x${h}/eeeeee/333333?text=${encodeURIComponent(t)}`;
-
 // Fallbacks used when a source asset can't be resolved during import.
 const FALLBACK_IMAGE = 'https://author-p63260-e524717.adobeaemcloud.com/adobe/dynamicmedia/deliver/dm-aid--5df6d573-c301-41be-bd6e-f55a17edf39d/stryker-logo-thumbnail-1.jpg';
 const FALLBACK_VIDEO = 'https://youtu.be/kRIuiIy_SCs?si=BxJbaFO8GU6mARUS';
@@ -140,18 +138,21 @@ export default {
     // Tabbed content mirrors cards-stryker: a single block whose first row is the
     // block-level heading field, followed by one multi-cell row per item. Items
     // sharing a tabName group under one tab. Item cell order matches the model:
-    // tabName, image, text, link (imageAlt folds into the image). A YouTube link
-    // renders as a video player; any other link renders a card CTA.
-    const tabCard = (tabName, image, title, body, linkText) => [
+    // tabName, image, text, linkText, link (imageAlt folds into the image). A
+    // YouTube link renders a video player; any other link renders a card CTA
+    // whose label is linkText (the aem-content link field only keeps the URL).
+    const tabCard = (tabName, image, title, body, linkText, linkUrl) => [
       tabName,
       img(document, image, title),
       el(document, 'div', `<p>${title}</p>${body ? `<p>${body}</p>` : ''}`),
-      anchor(document, '/stryker/home', linkText),
+      linkText,
+      anchor(document, linkUrl || '/stryker/home', linkText),
     ];
     const tabVideo = (tabName, title, url) => [
       tabName,
       '',
       el(document, 'div', `<p>${title}</p>`),
+      '',
       videoAnchor(document, url),
     ];
 
@@ -162,10 +163,12 @@ export default {
       tabCard('Product Information', `${RES}/Connected%20Solutions%20Beds%20Brochure%20Web.pdf.thumb.319.319.png`, 'Connected Solutions Beds Brochure Web.pdf', '', 'Download'),
       tabCard('Product Information', `${RES}/Connected%20Solutions%20Stretcher%20Brochure%20Web.pdf.thumb.319.319.png`, 'Connected Solutions Stretcher Brochure Web.pdf', '', 'Download'),
       tabCard('Product Information', `${RES}/iBed%20Wireless_SS_Mkt%20Lit-1371%20Rev%20C.pdf.thumb.319.319.png`, 'iBed Wireless Spec Sheet', '', 'Download'),
-      // Tab 2: Related Products — product cards with Learn More
-      tabCard('Related Products', PLACE(400, 300, 'ProCuity LE(X) / Z(X)'), 'ProCuity LE(X) / Z(X)', 'For an enhanced MedSurg experience', 'Learn More'),
-      tabCard('Related Products', PLACE(400, 300, 'S3'), 'S3', 'Safe. Simple. Secure.', 'Learn More'),
-      tabCard('Related Products', PLACE(400, 300, 'InTouch'), 'InTouch', 'Basic needs. Simplified care. Exceptional outcomes.', 'Learn More'),
+      // Tab 2: Related Products — product cards (real Stryker thumbnails)
+      tabCard('Related Products', `${MEDIA}/Thumbnail_ProCuity?$preset_426_254$`, 'ProCuity LE(X) / Z(X)', 'For an enhanced MedSurg experience', 'Learn more', '/stryker/home'),
+      tabCard('Related Products', `${MEDIA}/Thumbnail_S3_SYK?$preset_426_254$`, 'S3', 'Safe. Simple. Secure.', 'Learn more', '/stryker/home'),
+      tabCard('Related Products', `${MEDIA}/Thumbnail_InTouch_SYK_2?$preset_426_254$`, 'InTouch', 'Basic needs. Simplified care. Exceptional outcomes.', 'Learn more', '/stryker/home'),
+      tabCard('Related Products', `${MEDIA}/20200708-Stryker_Surfaces-31?$preset_426_254$`, 'Prime Series', 'Patient transport, redefined.', 'Learn more', '/stryker/home'),
+      tabCard('Related Products', `${MEDIA}/screenshot-ADH%20copy?$preset_426_254$`, 'Advanced Digital Healthcare', 'Connected technology for better outcomes.', 'Learn more', '/stryker/home'),
       // Tab 3: Videos — embedded players
       tabVideo('Videos', 'NW15', 'https://youtu.be/kRIuiIy_SCs'),
       tabVideo('Videos', 'iBed Vision', 'https://youtu.be/kRIuiIy_SCs'),

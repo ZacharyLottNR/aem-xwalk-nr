@@ -49,6 +49,14 @@
           "value": ""
         },
         {
+          "component": "text",
+          "valueType": "string",
+          "name": "linkText",
+          "label": "Link Text",
+          "value": "",
+          "description": "Optional. The CTA label (e.g. Download, Learn More). Ignored for video items."
+        },
+        {
           "component": "aem-content",
           "valueType": "string",
           "name": "link",
