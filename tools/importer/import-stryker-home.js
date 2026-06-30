@@ -10,17 +10,38 @@
 
 const MEDIA = 'https://media-assets.stryker.com/is/image/stryker';
 
+// Fallbacks used when a source asset can't be resolved during import.
+const FALLBACK_IMAGE = 'https://author-p63260-e524717.adobeaemcloud.com/adobe/dynamicmedia/deliver/dm-aid--5df6d573-c301-41be-bd6e-f55a17edf39d/stryker-logo-thumbnail-1.jpg';
+const FALLBACK_VIDEO = 'https://youtu.be/kRIuiIy_SCs?si=BxJbaFO8GU6mARUS';
+
+// A url is usable only if it's a non-empty string with no unresolved tokens.
+function isUsableUrl(value) {
+  return typeof value === 'string'
+    && value.trim() !== ''
+    && !/\b(undefined|null|NaN)\b/.test(value);
+}
+
 function el(document, tag, html) {
   const node = document.createElement(tag);
   if (html != null) node.innerHTML = html;
   return node;
 }
 
+// Surfaces a problem inline so the page still renders with an explanation.
+function errorBlock(document, message) {
+  return el(document, 'div', `<p>something went wrong: ${message}</p>`);
+}
+
 function img(document, src, alt) {
   const i = document.createElement('img');
-  i.src = src;
+  i.src = isUsableUrl(src) ? src : FALLBACK_IMAGE;
   i.alt = alt || '';
   return i;
+}
+
+function videoAnchor(document, url, text) {
+  const href = isUsableUrl(url) ? url : FALLBACK_VIDEO;
+  return anchor(document, href, isUsableUrl(text) ? text : href);
 }
 
 function anchor(document, href, text) {
@@ -33,16 +54,19 @@ function anchor(document, href, text) {
 export default {
   transform: ({ document }) => {
     const main = document.createElement('div');
-    const blocks = [];
-    const childBlock = (name, cells) => WebImporter.Blocks.createBlock(document, { name, cells });
+
+    try {
+    // Section 1: landing video + What we do + content break (grouped, no breaks)
+    const section1 = [];
 
     // 1. Full-width landing video (muted, looping, hidden on mobile)
-    blocks.push(['home-video-hero-stryker', [
-      [anchor(document, 'https://youtu.be/kRIuiIy_SCs', 'https://youtu.be/kRIuiIy_SCs')],
+    section1.push(['home-video-hero-stryker', [
+      [videoAnchor(document, 'https://youtu.be/kRIuiIy_SCs')],
+      ['center'],
     ]]);
 
     // 2. What we do (standard layout: text card left, 150M image right)
-    blocks.push(['get-to-know-us-stryker', [
+    section1.push(['get-to-know-us-stryker', [
       [img(document, `${MEDIA}/150M-white?$max_width_1440$`, '150 million patients')],
       [el(document, 'div', '<h2>What we do</h2><p>Stryker is one of the world\'s leading medical technology companies. Alongside our customers around the world, we impact more than 150 million patients annually.</p>')],
       ['Get to know us'],
@@ -51,14 +75,19 @@ export default {
       [''],
     ]]);
 
-    // 3. Latest news (cards, news style, 4 columns)
+    // 3. Content break (default/Big divider) — closes section 1
+    section1.push(['content-break-stryker', [
+      [''],
+    ]]);
+
+    // Section 2: Latest news (cards, news style, 4 columns)
     const newsCard = (title, desc, href) => [
       img(document, `${MEDIA}/stryker-logo-thumbnail-1?$preset_307_184$`, title),
       'Read More',
       anchor(document, href, 'News'),
       el(document, 'div', `<p>${title}</p>${desc ? `<p>${desc}</p>` : ''}`),
     ];
-    blocks.push(['cards-stryker', [
+    const section2 = [['cards-stryker', [
       ['Latest news'],
       ['4'],
       ['news'],
@@ -66,15 +95,18 @@ export default {
       newsCard('Stryker partners with Fortune to share our digital innovation story', 'Fortune Brand Studio sat down with Stryker leaders to explore how our connected digital solutions deliver value to our customers across the continuum of care.', '/stryker/home'),
       newsCard('Stryker launches TPX HD power tool, supporting demanding orthopaedic procedures', 'A premium small bone power tool designed to support performance, control and ergonomics in a wide range of challenging orthopaedic procedures.', '/stryker/home'),
       newsCard('AVS, Now Part of Stryker, Enrolls First Patient in First-in-Human Coronary Intravascular Lithotripsy Study', 'POWER CAD I study will evaluate feasibility of the Pulse IVL system in patients with severely calcified coronary arterial disease.', '/stryker/home'),
-    ]]);
+    ]]];
 
-    // 4. Our focus (overview: two-color title + info cards)
+    // Section 3: Our focus + People are at the heart + Corporate responsibility + Awards
+    // Each focus card has a 4th CTA cell linking to /stryker/rise.
     const focusCard = (image, title, sub, body) => [
       img(document, image, title),
       title,
       el(document, 'div', `<p><strong>${sub}</strong></p><p>${body}</p>`),
+      anchor(document, '/stryker/rise', '/content/aem-boilerplate-nr/stryker/rise'),
     ];
-    blocks.push(['overview-stryker', [
+    const section3 = [];
+    section3.push(['overview-stryker', [
       ['Our'],
       ['focus'],
       [el(document, 'div', '')],
@@ -87,8 +119,8 @@ export default {
       focusCard(`${MEDIA}/trainingAndEducation-ourFocus?$max_width_1440$`, 'Training and education', 'Advancing product and procedural knowledge', 'Our partnership goes beyond delivering the latest technology and solutions. We offer a wide range of training and education options to help ensure you\'re making the most of your time and investment.'),
     ]]);
 
-    // 4b. People are at the heart (text-and-media advanced: headline + CTA + group photo)
-    blocks.push(['text-and-media-stryker', [
+    // People are at the heart (text-and-media advanced: headline + group photo)
+    section3.push(['text-and-media-stryker', [
       [img(document, `${MEDIA}/PeopleGraphic_V5?$max_width_1440$`, 'Group photo')],
       [''],
       ['People are at the heart of what we do,'],
@@ -98,8 +130,8 @@ export default {
       ['media-right'],
     ]]);
 
-    // 5. Corporate responsibility (full-bleed image, text overlaid right)
-    blocks.push(['get-to-know-us-stryker', [
+    // Corporate responsibility (full-bleed image, text overlaid right)
+    section3.push(['get-to-know-us-stryker', [
       [img(document, `${MEDIA}/MakingAnImpact-greenGrad-desktopV4?$max_width_1440$`, 'Corporate responsibility')],
       [el(document, 'div', '<h2>Corporate responsibility</h2><p>We are committed to positively impacting people and our planet through responsible, sustainable practices that create a better, healthier world.</p>')],
       ['Read our 2024 Comprehensive Report'],
@@ -108,9 +140,9 @@ export default {
       [el(document, 'div', '')],
     ]]);
 
-    // 6. Awards (image gallery)
+    // Awards (image gallery)
     const award = (slug, alt) => [img(document, `${MEDIA}/${slug}?$max_width_png$`, alt)];
-    blocks.push(['image-gallery-stryker', [
+    section3.push(['image-gallery-stryker', [
       ['Awards'],
       ['We owe our achievements to our dedicated employees'],
       ['View all awards'],
@@ -123,17 +155,10 @@ export default {
       award('100-best-companies-maufacturing-production-small', 'Best Workplaces Manufacturing 2025'),
     ]]);
 
-    // Build flat blocks with section breaks.
-    blocks.forEach(([name, cells], idx) => {
-      if (idx > 0) main.append(document.createElement('hr'));
-      const block = WebImporter.Blocks.createBlock(document, { name, cells });
-      main.append(block);
-    });
-
-    // 7. Quick links — container + items (2-level, round-trips through md2jcr).
+    // Section 4: Quick links + legal text
+    // Quick links — container + items (2-level, round-trips through md2jcr).
     // Each item is [linkLabel, linkUrl]; a blank URL makes the item a column
     // header. The first row is the block heading.
-    main.append(document.createElement('hr'));
     const quickItems = [['Quick links']];
     const quickGroup = (category, links) => {
       quickItems.push([category, '']); // header item (blank URL)
@@ -143,10 +168,24 @@ export default {
     quickGroup('Offerings', [['Services', '/stryker/home'], ['Care Settings', '/stryker/home'], ['Training and Education', '/stryker/home']]);
     quickGroup('Our company', [['Contact Us', '/stryker/home'], ['Investor Relations', 'https://investors.stryker.com/'], ['Comprehensive Report', '/stryker/home']]);
     quickGroup('More information', [['Advanced Digital Healthcare', '/stryker/home'], ['Ambulatory Surgery Centers', '/stryker/home'], ['Training and Education', '/stryker/home'], ['Accessibility Statement', '/stryker/home'], ['Patients', 'https://patients.stryker.com/index.html']]);
-    main.append(WebImporter.Blocks.createBlock(document, {
-      name: 'quick-links-stryker',
-      cells: quickItems,
-    }));
+    const section4 = [
+      ['quick-links-stryker', quickItems],
+      ['legal-text-stryker', [['COMM-GSNPS-SYK-601900_Rev-8']]],
+    ];
+
+    // Assemble sections: blocks within a section are contiguous; an <hr> only
+    // separates one section from the next.
+    const sections = [section1, section2, section3, section4];
+    sections.forEach((section, sIdx) => {
+      if (sIdx > 0) main.append(document.createElement('hr'));
+      section.forEach(([name, cells]) => {
+        try {
+          main.append(WebImporter.Blocks.createBlock(document, { name, cells }));
+        } catch (blockErr) {
+          main.append(errorBlock(document, `failed to build the "${name}" block — ${blockErr.message}`));
+        }
+      });
+    });
 
     // Page metadata
     main.append(document.createElement('hr'));
@@ -154,16 +193,26 @@ export default {
       name: 'metadata',
       cells: {
         Title: 'Stryker - Medical Devices and Equipment Manufacturing Company',
+        Description: 'Stryker is one of the world\'s leading medical technology companies. Alongside our customers around the world, we impact more than 150 million patients annually.',
         theme: 'stryker',
-        nav: '/content/stryker/nav',
+        nav: '/content/stryker/nav-home',
         footer: '/content/stryker/footer',
       },
     }));
 
+    const allBlocks = sections.flat().map((b) => b[0]);
     return [{
       element: main,
       path: '/stryker/home',
-      report: { title: 'Stryker Home', template: 'stryker-home', blocks: [...blocks.map((b) => b[0]), 'quick-links-stryker'] },
+      report: { title: 'Stryker Home', template: 'stryker-home', blocks: allBlocks },
     }];
+    } catch (err) {
+      main.append(errorBlock(document, err && err.message ? err.message : String(err)));
+      return [{
+        element: main,
+        path: '/stryker/home',
+        report: { title: 'Stryker Home', template: 'stryker-home', blocks: ['error'] },
+      }];
+    }
   },
 };

@@ -224,11 +224,18 @@ var CustomImportScript = (() => {
         [galleryItem("Experience one billion colors", "62.5x more colors.", "")],
         [galleryItem("Fluorescence imaging", "Clearer delineation of fluorescence signal for improved visualization.", "https://www.stryker.com/fluorescence")]
       ]]);
-      const tab = (name, contentEl) => childBlock("tabbed-content-tab-stryker", [[name], [contentEl]]);
+      const tabItem = (tabName, title, body, linkText) => [
+        tabName,
+        img(document, "https://placehold.co/400x300/eeeeee/333333?text=Item", title),
+        el(document, "div", `<p>${title}</p><p>${body}</p>`),
+        linkText,
+        anchor(document, "https://www.stryker.com/", linkText)
+      ];
       blocks.push(["tabbed-content-stryker", [
-        [tab("Product Information", el(document, "div", "<h3>Connected Solutions Beds Brochure</h3><p>Download the brochure to learn more.</p>"))],
-        [tab("Related Products", el(document, "div", "<h3>ProCuity LE(X) / Z(X)</h3><p>For an enhanced MedSurg experience.</p>"))],
-        [tab("Videos", el(document, "div", "<h3>iBed Vision</h3><p>Watch the overview video.</p>"))]
+        [""],
+        tabItem("Product Information", "Connected Solutions Beds Brochure", "Download the brochure to learn more.", "Download"),
+        tabItem("Related Products", "ProCuity LE(X) / Z(X)", "For an enhanced MedSurg experience.", "Learn More"),
+        ["Videos", "", el(document, "div", "<p>iBed Vision</p>"), "", anchor(document, "https://youtu.be/kRIuiIy_SCs", "https://youtu.be/kRIuiIy_SCs")]
       ]]);
       blocks.forEach(([name, cells], idx) => {
         if (idx > 0) main.append(document.createElement("hr"));
