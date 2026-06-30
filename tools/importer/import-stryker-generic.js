@@ -144,6 +144,84 @@ function extractVideo(document, section) {
   })];
 }
 
+// c-autocarousel → the page hero. Each slide wraps an experience fragment whose
+// content is a standalone image or video. We recover the first slide's image as
+// a full-width hero image (default content); if the slide is a video, fall
+// through to a video block.
+function extractCarousel(document, section) {
+  const firstSlide = section.querySelector('.carouselslide, .autoplay-slide') || section;
+  const img = firstSlide.querySelector('img');
+  if (img && imgSrc(img)) {
+    return [imgNode(document, imgSrc(img), img.getAttribute('alt') || '')];
+  }
+  if (firstSlide.querySelector('.c-standalone-video-content, a[href*="youtu"], iframe[src]')) {
+    return extractVideo(document, firstSlide);
+  }
+  return null;
+}
+
+// c-table → render the table's content as default-content paragraphs/list. A
+// raw <table> can't be emitted here: md2jcr/html2md treat a table whose first
+// row is a header as an EDS block named after that header text, which throws
+// ("component does not exist"). Flattening to text avoids that while keeping
+// the information. The first header row becomes a heading; each body row is a
+// "label: cols" line.
+function extractTable(document, section) {
+  const table = section.querySelector('table');
+  if (!table) return null;
+  const rows = [...table.querySelectorAll('tr')];
+  if (!rows.length) return null;
+  const nodes = [];
+  const headerCells = [...rows[0].querySelectorAll('th')];
+  const headers = headerCells.map((c) => text(c));
+  if (headers.length) {
+    nodes.push(el(document, 'h3', headers[0] || 'Details'));
+  }
+  const ul = document.createElement('ul');
+  rows.slice(headers.length ? 1 : 0).forEach((tr) => {
+    const tds = [...tr.children].map((c) => text(c)).filter((t) => t !== '');
+    if (!tds.length) return;
+    const li = document.createElement('li');
+    li.textContent = tds.join(' — ');
+    ul.append(li);
+  });
+  if (ul.children.length) nodes.push(ul);
+  return nodes.length ? nodes : null;
+}
+
+// c-resourcesanddownload (standalone, outside a tab) → cards-stryker. Each
+// `.item` is a downloadable asset: thumbnail image + a Download link.
+function extractResources(document, section) {
+  const items = [...section.querySelectorAll('.item')];
+  if (!items.length) return null;
+  const cells = [[''], ['3'], ['default']];
+  items.forEach((item) => {
+    const img = item.querySelector('img');
+    const link = item.querySelector('a[target="_blank"], a');
+    const titleText = img?.getAttribute('alt') || text(item.querySelector('h2, h3, h4')) || text(link);
+    const ctaHref = link?.getAttribute('href') || '#';
+    cells.push([
+      imgNode(document, imgSrc(img), titleText),
+      'Download',
+      anchorNode(document, ctaHref, 'Download'),
+      el(document, 'div', `<p>${titleText}</p>`),
+    ]);
+  });
+  return [WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells })];
+}
+
+// c-marketo-form → a contact CTA. The form itself is Marketo/JS and has no EDS
+// equivalent, so surface its success message (or a default) as a section banner
+// inviting the reader to get in touch.
+function extractMarketoForm(document, section) {
+  const msg = text(section.querySelector('.alert, .marketo-form-content p'))
+    || 'Interested in learning more? Talk to a rep today.';
+  return [WebImporter.Blocks.createBlock(document, {
+    name: 'section-banner-stryker',
+    cells: [[el(document, 'div', `<p>${msg}</p>`)]],
+  })];
+}
+
 // c-latestnews → cards-stryker (news style). Each `.item` is a news teaser:
 // image, headline, description, Read More link.
 function extractLatestNews(document, section) {
@@ -270,8 +348,14 @@ const EXTRACTORS = {
   'c-latestnews': extractLatestNews,
   'c-largeheadline': extractLargeHeadline,
   'c-full-bleed-panel': extractFullBleedPanel,
+  'c-autocarousel': extractCarousel,
+  'c-table': extractTable,
+  'c-marketo-form': extractMarketoForm,
+  'c-resourcesanddownload': extractResources,
   'c-tabs': extractTabs,
   'c-text': extractText,
+  // c-ourcompany is an empty JS-hydrated placeholder; falls through to
+  // extractText which returns null, so it is safely skipped.
 };
 
 // Identify the c-{type} token on a page-section element.

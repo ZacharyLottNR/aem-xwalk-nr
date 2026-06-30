@@ -100,6 +100,64 @@ var CustomImportScript = (() => {
       cells: [[anchorNode(document, isUsableUrl(url) ? url : FALLBACK_VIDEO, url)], [""]]
     })];
   }
+  function extractCarousel(document, section) {
+    const firstSlide = section.querySelector(".carouselslide, .autoplay-slide") || section;
+    const img = firstSlide.querySelector("img");
+    if (img && imgSrc(img)) {
+      return [imgNode(document, imgSrc(img), img.getAttribute("alt") || "")];
+    }
+    if (firstSlide.querySelector('.c-standalone-video-content, a[href*="youtu"], iframe[src]')) {
+      return extractVideo(document, firstSlide);
+    }
+    return null;
+  }
+  function extractTable(document, section) {
+    const table = section.querySelector("table");
+    if (!table) return null;
+    const rows = [...table.querySelectorAll("tr")];
+    if (!rows.length) return null;
+    const nodes = [];
+    const headerCells = [...rows[0].querySelectorAll("th")];
+    const headers = headerCells.map((c) => text(c));
+    if (headers.length) {
+      nodes.push(el(document, "h3", headers[0] || "Details"));
+    }
+    const ul = document.createElement("ul");
+    rows.slice(headers.length ? 1 : 0).forEach((tr) => {
+      const tds = [...tr.children].map((c) => text(c)).filter((t) => t !== "");
+      if (!tds.length) return;
+      const li = document.createElement("li");
+      li.textContent = tds.join(" \u2014 ");
+      ul.append(li);
+    });
+    if (ul.children.length) nodes.push(ul);
+    return nodes.length ? nodes : null;
+  }
+  function extractResources(document, section) {
+    const items = [...section.querySelectorAll(".item")];
+    if (!items.length) return null;
+    const cells = [[""], ["3"], ["default"]];
+    items.forEach((item) => {
+      const img = item.querySelector("img");
+      const link = item.querySelector('a[target="_blank"], a');
+      const titleText = (img == null ? void 0 : img.getAttribute("alt")) || text(item.querySelector("h2, h3, h4")) || text(link);
+      const ctaHref = (link == null ? void 0 : link.getAttribute("href")) || "#";
+      cells.push([
+        imgNode(document, imgSrc(img), titleText),
+        "Download",
+        anchorNode(document, ctaHref, "Download"),
+        el(document, "div", `<p>${titleText}</p>`)
+      ]);
+    });
+    return [WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells })];
+  }
+  function extractMarketoForm(document, section) {
+    const msg = text(section.querySelector(".alert, .marketo-form-content p")) || "Interested in learning more? Talk to a rep today.";
+    return [WebImporter.Blocks.createBlock(document, {
+      name: "section-banner-stryker",
+      cells: [[el(document, "div", `<p>${msg}</p>`)]]
+    })];
+  }
   function extractLatestNews(document, section) {
     const items = [...section.querySelectorAll(".item")];
     if (!items.length) return null;
@@ -199,8 +257,14 @@ var CustomImportScript = (() => {
     "c-latestnews": extractLatestNews,
     "c-largeheadline": extractLargeHeadline,
     "c-full-bleed-panel": extractFullBleedPanel,
+    "c-autocarousel": extractCarousel,
+    "c-table": extractTable,
+    "c-marketo-form": extractMarketoForm,
+    "c-resourcesanddownload": extractResources,
     "c-tabs": extractTabs,
     "c-text": extractText
+    // c-ourcompany is an empty JS-hydrated placeholder; falls through to
+    // extractText which returns null, so it is safely skipped.
   };
   function componentType(section) {
     return [...section.classList].find((c) => c.startsWith("c-")) || null;
