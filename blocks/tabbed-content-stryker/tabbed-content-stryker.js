@@ -20,14 +20,15 @@ function youTubeEmbedUrl(url) {
 }
 
 // Build the rendered node for one item row.
-// Cell order matches the item model: 0 tabName, 1 image, 2 text, 3 linkText,
-// 4 link (imageAlt folds into the image). A YouTube link renders an embedded
-// player; any other link renders a card CTA whose label is linkText.
+// Cell order matches the item model's field groups: 0 tabName, 1 image,
+// 2 ctaLabel, 3 ctaUrl, 4 text (imageAlt folds into the image). A YouTube
+// ctaUrl renders an embedded player; any other renders a card CTA whose label
+// is ctaLabel.
 function renderItem(cells) {
   const imageCell = cells[1];
-  const textCell = cells[2];
-  const linkTextCell = cells[3];
-  const linkCell = cells[4];
+  const ctaLabelCell = cells[2];
+  const linkCell = cells[3];
+  const textCell = cells[4];
 
   const href = linkCell?.querySelector('a')?.href || linkCell?.textContent?.trim();
   const embedUrl = href ? youTubeEmbedUrl(href) : null;
@@ -69,7 +70,7 @@ function renderItem(cells) {
     const link = document.createElement('a');
     link.className = 'tabbed-content-item-stryker-link';
     link.href = href;
-    link.textContent = linkTextCell?.textContent?.trim()
+    link.textContent = ctaLabelCell?.textContent?.trim()
       || linkCell?.querySelector('a')?.textContent?.trim()
       || 'Learn More';
     item.append(link);

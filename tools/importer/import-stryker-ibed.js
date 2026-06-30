@@ -137,23 +137,25 @@ export default {
 
     // Tabbed content mirrors cards-stryker: a single block whose first row is the
     // block-level heading field, followed by one multi-cell row per item. Items
-    // sharing a tabName group under one tab. Item cell order matches the model:
-    // tabName, image, text, linkText, link (imageAlt folds into the image). A
-    // YouTube link renders a video player; any other link renders a card CTA
-    // whose label is linkText (the aem-content link field only keeps the URL).
-    const tabCard = (tabName, image, title, body, linkText, linkUrl) => [
+    // sharing a tabName group under one tab. Item cell order matches the model's
+    // field groups: tabName, image, ctaLabel, ctaUrl, text (imageAlt folds into
+    // the image). A YouTube ctaUrl renders a video player; any other renders a
+    // card CTA whose label is ctaLabel. Fields use the ctaLabel/ctaUrl naming
+    // from cards-stryker-card so md2jcr maps each to its own cell — a name like
+    // "linkText" would collapse into the link field and break the conversion.
+    const tabCard = (tabName, image, title, body, ctaLabel, ctaUrl) => [
       tabName,
       img(document, image, title),
+      ctaLabel,
+      anchor(document, ctaUrl || '/stryker/home', ctaLabel),
       el(document, 'div', `<p>${title}</p>${body ? `<p>${body}</p>` : ''}`),
-      linkText,
-      anchor(document, linkUrl || '/stryker/home', linkText),
     ];
     const tabVideo = (tabName, title, url) => [
       tabName,
       '',
-      el(document, 'div', `<p>${title}</p>`),
       '',
       videoAnchor(document, url),
+      el(document, 'div', `<p>${title}</p>`),
     ];
 
     main.append(childBlock('tabbed-content-stryker', [

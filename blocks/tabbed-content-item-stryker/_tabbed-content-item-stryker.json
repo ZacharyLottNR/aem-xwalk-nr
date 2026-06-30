@@ -42,26 +42,26 @@
           "value": ""
         },
         {
-          "component": "richtext",
-          "valueType": "string",
-          "name": "text",
-          "label": "Text",
-          "value": ""
-        },
-        {
           "component": "text",
           "valueType": "string",
-          "name": "linkText",
-          "label": "Link Text",
+          "name": "ctaLabel",
+          "label": "CTA Label",
           "value": "",
           "description": "Optional. The CTA label (e.g. Download, Learn More). Ignored for video items."
         },
         {
           "component": "aem-content",
           "valueType": "string",
-          "name": "link",
-          "label": "Link",
+          "name": "ctaUrl",
+          "label": "CTA URL",
           "description": "Optional. A card CTA link, or a YouTube URL to embed the item as a video player."
+        },
+        {
+          "component": "richtext",
+          "valueType": "string",
+          "name": "text",
+          "label": "Text",
+          "value": ""
         }
       ]
     }
