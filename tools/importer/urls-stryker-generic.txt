@@ -1,0 +1,2 @@
+# Generic Stryker importer — point at any Stryker product page.
+https://www.stryker.com/us/en/acute-care/products/ibed-wireless.html
