@@ -144,6 +144,53 @@ function extractVideo(document, section) {
   })];
 }
 
+// c-latestnews → cards-stryker (news style). Each `.item` is a news teaser:
+// image, headline, description, Read More link.
+function extractLatestNews(document, section) {
+  const items = [...section.querySelectorAll('.item')];
+  if (!items.length) return null;
+  const heading = text(section.querySelector('.c-section-title, h2')) || 'Latest news';
+  const cells = [[heading], ['4'], ['news']];
+  items.forEach((item) => {
+    const img = item.querySelector('img');
+    const titleEl = item.querySelector('h2, h3, h4, .m-c-subheading-description');
+    const ctaEl = item.querySelector('a.news-link, a.action-link, a');
+    const desc = [...item.querySelectorAll('p.description, .desc-container p')]
+      .map((p) => p.innerHTML.trim()).filter(Boolean);
+    const titleText = text(titleEl);
+    const ctaLabel = text(ctaEl) || 'Read More';
+    const ctaHref = ctaEl?.getAttribute('href') || '#';
+    cells.push([
+      imgNode(document, imgSrc(img), titleText),
+      ctaLabel,
+      anchorNode(document, ctaHref, ctaLabel),
+      el(document, 'div', `<p>${titleText}</p>${desc.map((d) => `<p>${d}</p>`).join('')}`),
+    ]);
+  });
+  return [WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells })];
+}
+
+// c-largeheadline → a two-tone heading. Stryker nests color spans; we keep the
+// plain text as an <h2> (default content) so it round-trips simply.
+function extractLargeHeadline(document, section) {
+  const label = text(section.querySelector('.largeheadline')) || text(section);
+  if (!label) return null;
+  return [el(document, 'h2', label)];
+}
+
+// c-full-bleed-panel → an experience-fragment promo (image + text). Recover the
+// image and any heading/paragraphs as default content; skip if empty.
+function extractFullBleedPanel(document, section) {
+  const nodes = [];
+  const img = section.querySelector('img');
+  if (img) nodes.push(imgNode(document, imgSrc(img), img.getAttribute('alt') || ''));
+  section.querySelectorAll('h1, h2, h3, h4, p').forEach((n) => {
+    const t = n.innerHTML.trim();
+    if (t) nodes.push(el(document, n.tagName.toLowerCase(), t));
+  });
+  return nodes.length ? nodes : null;
+}
+
 // c-disclaimer/c-section-title are handled inline; this covers generic text
 // components (headings + paragraphs) as default content.
 function extractText(document, section) {
@@ -155,13 +202,75 @@ function extractText(document, section) {
   return nodes.length ? nodes : null;
 }
 
+// Collect tab items from a panel into flat tabbed-content-item-stryker rows.
+// Cell order matches the model's field groups: tabName, image, ctaLabel,
+// ctaUrl, text. A panel can hold file cards (c-resourcesanddownload), product
+// cards (c-customizeable) or videos (c-standalone-video-content).
+function tabItemsFromPanel(document, panel, tabName) {
+  const rows = [];
+  const videoSection = panel.querySelector('.c-standalone-video-content');
+  if (videoSection || panel.querySelector('a[href*="youtu"], iframe[src]')) {
+    const a = panel.querySelector('a[href*="youtu"], a[href*="vimeo"]');
+    const iframe = panel.querySelector('iframe[src]');
+    const url = a?.getAttribute('href') || iframe?.getAttribute('src') || FALLBACK_VIDEO;
+    const title = text(panel.querySelector('h2, h3, h4')) || tabName;
+    rows.push([tabName, '', '', anchorNode(document, isUsableUrl(url) ? url : FALLBACK_VIDEO, url), el(document, 'div', `<p>${title}</p>`)]);
+    return rows;
+  }
+  // Card-style items (resources or customizeable products).
+  [...panel.querySelectorAll('.item')].forEach((item) => {
+    const img = item.querySelector('img');
+    const link = item.querySelector('a.action-link, a[target="_blank"], a');
+    const titleEl = item.querySelector('h2, h3, h4');
+    const desc = [...item.querySelectorAll('.desc-container p, p.description')]
+      .map((p) => p.innerHTML.trim()).filter(Boolean);
+    const titleText = text(titleEl) || img?.getAttribute('alt') || text(link);
+    const isDownload = (link?.getAttribute('href') || '').match(/\.(pdf|docx?|xlsx?|zip)$/i)
+      || item.closest('.c-resourcesanddownload');
+    const ctaLabel = text(item.querySelector('a.action-link')) || (isDownload ? 'Download' : 'Learn more');
+    const ctaHref = link?.getAttribute('href') || '#';
+    rows.push([
+      tabName,
+      imgNode(document, imgSrc(img), titleText),
+      ctaLabel,
+      anchorNode(document, ctaHref, ctaLabel),
+      el(document, 'div', `<p>${titleText}</p>${desc.map((d) => `<p>${d}</p>`).join('')}`),
+    ]);
+  });
+  return rows;
+}
+
+// c-tabs → tabbed-content-stryker. Reads the tab labels from `.tab-link` and
+// each panel's content, flattening every panel into tabName-tagged item rows.
+function extractTabs(document, section) {
+  const links = [...section.querySelectorAll('.tabs-nav a.tab-link, nav ul.tab a')];
+  const panels = [...section.querySelectorAll('.tabs-content > .tab-content')];
+  if (!links.length || !panels.length) return null;
+
+  // Block-level heading field row (blank) precedes the item rows.
+  const cells = [['']];
+  links.forEach((link) => {
+    const tabName = text(link);
+    const href = (link.getAttribute('href') || '').replace(/^#/, '');
+    const panel = panels.find((p) => p.id === href) || panels[links.indexOf(link)];
+    if (!tabName || !panel) return;
+    tabItemsFromPanel(document, panel, tabName).forEach((row) => cells.push(row));
+  });
+  if (cells.length <= 1) return null;
+  return [WebImporter.Blocks.createBlock(document, { name: 'tabbed-content-stryker', cells })];
+}
+
 // Dispatch table: c-{type} → extractor. Order doesn't matter; matched by class.
 const EXTRACTORS = {
   'c-standalone-image': extractStandaloneImage,
   'c-disclaimer': extractDisclaimer,
   'c-customizeable': extractCustomizeable,
-  'c-standalone-video-content': extractVideo,
   'c-procare-tile-addinfo': extractCustomizeable,
+  'c-standalone-video-content': extractVideo,
+  'c-latestnews': extractLatestNews,
+  'c-largeheadline': extractLargeHeadline,
+  'c-full-bleed-panel': extractFullBleedPanel,
+  'c-tabs': extractTabs,
   'c-text': extractText,
 };
 

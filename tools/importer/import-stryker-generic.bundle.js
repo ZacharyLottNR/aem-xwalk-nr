@@ -100,6 +100,43 @@ var CustomImportScript = (() => {
       cells: [[anchorNode(document, isUsableUrl(url) ? url : FALLBACK_VIDEO, url)], [""]]
     })];
   }
+  function extractLatestNews(document, section) {
+    const items = [...section.querySelectorAll(".item")];
+    if (!items.length) return null;
+    const heading = text(section.querySelector(".c-section-title, h2")) || "Latest news";
+    const cells = [[heading], ["4"], ["news"]];
+    items.forEach((item) => {
+      const img = item.querySelector("img");
+      const titleEl = item.querySelector("h2, h3, h4, .m-c-subheading-description");
+      const ctaEl = item.querySelector("a.news-link, a.action-link, a");
+      const desc = [...item.querySelectorAll("p.description, .desc-container p")].map((p) => p.innerHTML.trim()).filter(Boolean);
+      const titleText = text(titleEl);
+      const ctaLabel = text(ctaEl) || "Read More";
+      const ctaHref = (ctaEl == null ? void 0 : ctaEl.getAttribute("href")) || "#";
+      cells.push([
+        imgNode(document, imgSrc(img), titleText),
+        ctaLabel,
+        anchorNode(document, ctaHref, ctaLabel),
+        el(document, "div", `<p>${titleText}</p>${desc.map((d) => `<p>${d}</p>`).join("")}`)
+      ]);
+    });
+    return [WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells })];
+  }
+  function extractLargeHeadline(document, section) {
+    const label = text(section.querySelector(".largeheadline")) || text(section);
+    if (!label) return null;
+    return [el(document, "h2", label)];
+  }
+  function extractFullBleedPanel(document, section) {
+    const nodes = [];
+    const img = section.querySelector("img");
+    if (img) nodes.push(imgNode(document, imgSrc(img), img.getAttribute("alt") || ""));
+    section.querySelectorAll("h1, h2, h3, h4, p").forEach((n) => {
+      const t = n.innerHTML.trim();
+      if (t) nodes.push(el(document, n.tagName.toLowerCase(), t));
+    });
+    return nodes.length ? nodes : null;
+  }
   function extractText(document, section) {
     const nodes = [];
     section.querySelectorAll("h1, h2, h3, h4, p").forEach((n) => {
@@ -108,12 +145,61 @@ var CustomImportScript = (() => {
     });
     return nodes.length ? nodes : null;
   }
+  function tabItemsFromPanel(document, panel, tabName) {
+    const rows = [];
+    const videoSection = panel.querySelector(".c-standalone-video-content");
+    if (videoSection || panel.querySelector('a[href*="youtu"], iframe[src]')) {
+      const a = panel.querySelector('a[href*="youtu"], a[href*="vimeo"]');
+      const iframe = panel.querySelector("iframe[src]");
+      const url = (a == null ? void 0 : a.getAttribute("href")) || (iframe == null ? void 0 : iframe.getAttribute("src")) || FALLBACK_VIDEO;
+      const title = text(panel.querySelector("h2, h3, h4")) || tabName;
+      rows.push([tabName, "", "", anchorNode(document, isUsableUrl(url) ? url : FALLBACK_VIDEO, url), el(document, "div", `<p>${title}</p>`)]);
+      return rows;
+    }
+    [...panel.querySelectorAll(".item")].forEach((item) => {
+      const img = item.querySelector("img");
+      const link = item.querySelector('a.action-link, a[target="_blank"], a');
+      const titleEl = item.querySelector("h2, h3, h4");
+      const desc = [...item.querySelectorAll(".desc-container p, p.description")].map((p) => p.innerHTML.trim()).filter(Boolean);
+      const titleText = text(titleEl) || (img == null ? void 0 : img.getAttribute("alt")) || text(link);
+      const isDownload = ((link == null ? void 0 : link.getAttribute("href")) || "").match(/\.(pdf|docx?|xlsx?|zip)$/i) || item.closest(".c-resourcesanddownload");
+      const ctaLabel = text(item.querySelector("a.action-link")) || (isDownload ? "Download" : "Learn more");
+      const ctaHref = (link == null ? void 0 : link.getAttribute("href")) || "#";
+      rows.push([
+        tabName,
+        imgNode(document, imgSrc(img), titleText),
+        ctaLabel,
+        anchorNode(document, ctaHref, ctaLabel),
+        el(document, "div", `<p>${titleText}</p>${desc.map((d) => `<p>${d}</p>`).join("")}`)
+      ]);
+    });
+    return rows;
+  }
+  function extractTabs(document, section) {
+    const links = [...section.querySelectorAll(".tabs-nav a.tab-link, nav ul.tab a")];
+    const panels = [...section.querySelectorAll(".tabs-content > .tab-content")];
+    if (!links.length || !panels.length) return null;
+    const cells = [[""]];
+    links.forEach((link) => {
+      const tabName = text(link);
+      const href = (link.getAttribute("href") || "").replace(/^#/, "");
+      const panel = panels.find((p) => p.id === href) || panels[links.indexOf(link)];
+      if (!tabName || !panel) return;
+      tabItemsFromPanel(document, panel, tabName).forEach((row) => cells.push(row));
+    });
+    if (cells.length <= 1) return null;
+    return [WebImporter.Blocks.createBlock(document, { name: "tabbed-content-stryker", cells })];
+  }
   var EXTRACTORS = {
     "c-standalone-image": extractStandaloneImage,
     "c-disclaimer": extractDisclaimer,
     "c-customizeable": extractCustomizeable,
-    "c-standalone-video-content": extractVideo,
     "c-procare-tile-addinfo": extractCustomizeable,
+    "c-standalone-video-content": extractVideo,
+    "c-latestnews": extractLatestNews,
+    "c-largeheadline": extractLargeHeadline,
+    "c-full-bleed-panel": extractFullBleedPanel,
+    "c-tabs": extractTabs,
     "c-text": extractText
   };
   function componentType(section) {
