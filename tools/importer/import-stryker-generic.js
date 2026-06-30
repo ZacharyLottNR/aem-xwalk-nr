@@ -354,6 +354,9 @@ const EXTRACTORS = {
   'c-resourcesanddownload': extractResources,
   'c-tabs': extractTabs,
   'c-text': extractText,
+  // c-title / c-tagline hold a hydrated heading or tagline; emit their text.
+  'c-title': extractText,
+  'c-tagline': extractText,
   // c-ourcompany is an empty JS-hydrated placeholder; falls through to
   // extractText which returns null, so it is safely skipped.
 };
@@ -363,7 +366,66 @@ function componentType(section) {
   return [...section.classList].find((c) => c.startsWith('c-')) || null;
 }
 
+// A "card unit" is a grid column (.xf-master-building-block) that bundles an
+// image + heading + description + link — Stryker assembles these from separate
+// image/title/tagline sub-components that only exist after client hydration.
+// They are NOT a single c-* component, so the per-page-section dispatch misses
+// them; we detect them structurally instead.
+function isCardUnit(node) {
+  return node.classList?.contains('xf-master-building-block')
+    && node.querySelector('img')
+    && node.querySelector('h2, h3, h4');
+}
+
+// Build a cards-stryker block from a list of card-unit elements. Cell order
+// matches cards-stryker-card field groups: image, ctaLabel, ctaUrl, text.
+function cardsFromUnits(document, units, heading) {
+  const cells = [[heading || ''], ['3'], ['default']];
+  units.forEach((unit) => {
+    const img = unit.querySelector('img');
+    const titleEl = unit.querySelector('h2, h3, h4');
+    const link = unit.querySelector('a[href]');
+    const titleText = text(titleEl) || img?.getAttribute('alt') || '';
+    const desc = [...unit.querySelectorAll('p')]
+      .map((p) => p.innerHTML.trim())
+      .filter((t) => t && t !== titleText);
+    const href = link?.getAttribute('href') || '#';
+    cells.push([
+      imgNode(document, imgSrc(img), titleText),
+      'Learn more',
+      anchorNode(document, href, 'Learn more'),
+      el(document, 'div', `<p>${titleText}</p>${desc.map((d) => `<p>${d}</p>`).join('')}`),
+    ]);
+  });
+  return WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells });
+}
+
 export default {
+  // Stryker renders much of a page (training cards, carousels, taglines) with
+  // client-side JS. Wait for that hydration to finish before the DOM is read,
+  // otherwise headings/descriptions come through empty. Runs in the browser.
+  onLoad: async ({ document }) => {
+    /* global window */
+    const sleep = (ms) => new Promise((r) => { setTimeout(r, ms); });
+    // Scroll through the page to trigger lazy hydration of off-screen widgets.
+    const h = document.body.scrollHeight;
+    for (let y = 0; y <= h; y += 600) {
+      window.scrollTo(0, y);
+      // eslint-disable-next-line no-await-in-loop
+      await sleep(120);
+    }
+    window.scrollTo(0, 0);
+    // Wait (up to ~6s) until card grids have real headings, not empty shells.
+    for (let i = 0; i < 30; i += 1) {
+      const cards = document.querySelectorAll('.xf-master-building-block');
+      const ready = [...cards].some((c) => c.querySelector('h2, h3, h4')
+        && (c.querySelector('h2, h3, h4').textContent || '').trim());
+      if (ready || !cards.length) break;
+      // eslint-disable-next-line no-await-in-loop
+      await sleep(200);
+    }
+  },
+
   transform: ({ document, url }) => {
     const main = document.createElement('div');
     const blockNames = [];
@@ -397,25 +459,60 @@ export default {
       const sectionsOut = [{ anchorLabel: '', nodes: [] }];
       let current = sectionsOut[0];
 
+      // Card units (.xf-master-building-block) bundle an image page-section with
+      // a hydrated heading + tagline. We collect contiguous units into one
+      // cards-stryker block. `pendingCards` buffers units until a non-card
+      // section (or section break) flushes them.
+      let pendingCards = [];
+      const flushCards = () => {
+        if (!pendingCards.length) return;
+        try {
+          current.nodes.push(cardsFromUnits(document, pendingCards));
+          blockNames.push('cards-stryker');
+        } catch (e) {
+          current.nodes.push(errorBlock(document, `failed to build card grid — ${e.message}`));
+        }
+        pendingCards = [];
+      };
+      const seenUnits = new Set();
+
       pageSections.forEach((section) => {
         const type = componentType(section);
 
         // A section-title opens a new EDS section with an anchor label.
         if (type === 'c-section-title' || section.classList.contains('jumpbarparsys')) {
+          flushCards();
           const label = section.getAttribute('data-title') || text(section);
           current = { anchorLabel: label || '', nodes: [] };
           sectionsOut.push(current);
           return;
         }
 
+        // If this page-section is part of a hydrated card unit, handle the whole
+        // unit once and buffer it (so consecutive cards become one grid).
+        const unit = section.closest?.('.xf-master-building-block');
+        if (unit && isCardUnit(unit)) {
+          if (!seenUnits.has(unit)) { seenUnits.add(unit); pendingCards.push(unit); }
+          return;
+        }
+
+        // Any other component flushes buffered cards first, then extracts.
+        flushCards();
         const extractor = EXTRACTORS[type];
         try {
           const produced = extractor ? extractor(document, section) : extractText(document, section);
-          if (produced && produced.length) current.nodes.push(...produced);
+          if (produced && produced.length) {
+            current.nodes.push(...produced);
+          } else if (!extractor && type) {
+            // Unknown component with no recoverable content — leave a visible
+            // marker rather than dropping it silently.
+            current.nodes.push(errorBlock(document, `unmapped component "${type}" had no extractable content`));
+          }
         } catch (compErr) {
           current.nodes.push(errorBlock(document, `failed to extract ${type || 'section'} — ${compErr.message}`));
         }
       });
+      flushCards();
 
       // Insert the sticky anchor nav into the first section (after the hero).
       sectionsOut[0].nodes.push(WebImporter.Blocks.createBlock(document, {

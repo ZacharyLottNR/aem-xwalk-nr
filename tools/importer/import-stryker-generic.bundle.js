@@ -17,6 +17,26 @@ var CustomImportScript = (() => {
     return to;
   };
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+  var __async = (__this, __arguments, generator) => {
+    return new Promise((resolve, reject) => {
+      var fulfilled = (value) => {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      var rejected = (value) => {
+        try {
+          step(generator.throw(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+      step((generator = generator.apply(__this, __arguments)).next());
+    });
+  };
 
   // tools/importer/import-stryker-generic.js
   var import_stryker_generic_exports = {};
@@ -262,14 +282,59 @@ var CustomImportScript = (() => {
     "c-marketo-form": extractMarketoForm,
     "c-resourcesanddownload": extractResources,
     "c-tabs": extractTabs,
-    "c-text": extractText
+    "c-text": extractText,
+    // c-title / c-tagline hold a hydrated heading or tagline; emit their text.
+    "c-title": extractText,
+    "c-tagline": extractText
     // c-ourcompany is an empty JS-hydrated placeholder; falls through to
     // extractText which returns null, so it is safely skipped.
   };
   function componentType(section) {
     return [...section.classList].find((c) => c.startsWith("c-")) || null;
   }
+  function isCardUnit(node) {
+    var _a;
+    return ((_a = node.classList) == null ? void 0 : _a.contains("xf-master-building-block")) && node.querySelector("img") && node.querySelector("h2, h3, h4");
+  }
+  function cardsFromUnits(document, units, heading) {
+    const cells = [[heading || ""], ["3"], ["default"]];
+    units.forEach((unit) => {
+      const img = unit.querySelector("img");
+      const titleEl = unit.querySelector("h2, h3, h4");
+      const link = unit.querySelector("a[href]");
+      const titleText = text(titleEl) || (img == null ? void 0 : img.getAttribute("alt")) || "";
+      const desc = [...unit.querySelectorAll("p")].map((p) => p.innerHTML.trim()).filter((t) => t && t !== titleText);
+      const href = (link == null ? void 0 : link.getAttribute("href")) || "#";
+      cells.push([
+        imgNode(document, imgSrc(img), titleText),
+        "Learn more",
+        anchorNode(document, href, "Learn more"),
+        el(document, "div", `<p>${titleText}</p>${desc.map((d) => `<p>${d}</p>`).join("")}`)
+      ]);
+    });
+    return WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells });
+  }
   var import_stryker_generic_default = {
+    // Stryker renders much of a page (training cards, carousels, taglines) with
+    // client-side JS. Wait for that hydration to finish before the DOM is read,
+    // otherwise headings/descriptions come through empty. Runs in the browser.
+    onLoad: (_0) => __async(void 0, [_0], function* ({ document }) {
+      const sleep = (ms) => new Promise((r) => {
+        setTimeout(r, ms);
+      });
+      const h = document.body.scrollHeight;
+      for (let y = 0; y <= h; y += 600) {
+        window.scrollTo(0, y);
+        yield sleep(120);
+      }
+      window.scrollTo(0, 0);
+      for (let i = 0; i < 30; i += 1) {
+        const cards = document.querySelectorAll(".xf-master-building-block");
+        const ready = [...cards].some((c) => c.querySelector("h2, h3, h4") && (c.querySelector("h2, h3, h4").textContent || "").trim());
+        if (ready || !cards.length) break;
+        yield sleep(200);
+      }
+    }),
     transform: ({ document, url }) => {
       const main = document.createElement("div");
       const blockNames = [];
@@ -284,22 +349,50 @@ var CustomImportScript = (() => {
         const pageSections = [...document.querySelectorAll(".page-section")].filter((s) => !s.closest(".experienceFragment-ef, .experienceFragment-ef-mobile") || s === document.querySelector(".page-section"));
         const sectionsOut = [{ anchorLabel: "", nodes: [] }];
         let current = sectionsOut[0];
+        let pendingCards = [];
+        const flushCards = () => {
+          if (!pendingCards.length) return;
+          try {
+            current.nodes.push(cardsFromUnits(document, pendingCards));
+            blockNames.push("cards-stryker");
+          } catch (e) {
+            current.nodes.push(errorBlock(document, `failed to build card grid \u2014 ${e.message}`));
+          }
+          pendingCards = [];
+        };
+        const seenUnits = /* @__PURE__ */ new Set();
         pageSections.forEach((section) => {
+          var _a;
           const type = componentType(section);
           if (type === "c-section-title" || section.classList.contains("jumpbarparsys")) {
+            flushCards();
             const label = section.getAttribute("data-title") || text(section);
             current = { anchorLabel: label || "", nodes: [] };
             sectionsOut.push(current);
             return;
           }
+          const unit = (_a = section.closest) == null ? void 0 : _a.call(section, ".xf-master-building-block");
+          if (unit && isCardUnit(unit)) {
+            if (!seenUnits.has(unit)) {
+              seenUnits.add(unit);
+              pendingCards.push(unit);
+            }
+            return;
+          }
+          flushCards();
           const extractor = EXTRACTORS[type];
           try {
             const produced = extractor ? extractor(document, section) : extractText(document, section);
-            if (produced && produced.length) current.nodes.push(...produced);
+            if (produced && produced.length) {
+              current.nodes.push(...produced);
+            } else if (!extractor && type) {
+              current.nodes.push(errorBlock(document, `unmapped component "${type}" had no extractable content`));
+            }
           } catch (compErr) {
             current.nodes.push(errorBlock(document, `failed to extract ${type || "section"} \u2014 ${compErr.message}`));
           }
         });
+        flushCards();
         sectionsOut[0].nodes.push(WebImporter.Blocks.createBlock(document, {
           name: "section-anchor-stryker",
           cells: [[""]]
