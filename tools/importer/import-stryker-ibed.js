@@ -202,7 +202,7 @@ export default {
     // === SECTION 7 (no anchor): legal references ===
     sections.push([
       block('legal-text-stryker', [
-        [el(document, 'div', '<p>1. The features listed are only available when iBed Wireless is integrated with third party systems that bring data to EHRs, Handheld devices, Alert Management Systems, Nurse Call, or Asset Management Systems.</p><p>2. As outlined in the IFU, 99.99% efficiency is based on a 10 second time frame, as indicated with UL compliance.</p>')],
+        [el(document, 'div', '<p>1. The features listed are only available when iBed Wireless is integrated with third party systems that bring data to EHRs, Handheld devices, Alert Management Systems, Nurse Call, or Asset Management Systems. The iBed Wireless System requires iBed Radios, iBed Locators, and a Stryker Server application.</p><p>2. If used as outlined in the IFU. 99.99% efficiency is based on a 10 second time frame, as indicated with UL compliance.</p><p>*When combining the proper processes and technologies to help reduce risk of bed related falls.</p><p>**No PHI information is transmitted.</p><p>M0000012519 REV AB<br>Last Updated September/2025</p>')],
       ]),
     ]);
 
