@@ -316,14 +316,24 @@ function extractPromoPanel(document, panel) {
   const heading = panel.querySelector('h1, h2, h3, h4');
   const cta = panel.querySelector('a[href]');
   const headingText = text(heading);
-  // Description = paragraphs that aren't the heading or the CTA label.
   const ctaLabel = text(cta);
-  const desc = [...panel.querySelectorAll('p')]
-    .map((p) => ({ html: p.innerHTML.trim(), plain: text(p) }))
-    .filter((p) => p.plain && p.plain !== headingText && p.plain !== ctaLabel)
-    .map((p) => `<p>${p.html}</p>`)
-    .join('');
-  const bodyHtml = `${headingText ? `<h2>${headingText}</h2>` : ''}${desc}`;
+  // Description = the panel's text leaves that aren't the heading or the CTA.
+  // Stryker renders the blurb in a <span>/<div> (not a <p>), so scan every
+  // childless text-bearing leaf, not just paragraphs. Capturing it here (rather
+  // than letting it fall through) keeps the whole promo in ONE block and, via
+  // the dedup key seeded from block text, stops the safety-net sweep re-emitting
+  // the blurb + CTA as loose content below the card.
+  const seen = new Set();
+  const descParts = [];
+  panel.querySelectorAll('p, span, div').forEach((n) => {
+    if (n.childElementCount) return; // leaf nodes only
+    const plain = text(n);
+    if (!plain || plain === headingText || plain === ctaLabel) return;
+    if (isJunkText(plain) || seen.has(plain)) return;
+    seen.add(plain);
+    descParts.push(`<p>${n.innerHTML.trim() || plain}</p>`);
+  });
+  const bodyHtml = `${headingText ? `<h2>${headingText}</h2>` : ''}${descParts.join('')}`;
   return [WebImporter.Blocks.createBlock(document, {
     name: 'get-to-know-us-stryker',
     cells: [

@@ -277,8 +277,17 @@ var CustomImportScript = (() => {
     const cta = panel.querySelector("a[href]");
     const headingText = text(heading);
     const ctaLabel = text(cta);
-    const desc = [...panel.querySelectorAll("p")].map((p) => ({ html: p.innerHTML.trim(), plain: text(p) })).filter((p) => p.plain && p.plain !== headingText && p.plain !== ctaLabel).map((p) => `<p>${p.html}</p>`).join("");
-    const bodyHtml = `${headingText ? `<h2>${headingText}</h2>` : ""}${desc}`;
+    const seen = /* @__PURE__ */ new Set();
+    const descParts = [];
+    panel.querySelectorAll("p, span, div").forEach((n) => {
+      if (n.childElementCount) return;
+      const plain = text(n);
+      if (!plain || plain === headingText || plain === ctaLabel) return;
+      if (isJunkText(plain) || seen.has(plain)) return;
+      seen.add(plain);
+      descParts.push(`<p>${n.innerHTML.trim() || plain}</p>`);
+    });
+    const bodyHtml = `${headingText ? `<h2>${headingText}</h2>` : ""}${descParts.join("")}`;
     return [WebImporter.Blocks.createBlock(document, {
       name: "get-to-know-us-stryker",
       cells: [
