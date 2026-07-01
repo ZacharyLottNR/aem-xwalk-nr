@@ -83,6 +83,53 @@ function toEmbed(url) {
   return url;
 }
 
+// -------------------------------------------------------------------------
+// Junk filter
+// -------------------------------------------------------------------------
+// The maximal-capture sweep and the lossless fallback would otherwise pull in
+// non-article text: JS-injected video-player controls, share/embed dialogs, the
+// cookie-consent modal, mobile-nav menus and leaked widget config strings.
+// `isJunkText` recognises those fragments so they can be dropped AT CAPTURE
+// TIME (before a node is appended). Patterns are deliberately specific so
+// genuine copy is never matched. Note: filtering must happen at capture time —
+// the runner re-serialises the source document, so removing nodes from the
+// assembled output after the fact has no effect.
+
+// Exact (normalized, lowercased) strings that are always widget/UI chrome.
+const JUNK_EXACT = new Set([
+  'audio', 'menu', 'back', 'continue', 'x', 'search this site', 'select all',
+  'cancel', 'cancelselect all', 'cancelsend email', 'allow all', 'clear',
+  'apply cancel', 'reject all confirm my choices', 'always active',
+  'consent leg.interest', 'embed link', 'share link', 'email this to a friend',
+  'reject all', 'accept all cookies', 'cookies settings', 'confirm my choices',
+  'manage consent preferences', 'cookie list', 'privacy preference center',
+  '8 english', 'our business', 'search…', 'allow all', 'watch on',
+]);
+
+// Regex patterns that reliably identify junk fragments.
+const JUNK_PATTERNS = [
+  /^\d{1,2}:\d{2}(\s*\/\s*\d{1,2}:\d{2})?$/, // media timecodes: "0:00", "0:04 / 0:07"
+  /^\/content\/experience-fragments\//i, // XF path strings
+  /^blob:/i, // blob: media URLs
+  /^rgba?\(/i, // leaked inline color values: "rgba(255,255,255,1)"
+  /^\[[ x]\]/i, // cookie toggles: "[x] Functional Cookies", "[ ] checkbox label"
+  /^(true|false|none)$/i, // leaked widget config values
+  /wrong email address/i, // email-a-friend form copy
+  /to share this content with others/i, // embed/share dialog copy
+  /^\d{2,4}x\d{2,4}$/, // embed size options: "320x240", "640x480"
+  /these cookies (are|enable|allow|may)/i, // OneTrust cookie descriptions
+  /localpage_nav|hcp-banner-overlay|first-item/i, // widget config tokens
+  /copy and past this (code|link)/i, // embed/share instructions
+];
+
+function isJunkText(t) {
+  if (!t) return true;
+  const norm = t.replace(/\s+/g, ' ').trim().toLowerCase();
+  if (!norm) return true; // empty
+  if (JUNK_EXACT.has(norm)) return true;
+  return JUNK_PATTERNS.some((re) => re.test(norm));
+}
+
 // ---- Per-component extractors ---------------------------------------------
 // Each returns an array of nodes (blocks and/or default content) to append to
 // the current section, or null to skip. They never throw — a failure inside one
@@ -264,7 +311,7 @@ function extractFullBleedPanel(document, section) {
   if (img) nodes.push(imgNode(document, imgSrc(img), img.getAttribute('alt') || ''));
   section.querySelectorAll('h1, h2, h3, h4, p').forEach((n) => {
     const t = n.innerHTML.trim();
-    if (t) nodes.push(el(document, n.tagName.toLowerCase(), t));
+    if (t && !isJunkText(text(n))) nodes.push(el(document, n.tagName.toLowerCase(), t));
   });
   return nodes.length ? nodes : null;
 }
@@ -275,7 +322,7 @@ function extractText(document, section) {
   const nodes = [];
   section.querySelectorAll('h1, h2, h3, h4, p').forEach((n) => {
     const t = n.innerHTML.trim();
-    if (t) nodes.push(el(document, n.tagName.toLowerCase(), t));
+    if (t && !isJunkText(text(n))) nodes.push(el(document, n.tagName.toLowerCase(), t));
   });
   return nodes.length ? nodes : null;
 }
@@ -394,6 +441,7 @@ function extractAllContent(document, root) {
     const plain = text(n);
     if (!plain) return;
     if (seenText.has(plain)) return;
+    if (isJunkText(plain)) return; // drop known widget/nav/cookie chrome
     seenText.add(plain);
     const tag = n.tagName.toLowerCase();
     nodes.push(el(document, tag === 'li' ? 'p' : tag, t));
@@ -639,6 +687,7 @@ export default {
         if (n.closest(JUNK)) return;
         if (!isTextLeaf(n)) return;
         const plain = norm(text(n));
+        if (isJunkText(plain)) return; // drop known widget/nav/cookie chrome
         const k = key(plain);
         if (!k || capturedKey.includes(k)) return;
         if (queuedNodes.some((q) => q.contains(n) || n.contains(q))) return;
@@ -651,6 +700,30 @@ export default {
         current.nodes.push(document.createElement('hr'));
         missed.forEach((m) => current.nodes.push(m));
       }
+
+      // Final junk scrub: remove leaked widget/config text from the constructed
+      // nodes BEFORE they're assembled into `main` (post-assembly DOM edits are
+      // ignored — the runner re-serialises the source). Only touches loose
+      // paragraphs/headings/list items whose text is known junk; never removes
+      // anything inside a block table.
+      sectionsOut.forEach((sec) => {
+        sec.nodes.forEach((node) => {
+          if (!node.querySelectorAll) return;
+          if (node.matches && node.matches('table')) return;
+          node.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li').forEach((leaf) => {
+            if (leaf.closest('table')) return;
+            if (![...leaf.children].some((c) => text(c) === text(leaf)) && isJunkText(text(leaf))) {
+              leaf.remove();
+            }
+          });
+          // If the node itself is a loose junk paragraph, drop it.
+          if (node.matches && node.matches('p, h1, h2, h3, h4, h5, h6, li')
+            && isJunkText(text(node)) && !node.querySelector('img, picture, a[href]')) {
+            node._dropped = true;
+          }
+        });
+        sec.nodes = sec.nodes.filter((n) => !n._dropped);
+      });
 
       // Insert the sticky anchor nav into the first section (after the hero).
       sectionsOut[0].nodes.push(WebImporter.Blocks.createBlock(document, {

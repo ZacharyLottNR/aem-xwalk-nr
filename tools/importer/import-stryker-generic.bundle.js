@@ -76,6 +76,72 @@ var CustomImportScript = (() => {
     const cand = img.getAttribute("src") || img.getAttribute("data-src") || (img.getAttribute("srcset") || "").split(",")[0].trim().split(" ")[0];
     return cand || "";
   }
+  var JUNK_EXACT = /* @__PURE__ */ new Set([
+    "audio",
+    "menu",
+    "back",
+    "continue",
+    "x",
+    "search this site",
+    "select all",
+    "cancel",
+    "cancelselect all",
+    "cancelsend email",
+    "allow all",
+    "clear",
+    "apply cancel",
+    "reject all confirm my choices",
+    "always active",
+    "consent leg.interest",
+    "embed link",
+    "share link",
+    "email this to a friend",
+    "reject all",
+    "accept all cookies",
+    "cookies settings",
+    "confirm my choices",
+    "manage consent preferences",
+    "cookie list",
+    "privacy preference center",
+    "8 english",
+    "our business",
+    "search\u2026",
+    "allow all",
+    "watch on"
+  ]);
+  var JUNK_PATTERNS = [
+    /^\d{1,2}:\d{2}(\s*\/\s*\d{1,2}:\d{2})?$/,
+    // media timecodes: "0:00", "0:04 / 0:07"
+    /^\/content\/experience-fragments\//i,
+    // XF path strings
+    /^blob:/i,
+    // blob: media URLs
+    /^rgba?\(/i,
+    // leaked inline color values: "rgba(255,255,255,1)"
+    /^\[[ x]\]/i,
+    // cookie toggles: "[x] Functional Cookies", "[ ] checkbox label"
+    /^(true|false|none)$/i,
+    // leaked widget config values
+    /wrong email address/i,
+    // email-a-friend form copy
+    /to share this content with others/i,
+    // embed/share dialog copy
+    /^\d{2,4}x\d{2,4}$/,
+    // embed size options: "320x240", "640x480"
+    /these cookies (are|enable|allow|may)/i,
+    // OneTrust cookie descriptions
+    /localpage_nav|hcp-banner-overlay|first-item/i,
+    // widget config tokens
+    /copy and past this (code|link)/i
+    // embed/share instructions
+  ];
+  function isJunkText(t) {
+    if (!t) return true;
+    const norm = t.replace(/\s+/g, " ").trim().toLowerCase();
+    if (!norm) return true;
+    if (JUNK_EXACT.has(norm)) return true;
+    return JUNK_PATTERNS.some((re) => re.test(norm));
+  }
   function extractStandaloneImage(document, section) {
     const img = section.querySelector("img");
     if (!img) return null;
@@ -211,7 +277,7 @@ var CustomImportScript = (() => {
     if (img) nodes.push(imgNode(document, imgSrc(img), img.getAttribute("alt") || ""));
     section.querySelectorAll("h1, h2, h3, h4, p").forEach((n) => {
       const t = n.innerHTML.trim();
-      if (t) nodes.push(el(document, n.tagName.toLowerCase(), t));
+      if (t && !isJunkText(text(n))) nodes.push(el(document, n.tagName.toLowerCase(), t));
     });
     return nodes.length ? nodes : null;
   }
@@ -219,7 +285,7 @@ var CustomImportScript = (() => {
     const nodes = [];
     section.querySelectorAll("h1, h2, h3, h4, p").forEach((n) => {
       const t = n.innerHTML.trim();
-      if (t) nodes.push(el(document, n.tagName.toLowerCase(), t));
+      if (t && !isJunkText(text(n))) nodes.push(el(document, n.tagName.toLowerCase(), t));
     });
     return nodes.length ? nodes : null;
   }
@@ -314,6 +380,7 @@ var CustomImportScript = (() => {
       const plain = text(n);
       if (!plain) return;
       if (seenText.has(plain)) return;
+      if (isJunkText(plain)) return;
       seenText.add(plain);
       const tag = n.tagName.toLowerCase();
       nodes.push(el(document, tag === "li" ? "p" : tag, t));
@@ -493,6 +560,7 @@ var CustomImportScript = (() => {
           if (n.closest(JUNK)) return;
           if (!isTextLeaf(n)) return;
           const plain = norm(text(n));
+          if (isJunkText(plain)) return;
           const k = key(plain);
           if (!k || capturedKey.includes(k)) return;
           if (queuedNodes.some((q) => q.contains(n) || n.contains(q))) return;
@@ -505,6 +573,22 @@ var CustomImportScript = (() => {
           current.nodes.push(document.createElement("hr"));
           missed.forEach((m) => current.nodes.push(m));
         }
+        sectionsOut.forEach((sec) => {
+          sec.nodes.forEach((node) => {
+            if (!node.querySelectorAll) return;
+            if (node.matches && node.matches("table")) return;
+            node.querySelectorAll("p, h1, h2, h3, h4, h5, h6, li").forEach((leaf) => {
+              if (leaf.closest("table")) return;
+              if (![...leaf.children].some((c) => text(c) === text(leaf)) && isJunkText(text(leaf))) {
+                leaf.remove();
+              }
+            });
+            if (node.matches && node.matches("p, h1, h2, h3, h4, h5, h6, li") && isJunkText(text(node)) && !node.querySelector("img, picture, a[href]")) {
+              node._dropped = true;
+            }
+          });
+          sec.nodes = sec.nodes.filter((n) => !n._dropped);
+        });
         sectionsOut[0].nodes.push(WebImporter.Blocks.createBlock(document, {
           name: "section-anchor-stryker",
           cells: [[""]]
