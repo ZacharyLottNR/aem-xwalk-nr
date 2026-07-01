@@ -290,7 +290,35 @@ var CustomImportScript = (() => {
     // extractText which returns null, so it is safely skipped.
   };
   function componentType(section) {
-    return [...section.classList].find((c) => c.startsWith("c-")) || null;
+    var _a;
+    const own = [...section.classList || []].find((c) => c.startsWith("c-"));
+    if (own) return own;
+    const inner = (_a = section.querySelector) == null ? void 0 : _a.call(section, "[class]");
+    if (inner) {
+      const nested = [...inner.classList || []].find((c) => c.startsWith("c-"));
+      if (nested) return nested;
+    }
+    return null;
+  }
+  function extractAllContent(document, root) {
+    const nodes = [];
+    const seenText = /* @__PURE__ */ new Set();
+    const walker = root.querySelectorAll("h1, h2, h3, h4, h5, h6, p, li, img");
+    walker.forEach((n) => {
+      if (n.tagName === "IMG") {
+        const src = imgSrc(n);
+        if (isUsableUrl(src)) nodes.push(imgNode(document, src, n.getAttribute("alt") || ""));
+        return;
+      }
+      const t = n.innerHTML.trim();
+      const plain = text(n);
+      if (!plain) return;
+      if (seenText.has(plain)) return;
+      seenText.add(plain);
+      const tag = n.tagName.toLowerCase();
+      nodes.push(el(document, tag === "li" ? "p" : tag, t));
+    });
+    return nodes.length ? nodes : null;
   }
   function isCardUnit(node) {
     var _a;
@@ -346,7 +374,20 @@ var CustomImportScript = (() => {
           if (slug) path = `/stryker/${slug}`;
         } catch (e) {
         }
-        const pageSections = [...document.querySelectorAll(".page-section")].filter((s) => !s.closest(".experienceFragment-ef, .experienceFragment-ef-mobile") || s === document.querySelector(".page-section"));
+        const contentRoot = document.querySelector("main") || document.body;
+        const SELECTOR = [
+          ".c-section-title",
+          ".section-title[data-title]",
+          "[data-title]",
+          ".xf-master-building-block",
+          ".page-section",
+          ".c-disclaimer",
+          ".text.parbase",
+          ".c-rich-text-editor",
+          ".largeheadline"
+        ].join(",");
+        const all = [...contentRoot.querySelectorAll(SELECTOR)].filter((n) => !n.closest("header, footer, nav"));
+        const units = all.filter((n) => !all.some((o) => o !== n && o.contains(n)));
         const sectionsOut = [{ anchorLabel: "", nodes: [] }];
         let current = sectionsOut[0];
         let pendingCards = [];
@@ -360,39 +401,110 @@ var CustomImportScript = (() => {
           }
           pendingCards = [];
         };
-        const seenUnits = /* @__PURE__ */ new Set();
-        pageSections.forEach((section) => {
-          var _a;
-          const type = componentType(section);
-          if (type === "c-section-title" || section.classList.contains("jumpbarparsys")) {
+        const anchorTitleEl = (node) => {
+          var _a, _b;
+          return ((_a = node.matches) == null ? void 0 : _a.call(node, ".c-section-title, .section-title[data-title], [data-title]")) ? node : (_b = node.querySelector) == null ? void 0 : _b.call(node, ".c-section-title, .section-title[data-title], [data-title]");
+        };
+        const consumed = [];
+        const processNode = (node) => {
+          if (node.nodeType !== 1) return;
+          if (["SCRIPT", "STYLE", "LINK", "NOSCRIPT"].includes(node.tagName)) return;
+          consumed.push(node);
+          if (isCardUnit(node)) {
+            pendingCards.push(node);
+            return;
+          }
+          const titleEl = anchorTitleEl(node);
+          if (titleEl && (titleEl.getAttribute("data-title") || text(titleEl))) {
             flushCards();
-            const label = section.getAttribute("data-title") || text(section);
+            const label = titleEl.getAttribute("data-title") || text(titleEl);
             current = { anchorLabel: label || "", nodes: [] };
             sectionsOut.push(current);
             return;
           }
-          const unit = (_a = section.closest) == null ? void 0 : _a.call(section, ".xf-master-building-block");
-          if (unit && isCardUnit(unit)) {
-            if (!seenUnits.has(unit)) {
-              seenUnits.add(unit);
-              pendingCards.push(unit);
-            }
-            return;
-          }
           flushCards();
-          const extractor = EXTRACTORS[type];
+          const type = componentType(node);
+          const extractor = type ? EXTRACTORS[type] : null;
           try {
-            const produced = extractor ? extractor(document, section) : extractText(document, section);
-            if (produced && produced.length) {
-              current.nodes.push(...produced);
-            } else if (!extractor && type) {
-              current.nodes.push(errorBlock(document, `unmapped component "${type}" had no extractable content`));
-            }
+            let produced = extractor ? extractor(document, node) : null;
+            if (!produced || !produced.length) produced = extractAllContent(document, node);
+            if (produced && produced.length) current.nodes.push(...produced);
           } catch (compErr) {
-            current.nodes.push(errorBlock(document, `failed to extract ${type || "section"} \u2014 ${compErr.message}`));
+            const fallback = extractAllContent(document, node);
+            if (fallback) current.nodes.push(...fallback);
+            else current.nodes.push(errorBlock(document, `failed to extract ${type || node.className || "node"} \u2014 ${compErr.message}`));
+          }
+        };
+        units.forEach(processNode);
+        flushCards();
+        const capturedText = main.textContent || "";
+        const discParas = [];
+        document.querySelectorAll(".c-disclaimer p, .c-disclaimer").forEach((d) => {
+          if (d.matches(".c-disclaimer") && d.querySelector("p")) return;
+          const t = d.innerHTML.trim();
+          const plain = text(d);
+          if (plain && !capturedText.includes(plain) && !discParas.some((p) => p.plain === plain)) {
+            discParas.push({ html: t, plain });
           }
         });
-        flushCards();
+        if (discParas.length) {
+          current.nodes.push(WebImporter.Blocks.createBlock(document, {
+            name: "legal-text-stryker",
+            cells: [[el(document, "div", discParas.map((p) => `<p>${p.html}</p>`).join(""))]]
+          }));
+          blockNames.push("legal-text-stryker");
+        }
+        const norm = (s) => (s || "").replace(/\s+/g, " ").trim();
+        const key = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+        let capturedKey = "";
+        sectionsOut.forEach((sec) => sec.nodes.forEach((node) => {
+          capturedKey += key(text(node));
+        }));
+        const isTextLeaf = (n) => {
+          const t = norm(text(n));
+          if (!t || t.length < 3) return false;
+          return ![...n.children].some((c) => norm(text(c)) === t);
+        };
+        const JUNK = [
+          '[id*="onetrust"]',
+          '[class*="onetrust"]',
+          '[class*="ot-sdk"]',
+          '[class*="cookie"]',
+          '[class*="privacy-preference"]',
+          '[class*="video-viewer"]',
+          '[class*="video-content"]',
+          '[class*="video-dynamic"]',
+          '[class*="s7"]',
+          '[id*="s7"]',
+          '[class*="scene7"]',
+          '[data-widget*="video"]',
+          '[class*="cq-dd-image"]',
+          '[class*="dynamicmedia"]',
+          '[class*="mobile-nav"]',
+          '[class*="nav-overlay"]',
+          '[class*="jumpbarnav"]',
+          '[aria-hidden="true"]',
+          "[hidden]"
+        ].join(",");
+        const missed = [];
+        const queuedNodes = [];
+        contentRoot.querySelectorAll("h1, h2, h3, h4, h5, h6, p, li, div, span").forEach((n) => {
+          if (n.closest("header, footer, nav")) return;
+          if (n.closest(JUNK)) return;
+          if (!isTextLeaf(n)) return;
+          const plain = norm(text(n));
+          const k = key(plain);
+          if (!k || capturedKey.includes(k)) return;
+          if (queuedNodes.some((q) => q.contains(n) || n.contains(q))) return;
+          capturedKey += k;
+          queuedNodes.push(n);
+          const tag = /^H[1-6]$/.test(n.tagName) ? n.tagName.toLowerCase() : "p";
+          missed.push(el(document, tag, n.innerHTML.trim() || plain));
+        });
+        if (missed.length) {
+          current.nodes.push(document.createElement("hr"));
+          missed.forEach((m) => current.nodes.push(m));
+        }
         sectionsOut[0].nodes.push(WebImporter.Blocks.createBlock(document, {
           name: "section-anchor-stryker",
           cells: [[""]]
@@ -408,6 +520,21 @@ var CustomImportScript = (() => {
               cells: { anchorLabel: sec.anchorLabel }
             }));
           }
+        });
+        const seenTextKeys = /* @__PURE__ */ new Set();
+        main.querySelectorAll("table td, table th, table p, table h1, table h2, table h3, table h4, table li").forEach((c) => {
+          const k = key(text(c));
+          if (k) seenTextKeys.add(k);
+        });
+        main.querySelectorAll("p, h1, h2, h3, h4, h5, h6, li").forEach((n) => {
+          if (n.closest("table")) return;
+          const k = key(text(n));
+          if (!k) return;
+          if (seenTextKeys.has(k)) {
+            n.remove();
+            return;
+          }
+          seenTextKeys.add(k);
         });
         main.append(document.createElement("hr"));
         main.append(WebImporter.Blocks.createBlock(document, {

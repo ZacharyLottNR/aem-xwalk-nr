@@ -361,9 +361,44 @@ const EXTRACTORS = {
   // extractText which returns null, so it is safely skipped.
 };
 
-// Identify the c-{type} token on a page-section element.
+// Identify the c-{type} token on an element (searches its own classes, then a
+// descendant/ancestor that carries one).
 function componentType(section) {
-  return [...section.classList].find((c) => c.startsWith('c-')) || null;
+  const own = [...(section.classList || [])].find((c) => c.startsWith('c-'));
+  if (own) return own;
+  const inner = section.querySelector?.('[class]');
+  if (inner) {
+    const nested = [...(inner.classList || [])].find((c) => c.startsWith('c-'));
+    if (nested) return nested;
+  }
+  return null;
+}
+
+// Lossless fallback: pull every meaningful node (headings, paragraphs, list
+// items, standalone images) out of an element in document order. Used for any
+// content that isn't a recognized component so no text is ever dropped.
+function extractAllContent(document, root) {
+  const nodes = [];
+  const seenText = new Set();
+  // Preserve document order by walking the subtree once.
+  const walker = root.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, img');
+  walker.forEach((n) => {
+    if (n.tagName === 'IMG') {
+      const src = imgSrc(n);
+      if (isUsableUrl(src)) nodes.push(imgNode(document, src, n.getAttribute('alt') || ''));
+      return;
+    }
+    // Skip nodes whose text is fully contained in an ancestor we already took
+    // (avoids duplicating a paragraph that also matched a parent block).
+    const t = n.innerHTML.trim();
+    const plain = text(n);
+    if (!plain) return;
+    if (seenText.has(plain)) return;
+    seenText.add(plain);
+    const tag = n.tagName.toLowerCase();
+    nodes.push(el(document, tag === 'li' ? 'p' : tag, t));
+  });
+  return nodes.length ? nodes : null;
 }
 
 // A "card unit" is a grid column (.xf-master-building-block) that bundles an
@@ -447,22 +482,38 @@ export default {
         if (slug) path = `/stryker/${slug}`;
       } catch (e) { /* keep default */ }
 
-      // Walk the page-sections in document order, grouping them into EDS
-      // sections that break at each c-section-title (anchor) component.
-      const pageSections = [...document.querySelectorAll('.page-section')]
-        // Only top-level page-sections (skip ones nested in experience fragments
-        // that duplicate hero content).
-        .filter((s) => !s.closest('.experienceFragment-ef, .experienceFragment-ef-mobile') || s === document.querySelector('.page-section'));
+      const contentRoot = document.querySelector('main') || document.body;
+
+      // Build a flat, document-ORDER list of the "units" to import: recognized
+      // Stryker components, section-title anchors, hydrated card units, and any
+      // loose text/image blocks. Page structure/nesting varies a lot between
+      // Stryker templates, so instead of walking a single container's children
+      // we select every candidate across <main> and keep only the OUTERMOST of
+      // each (a unit contained by another selected unit is handled by its
+      // ancestor). This guarantees complete, order-preserving coverage with no
+      // silent gaps.
+      const SELECTOR = [
+        '.c-section-title', '.section-title[data-title]', '[data-title]',
+        '.xf-master-building-block',
+        '.page-section',
+        '.c-disclaimer',
+        '.text.parbase', '.c-rich-text-editor', '.largeheadline',
+      ].join(',');
+      const all = [...contentRoot.querySelectorAll(SELECTOR)]
+        // Drop header/footer chrome and hidden scaffolding.
+        .filter((n) => !n.closest('header, footer, nav'));
+      // Keep only outermost units (skip any node contained by another selected
+      // node) so each piece of content is emitted exactly once.
+      const units = all.filter((n) => !all.some((o) => o !== n && o.contains(n)));
 
       // sectionsOut: array of { anchorLabel, nodes: [] }. First section holds
       // the hero + anchor block.
       const sectionsOut = [{ anchorLabel: '', nodes: [] }];
       let current = sectionsOut[0];
 
-      // Card units (.xf-master-building-block) bundle an image page-section with
-      // a hydrated heading + tagline. We collect contiguous units into one
-      // cards-stryker block. `pendingCards` buffers units until a non-card
-      // section (or section break) flushes them.
+      // Card units (.xf-master-building-block) bundle an image with a hydrated
+      // heading + tagline. Collect contiguous units into one cards-stryker
+      // block. `pendingCards` buffers units until a non-card node flushes them.
       let pendingCards = [];
       const flushCards = () => {
         if (!pendingCards.length) return;
@@ -474,45 +525,132 @@ export default {
         }
         pendingCards = [];
       };
-      const seenUnits = new Set();
 
-      pageSections.forEach((section) => {
-        const type = componentType(section);
+      // Does this unit represent a section-title / anchor?
+      const anchorTitleEl = (node) => (node.matches?.('.c-section-title, .section-title[data-title], [data-title]')
+        ? node
+        : node.querySelector?.('.c-section-title, .section-title[data-title], [data-title]'));
 
-        // A section-title opens a new EDS section with an anchor label.
-        if (type === 'c-section-title' || section.classList.contains('jumpbarparsys')) {
+      // Track the source elements we consume, so the final safety-net sweep can
+      // reliably skip anything already captured (avoids duplicates).
+      const consumed = [];
+      const processNode = (node) => {
+        if (node.nodeType !== 1) return;
+        if (['SCRIPT', 'STYLE', 'LINK', 'NOSCRIPT'].includes(node.tagName)) return;
+        consumed.push(node);
+
+        // Hydrated card unit → buffer into the current card grid.
+        if (isCardUnit(node)) { pendingCards.push(node); return; }
+
+        // Section-title / anchor → open a new EDS section.
+        const titleEl = anchorTitleEl(node);
+        if (titleEl && (titleEl.getAttribute('data-title') || text(titleEl))) {
           flushCards();
-          const label = section.getAttribute('data-title') || text(section);
+          const label = titleEl.getAttribute('data-title') || text(titleEl);
           current = { anchorLabel: label || '', nodes: [] };
           sectionsOut.push(current);
           return;
         }
 
-        // If this page-section is part of a hydrated card unit, handle the whole
-        // unit once and buffer it (so consecutive cards become one grid).
-        const unit = section.closest?.('.xf-master-building-block');
-        if (unit && isCardUnit(unit)) {
-          if (!seenUnits.has(unit)) { seenUnits.add(unit); pendingCards.push(unit); }
-          return;
-        }
-
-        // Any other component flushes buffered cards first, then extracts.
+        // Any other unit flushes buffered cards, then extracts. Recognized
+        // components use their extractor; everything else falls back to a
+        // lossless text/image capture so no copy is dropped.
         flushCards();
-        const extractor = EXTRACTORS[type];
+        const type = componentType(node);
+        const extractor = type ? EXTRACTORS[type] : null;
         try {
-          const produced = extractor ? extractor(document, section) : extractText(document, section);
-          if (produced && produced.length) {
-            current.nodes.push(...produced);
-          } else if (!extractor && type) {
-            // Unknown component with no recoverable content — leave a visible
-            // marker rather than dropping it silently.
-            current.nodes.push(errorBlock(document, `unmapped component "${type}" had no extractable content`));
-          }
+          let produced = extractor ? extractor(document, node) : null;
+          if (!produced || !produced.length) produced = extractAllContent(document, node);
+          if (produced && produced.length) current.nodes.push(...produced);
         } catch (compErr) {
-          current.nodes.push(errorBlock(document, `failed to extract ${type || 'section'} — ${compErr.message}`));
+          const fallback = extractAllContent(document, node);
+          if (fallback) current.nodes.push(...fallback);
+          else current.nodes.push(errorBlock(document, `failed to extract ${type || node.className || 'node'} — ${compErr.message}`));
+        }
+      };
+
+      units.forEach(processNode);
+      flushCards();
+
+      // Disclaimers/legal text often live in .c-disclaimer elements OUTSIDE the
+      // content root (directly under <body>). Collect any that weren't already
+      // captured and append them as a final legal-text block so no legal copy
+      // is lost.
+      const capturedText = main.textContent || '';
+      const discParas = [];
+      document.querySelectorAll('.c-disclaimer p, .c-disclaimer').forEach((d) => {
+        // Only leaf .c-disclaimer paragraphs (avoid grabbing container twice).
+        if (d.matches('.c-disclaimer') && d.querySelector('p')) return;
+        const t = d.innerHTML.trim();
+        const plain = text(d);
+        if (plain && !capturedText.includes(plain) && !discParas.some((p) => p.plain === plain)) {
+          discParas.push({ html: t, plain });
         }
       });
-      flushCards();
+      if (discParas.length) {
+        current.nodes.push(WebImporter.Blocks.createBlock(document, {
+          name: 'legal-text-stryker',
+          cells: [[el(document, 'div', discParas.map((p) => `<p>${p.html}</p>`).join(''))]],
+        }));
+        blockNames.push('legal-text-stryker');
+      }
+
+      const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
+      // Aggressive key for dedup: lowercase alphanumerics only, so differences
+      // in whitespace, punctuation and entity encoding (e.g. curly vs straight
+      // apostrophes) never cause a false match.
+      const key = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+
+      // Safety net (maximal capture): some Stryker panels render copy in styled
+      // <div>/<span> rather than headings/paragraphs (e.g. "People are at the
+      // heart", "Corporate responsibility", "Awards"). Sweep every text-bearing
+      // LEAF in the content area and append anything not already captured, so no
+      // copy is missed. This intentionally also pulls in some non-article text
+      // (widget/mobile-nav/cookie scaffolding) — an accepted trade-off for
+      // guaranteed completeness; that surplus can be trimmed after import.
+      let capturedKey = '';
+      sectionsOut.forEach((sec) => sec.nodes.forEach((node) => {
+        capturedKey += key(text(node));
+      }));
+      // A "text leaf" directly holds text not wholly provided by a single child.
+      const isTextLeaf = (n) => {
+        const t = norm(text(n));
+        if (!t || t.length < 3) return false;
+        return ![...n.children].some((c) => norm(text(c)) === t);
+      };
+      // Well-known non-article scaffolding to skip even in "capture everything"
+      // mode: the OneTrust cookie modal, video-player widgets, mobile-nav
+      // overlays, and hidden aria elements. This trims obvious junk while still
+      // capturing all real copy (including div/span-only panels).
+      const JUNK = [
+        '[id*="onetrust"]', '[class*="onetrust"]', '[class*="ot-sdk"]',
+        '[class*="cookie"]', '[class*="privacy-preference"]',
+        '[class*="video-viewer"]', '[class*="video-content"]', '[class*="video-dynamic"]',
+        '[class*="s7"]', '[id*="s7"]', '[class*="scene7"]', '[data-widget*="video"]',
+        '[class*="cq-dd-image"]', '[class*="dynamicmedia"]',
+        '[class*="mobile-nav"]', '[class*="nav-overlay"]', '[class*="jumpbarnav"]',
+        '[aria-hidden="true"]', '[hidden]',
+      ].join(',');
+      const missed = [];
+      const queuedNodes = [];
+      contentRoot.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, div, span').forEach((n) => {
+        // Exclude true page chrome and known widget/modal scaffolding.
+        if (n.closest('header, footer, nav')) return;
+        if (n.closest(JUNK)) return;
+        if (!isTextLeaf(n)) return;
+        const plain = norm(text(n));
+        const k = key(plain);
+        if (!k || capturedKey.includes(k)) return;
+        if (queuedNodes.some((q) => q.contains(n) || n.contains(q))) return;
+        capturedKey += k;
+        queuedNodes.push(n);
+        const tag = /^H[1-6]$/.test(n.tagName) ? n.tagName.toLowerCase() : 'p';
+        missed.push(el(document, tag, n.innerHTML.trim() || plain));
+      });
+      if (missed.length) {
+        current.nodes.push(document.createElement('hr'));
+        missed.forEach((m) => current.nodes.push(m));
+      }
 
       // Insert the sticky anchor nav into the first section (after the hero).
       sectionsOut[0].nodes.push(WebImporter.Blocks.createBlock(document, {
@@ -532,6 +670,33 @@ export default {
             cells: { anchorLabel: sec.anchorLabel },
           }));
         }
+      });
+
+      // Post-assembly dedup: Stryker serves duplicate DOM (mobile + desktop
+      // copies) and the aggressive safety-net sweep can re-emit copy the
+      // structured walk already placed. Remove any top-level loose
+      // paragraph/heading/list whose text duplicates one seen earlier. Block
+      // tables (cards/tabs/etc.) are left intact so their internal structure is
+      // never corrupted; their whole-text key is still recorded so later loose
+      // duplicates of block copy are dropped.
+      // Record the text-key of every element INSIDE block tables (cards/tabs/
+      // etc.) — both whole cells and their text leaves — so loose paragraphs
+      // that merely repeat block copy are dropped, while the blocks themselves
+      // stay structurally intact.
+      const seenTextKeys = new Set();
+      main.querySelectorAll('table td, table th, table p, table h1, table h2, table h3, table h4, table li').forEach((c) => {
+        const k = key(text(c));
+        if (k) seenTextKeys.add(k);
+      });
+      // Walk loose paragraphs/headings/list-items in document order; drop any
+      // whose text was already seen (block copy or an earlier loose copy). Skip
+      // anything inside a block table (its structure must stay intact).
+      main.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li').forEach((n) => {
+        if (n.closest('table')) return;
+        const k = key(text(n));
+        if (!k) return;
+        if (seenTextKeys.has(k)) { n.remove(); return; }
+        seenTextKeys.add(k);
       });
 
       // Page metadata.
