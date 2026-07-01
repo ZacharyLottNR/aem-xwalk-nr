@@ -25,7 +25,25 @@
           "valueType": "string",
           "name": "video",
           "label": "Video URL",
-          "description": "Direct video file (mp4/webm) or a YouTube URL. Does not autoplay."
+          "description": "Direct video file (mp4/webm) or a YouTube URL."
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "theme",
+          "label": "Theme",
+          "value": "default",
+          "description": "Default/Video shows a standard player. Hero plays full-bleed, muted and auto-looping.",
+          "options": [
+            {
+              "name": "Default/Video",
+              "value": "default"
+            },
+            {
+              "name": "Hero",
+              "value": "hero"
+            }
+          ]
         },
         {
           "component": "reference",

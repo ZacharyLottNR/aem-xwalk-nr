@@ -177,13 +177,13 @@ var CustomImportScript = (() => {
     });
     return [WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells })];
   }
-  function extractVideo(document, section) {
+  function extractVideo(document, section, theme) {
     const a = section.querySelector('a[href*="youtu"], a[href*="vimeo"]');
     const iframe = section.querySelector("iframe[src]");
     const url = (a == null ? void 0 : a.getAttribute("href")) || (iframe == null ? void 0 : iframe.getAttribute("src")) || FALLBACK_VIDEO;
     return [WebImporter.Blocks.createBlock(document, {
       name: "video-stryker",
-      cells: [[anchorNode(document, isUsableUrl(url) ? url : FALLBACK_VIDEO, url)], [""]]
+      cells: [[anchorNode(document, isUsableUrl(url) ? url : FALLBACK_VIDEO, url)], [theme || "default"]]
     })];
   }
   function extractCarousel(document, section) {
@@ -193,7 +193,7 @@ var CustomImportScript = (() => {
       return [imgNode(document, imgSrc(img), img.getAttribute("alt") || "")];
     }
     if (firstSlide.querySelector('.c-standalone-video-content, a[href*="youtu"], iframe[src]')) {
-      return extractVideo(document, firstSlide);
+      return extractVideo(document, firstSlide, "hero");
     }
     return null;
   }
@@ -451,7 +451,10 @@ var CustomImportScript = (() => {
           ".c-disclaimer",
           ".text.parbase",
           ".c-rich-text-editor",
-          ".largeheadline"
+          ".largeheadline",
+          ".sectionseparator",
+          ".c-section-separator"
+          // horizontal content breaks
         ].join(",");
         const all = [...contentRoot.querySelectorAll(SELECTOR)].filter((n) => !n.closest("header, footer, nav"));
         const units = all.filter((n) => !all.some((o) => o !== n && o.contains(n)));
@@ -474,11 +477,21 @@ var CustomImportScript = (() => {
         };
         const consumed = [];
         const processNode = (node) => {
+          var _a;
           if (node.nodeType !== 1) return;
           if (["SCRIPT", "STYLE", "LINK", "NOSCRIPT"].includes(node.tagName)) return;
           consumed.push(node);
           if (isCardUnit(node)) {
             pendingCards.push(node);
+            return;
+          }
+          if (((_a = node.matches) == null ? void 0 : _a.call(node, ".sectionseparator, .c-section-separator, .section-separator")) || node.tagName === "HR") {
+            flushCards();
+            current.nodes.push(WebImporter.Blocks.createBlock(document, {
+              name: "content-break-stryker",
+              cells: [["little"]]
+            }));
+            blockNames.push("content-break-stryker");
             return;
           }
           const titleEl = anchorTitleEl(node);

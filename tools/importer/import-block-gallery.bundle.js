@@ -64,13 +64,15 @@ var CustomImportScript = (() => {
       const overviewCard = (title, desc) => [
         img(document, IMG(400, 260, "Overview"), title),
         title,
-        el(document, "div", `<p>${desc}</p>`)
+        el(document, "div", `<p>${desc}</p>`),
+        anchor(document, "https://www.stryker.com/", "https://www.stryker.com/")
       ];
       blocks.push(["overview-stryker", [
         ["Our"],
         ["focus"],
         [el(document, "div", "<p>Empowering people for powerful outcomes.</p>")],
         [el(document, "div", "<p>Across the continuum of care.</p>")],
+        [""],
         overviewCard("Medical and Surgical", "Empowering people for powerful outcomes."),
         overviewCard("Orthopaedics", "Leading what's next."),
         overviewCard("Neurotechnology", "Better connected.")
@@ -147,6 +149,7 @@ var CustomImportScript = (() => {
       ]]);
       blocks.push(["video-stryker", [
         [anchor(document, "https://youtu.be/kRIuiIy_SCs", "https://youtu.be/kRIuiIy_SCs")],
+        ["default"],
         [img(document, IMG(800, 450, "Poster"), "Poster")]
       ]]);
       blocks.push(["product-preview-stryker", [
@@ -224,18 +227,18 @@ var CustomImportScript = (() => {
         [galleryItem("Experience one billion colors", "62.5x more colors.", "")],
         [galleryItem("Fluorescence imaging", "Clearer delineation of fluorescence signal for improved visualization.", "https://www.stryker.com/fluorescence")]
       ]]);
-      const tabItem = (tabName, title, body, linkText) => [
+      const tabItem = (tabName, title, body, ctaLabel) => [
         tabName,
         img(document, "https://placehold.co/400x300/eeeeee/333333?text=Item", title),
-        el(document, "div", `<p>${title}</p><p>${body}</p>`),
-        linkText,
-        anchor(document, "https://www.stryker.com/", linkText)
+        ctaLabel,
+        anchor(document, "https://www.stryker.com/", ctaLabel),
+        el(document, "div", `<p>${title}</p><p>${body}</p>`)
       ];
       blocks.push(["tabbed-content-stryker", [
         [""],
         tabItem("Product Information", "Connected Solutions Beds Brochure", "Download the brochure to learn more.", "Download"),
         tabItem("Related Products", "ProCuity LE(X) / Z(X)", "For an enhanced MedSurg experience.", "Learn More"),
-        ["Videos", "", el(document, "div", "<p>iBed Vision</p>"), "", anchor(document, "https://youtu.be/kRIuiIy_SCs", "https://youtu.be/kRIuiIy_SCs")]
+        ["Videos", "", "", anchor(document, "https://youtu.be/kRIuiIy_SCs", "https://youtu.be/kRIuiIy_SCs"), el(document, "div", "<p>iBed Vision</p>")]
       ]]);
       blocks.forEach(([name, cells], idx) => {
         if (idx > 0) main.append(document.createElement("hr"));

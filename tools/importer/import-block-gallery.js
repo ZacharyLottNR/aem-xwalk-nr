@@ -168,9 +168,10 @@ export default {
       [img(document, IMG(160, 130, 'Award 6'), 'Award 6')],
     ]]);
 
-    // 8. video-stryker
+    // 8. video-stryker — cells: video, theme, poster
     blocks.push(['video-stryker', [
       [anchor(document, 'https://youtu.be/kRIuiIy_SCs', 'https://youtu.be/kRIuiIy_SCs')],
+      ['default'],
       [img(document, IMG(800, 450, 'Poster'), 'Poster')],
     ]]);
 

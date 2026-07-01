@@ -181,13 +181,14 @@ function extractCustomizeable(document, section) {
 
 // c-standalone-video-content → video-stryker. Stryker uses Dynamic Media; we
 // can rarely recover a public URL, so fall back to the brand video.
-function extractVideo(document, section) {
+function extractVideo(document, section, theme) {
   const a = section.querySelector('a[href*="youtu"], a[href*="vimeo"]');
   const iframe = section.querySelector('iframe[src]');
   const url = a?.getAttribute('href') || iframe?.getAttribute('src') || FALLBACK_VIDEO;
+  // Cells match the model field order: video, theme, poster (poster omitted).
   return [WebImporter.Blocks.createBlock(document, {
     name: 'video-stryker',
-    cells: [[anchorNode(document, isUsableUrl(url) ? url : FALLBACK_VIDEO, url)], ['']],
+    cells: [[anchorNode(document, isUsableUrl(url) ? url : FALLBACK_VIDEO, url)], [theme || 'default']],
   })];
 }
 
@@ -202,7 +203,8 @@ function extractCarousel(document, section) {
     return [imgNode(document, imgSrc(img), img.getAttribute('alt') || '')];
   }
   if (firstSlide.querySelector('.c-standalone-video-content, a[href*="youtu"], iframe[src]')) {
-    return extractVideo(document, firstSlide);
+    // A hero carousel video plays full-bleed / muted / auto-loop.
+    return extractVideo(document, firstSlide, 'hero');
   }
   return null;
 }
@@ -546,6 +548,7 @@ export default {
         '.page-section',
         '.c-disclaimer',
         '.text.parbase', '.c-rich-text-editor', '.largeheadline',
+        '.sectionseparator', '.c-section-separator', // horizontal content breaks
       ].join(',');
       const all = [...contentRoot.querySelectorAll(SELECTOR)]
         // Drop header/footer chrome and hidden scaffolding.
@@ -589,6 +592,19 @@ export default {
 
         // Hydrated card unit → buffer into the current card grid.
         if (isCardUnit(node)) { pendingCards.push(node); return; }
+
+        // Horizontal content break (Stryker .sectionseparator / hr) →
+        // content-break-stryker (little = thin grey rule).
+        if (node.matches?.('.sectionseparator, .c-section-separator, .section-separator')
+          || node.tagName === 'HR') {
+          flushCards();
+          current.nodes.push(WebImporter.Blocks.createBlock(document, {
+            name: 'content-break-stryker',
+            cells: [['little']],
+          }));
+          blockNames.push('content-break-stryker');
+          return;
+        }
 
         // Section-title / anchor → open a new EDS section.
         const titleEl = anchorTitleEl(node);
