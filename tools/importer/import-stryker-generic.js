@@ -640,7 +640,12 @@ export default {
       // content root (directly under <body>). Collect any that weren't already
       // captured and append them as a final legal-text block so no legal copy
       // is lost.
-      const capturedText = main.textContent || '';
+      // Build captured text from everything the walk already emitted (main is
+      // still empty here — assembly happens later).
+      let capturedText = '';
+      sectionsOut.forEach((sec) => sec.nodes.forEach((node) => {
+        capturedText += ` ${text(node)}`;
+      }));
       const discParas = [];
       document.querySelectorAll('.c-disclaimer p, .c-disclaimer').forEach((d) => {
         // Only leaf .c-disclaimer paragraphs (avoid grabbing container twice).
@@ -649,6 +654,7 @@ export default {
         const plain = text(d);
         if (plain && !capturedText.includes(plain) && !discParas.some((p) => p.plain === plain)) {
           discParas.push({ html: t, plain });
+          capturedText += ` ${plain}`;
         }
       });
       if (discParas.length) {
@@ -786,6 +792,35 @@ export default {
         if (!k) return;
         if (seenTextKeys.has(k)) { n.remove(); return; }
         seenTextKeys.add(k);
+      });
+
+      // Image dedup: the aggressive sweep re-captures card/gallery images as
+      // loose <img> even though they already live inside a block (cards-stryker
+      // etc.). Record every image already inside a block table, then drop loose
+      // duplicates. Images are keyed by the media-asset slug (path minus query),
+      // so the same asset at different presets is still recognised as a dup.
+      const imgKey = (src) => {
+        if (!src) return '';
+        try { return new URL(src, 'https://x').pathname.toLowerCase(); } catch (e) { return src.split('?')[0].toLowerCase(); }
+      };
+      const seenImgKeys = new Set();
+      main.querySelectorAll('table img').forEach((img) => {
+        const k = imgKey(imgSrc(img));
+        if (k) seenImgKeys.add(k);
+      });
+      main.querySelectorAll('img').forEach((img) => {
+        if (img.closest('table')) return; // keep block-internal images
+        const k = imgKey(imgSrc(img));
+        if (!k) return;
+        if (seenImgKeys.has(k)) {
+          // Remove the image and its wrapping <picture>/<a>/<p> if now empty.
+          const pic = img.closest('picture') || img;
+          const wrap = pic.closest('a, p');
+          pic.remove();
+          if (wrap && !text(wrap) && !wrap.querySelector('img, picture')) wrap.remove();
+          return;
+        }
+        seenImgKeys.add(k);
       });
 
       // Page metadata.

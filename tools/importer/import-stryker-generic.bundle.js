@@ -517,7 +517,10 @@ var CustomImportScript = (() => {
         };
         units.forEach(processNode);
         flushCards();
-        const capturedText = main.textContent || "";
+        let capturedText = "";
+        sectionsOut.forEach((sec) => sec.nodes.forEach((node) => {
+          capturedText += ` ${text(node)}`;
+        }));
         const discParas = [];
         document.querySelectorAll(".c-disclaimer p, .c-disclaimer").forEach((d) => {
           if (d.matches(".c-disclaimer") && d.querySelector("p")) return;
@@ -525,6 +528,7 @@ var CustomImportScript = (() => {
           const plain = text(d);
           if (plain && !capturedText.includes(plain) && !discParas.some((p) => p.plain === plain)) {
             discParas.push({ html: t, plain });
+            capturedText += ` ${plain}`;
           }
         });
         if (discParas.length) {
@@ -632,6 +636,32 @@ var CustomImportScript = (() => {
             return;
           }
           seenTextKeys.add(k);
+        });
+        const imgKey = (src) => {
+          if (!src) return "";
+          try {
+            return new URL(src, "https://x").pathname.toLowerCase();
+          } catch (e) {
+            return src.split("?")[0].toLowerCase();
+          }
+        };
+        const seenImgKeys = /* @__PURE__ */ new Set();
+        main.querySelectorAll("table img").forEach((img) => {
+          const k = imgKey(imgSrc(img));
+          if (k) seenImgKeys.add(k);
+        });
+        main.querySelectorAll("img").forEach((img) => {
+          if (img.closest("table")) return;
+          const k = imgKey(imgSrc(img));
+          if (!k) return;
+          if (seenImgKeys.has(k)) {
+            const pic = img.closest("picture") || img;
+            const wrap = pic.closest("a, p");
+            pic.remove();
+            if (wrap && !text(wrap) && !wrap.querySelector("img, picture")) wrap.remove();
+            return;
+          }
+          seenImgKeys.add(k);
         });
         main.append(document.createElement("hr"));
         main.append(WebImporter.Blocks.createBlock(document, {
