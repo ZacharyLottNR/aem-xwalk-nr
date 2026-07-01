@@ -271,6 +271,26 @@ var CustomImportScript = (() => {
     if (!label) return null;
     return [el(document, "h2", label)];
   }
+  function extractPromoPanel(document, panel) {
+    const img = panel.querySelector("img");
+    const heading = panel.querySelector("h1, h2, h3, h4");
+    const cta = panel.querySelector("a[href]");
+    const headingText = text(heading);
+    const ctaLabel = text(cta);
+    const desc = [...panel.querySelectorAll("p")].map((p) => ({ html: p.innerHTML.trim(), plain: text(p) })).filter((p) => p.plain && p.plain !== headingText && p.plain !== ctaLabel).map((p) => `<p>${p.html}</p>`).join("");
+    const bodyHtml = `${headingText ? `<h2>${headingText}</h2>` : ""}${desc}`;
+    return [WebImporter.Blocks.createBlock(document, {
+      name: "get-to-know-us-stryker",
+      cells: [
+        [img ? imgNode(document, imgSrc(img), img.getAttribute("alt") || headingText) : ""],
+        [el(document, "div", bodyHtml)],
+        [ctaLabel || ""],
+        [cta ? anchorNode(document, cta.getAttribute("href") || "#", ctaLabel) : ""],
+        ["standard"],
+        [""]
+      ]
+    })];
+  }
   function extractFullBleedPanel(document, section) {
     const nodes = [];
     const img = section.querySelector("img");
@@ -391,6 +411,14 @@ var CustomImportScript = (() => {
     var _a;
     return ((_a = node.classList) == null ? void 0 : _a.contains("xf-master-building-block")) && node.querySelector("img") && node.querySelector("h2, h3, h4");
   }
+  function isPromoPanel(node) {
+    if (!node.querySelector) return false;
+    if (node.querySelector(".xf-master-building-block, .item, table, .c-tabs, .c-disclaimer")) return false;
+    const imgs = node.querySelectorAll("img");
+    const links = node.querySelectorAll("a[href]");
+    const heading = node.querySelector("h1, h2, h3, h4");
+    return imgs.length === 1 && links.length === 1 && !!heading && text(node).length > 30;
+  }
   function cardsFromUnits(document, units, heading) {
     const cells = [[heading || ""], ["3"], ["default"]];
     units.forEach((unit) => {
@@ -453,13 +481,20 @@ var CustomImportScript = (() => {
           ".c-rich-text-editor",
           ".largeheadline",
           ".sectionseparator",
-          ".c-section-separator"
+          ".c-section-separator",
           // horizontal content breaks
+          ".pDiv"
+          // bespoke promo bands (e.g. Training Calendar)
         ].join(",");
         const all = [...contentRoot.querySelectorAll(SELECTOR)].filter((n) => !n.closest("header, footer, nav"));
         const units = all.filter((n) => !all.some((o) => o !== n && o.contains(n)));
         const sectionsOut = [{ anchorLabel: "", nodes: [] }];
         let current = sectionsOut[0];
+        const legalParas = [];
+        const pushLegal = (html, plain) => {
+          if (!plain || legalParas.some((p) => p.plain === plain)) return;
+          legalParas.push({ html, plain });
+        };
         let pendingCards = [];
         const flushCards = () => {
           if (!pendingCards.length) return;
@@ -477,7 +512,7 @@ var CustomImportScript = (() => {
         };
         const consumed = [];
         const processNode = (node) => {
-          var _a;
+          var _a, _b;
           if (node.nodeType !== 1) return;
           if (["SCRIPT", "STYLE", "LINK", "NOSCRIPT"].includes(node.tagName)) return;
           consumed.push(node);
@@ -494,6 +529,12 @@ var CustomImportScript = (() => {
             blockNames.push("content-break-stryker");
             return;
           }
+          if (((_b = node.matches) == null ? void 0 : _b.call(node, ".c-disclaimer")) || componentType(node) === "c-disclaimer") {
+            flushCards();
+            [...node.querySelectorAll("p")].forEach((p) => pushLegal(p.innerHTML.trim(), text(p)));
+            if (!node.querySelector("p")) pushLegal(node.innerHTML.trim(), text(node));
+            return;
+          }
           const titleEl = anchorTitleEl(node);
           if (titleEl && (titleEl.getAttribute("data-title") || text(titleEl))) {
             flushCards();
@@ -507,6 +548,9 @@ var CustomImportScript = (() => {
           const extractor = type ? EXTRACTORS[type] : null;
           try {
             let produced = extractor ? extractor(document, node) : null;
+            if ((!produced || !produced.length) && isPromoPanel(node)) {
+              produced = extractPromoPanel(document, node);
+            }
             if (!produced || !produced.length) produced = extractAllContent(document, node);
             if (produced && produced.length) current.nodes.push(...produced);
           } catch (compErr) {
@@ -517,33 +561,19 @@ var CustomImportScript = (() => {
         };
         units.forEach(processNode);
         flushCards();
-        let capturedText = "";
-        sectionsOut.forEach((sec) => sec.nodes.forEach((node) => {
-          capturedText += ` ${text(node)}`;
-        }));
-        const discParas = [];
         document.querySelectorAll(".c-disclaimer p, .c-disclaimer").forEach((d) => {
           if (d.matches(".c-disclaimer") && d.querySelector("p")) return;
-          const t = d.innerHTML.trim();
-          const plain = text(d);
-          if (plain && !capturedText.includes(plain) && !discParas.some((p) => p.plain === plain)) {
-            discParas.push({ html: t, plain });
-            capturedText += ` ${plain}`;
-          }
+          pushLegal(d.innerHTML.trim(), text(d));
         });
-        if (discParas.length) {
-          current.nodes.push(WebImporter.Blocks.createBlock(document, {
-            name: "legal-text-stryker",
-            cells: [[el(document, "div", discParas.map((p) => `<p>${p.html}</p>`).join(""))]]
-          }));
-          blockNames.push("legal-text-stryker");
-        }
         const norm = (s) => (s || "").replace(/\s+/g, " ").trim();
         const key = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
         let capturedKey = "";
         sectionsOut.forEach((sec) => sec.nodes.forEach((node) => {
           capturedKey += key(text(node));
         }));
+        legalParas.forEach((p) => {
+          capturedKey += key(p.plain);
+        });
         const isTextLeaf = (n) => {
           const t = norm(text(n));
           if (!t || t.length < 3) return false;
@@ -622,6 +652,14 @@ var CustomImportScript = (() => {
             }));
           }
         });
+        if (legalParas.length) {
+          main.append(document.createElement("hr"));
+          main.append(WebImporter.Blocks.createBlock(document, {
+            name: "legal-text-stryker",
+            cells: [[el(document, "div", legalParas.map((p) => `<p>${p.html}</p>`).join(""))]]
+          }));
+          blockNames.push("legal-text-stryker");
+        }
         const seenTextKeys = /* @__PURE__ */ new Set();
         main.querySelectorAll("table td, table th, table p, table h1, table h2, table h3, table h4, table li").forEach((c) => {
           const k = key(text(c));

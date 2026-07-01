@@ -305,6 +305,38 @@ function extractLargeHeadline(document, section) {
   return [el(document, 'h2', label)];
 }
 
+// Promo panel (e.g. the "Training Calendar" band) → get-to-know-us-stryker.
+// Stryker renders these as a heading + short description + a single CTA link
+// alongside a banner image, with no distinguishing c-* class. We detect them
+// structurally (see isPromoPanel) and map to get-to-know-us (standard layout).
+// Cell order matches the model: image, imageAlt, text, buttonLabel, buttonLink,
+// layout, backgroundImage.
+function extractPromoPanel(document, panel) {
+  const img = panel.querySelector('img');
+  const heading = panel.querySelector('h1, h2, h3, h4');
+  const cta = panel.querySelector('a[href]');
+  const headingText = text(heading);
+  // Description = paragraphs that aren't the heading or the CTA label.
+  const ctaLabel = text(cta);
+  const desc = [...panel.querySelectorAll('p')]
+    .map((p) => ({ html: p.innerHTML.trim(), plain: text(p) }))
+    .filter((p) => p.plain && p.plain !== headingText && p.plain !== ctaLabel)
+    .map((p) => `<p>${p.html}</p>`)
+    .join('');
+  const bodyHtml = `${headingText ? `<h2>${headingText}</h2>` : ''}${desc}`;
+  return [WebImporter.Blocks.createBlock(document, {
+    name: 'get-to-know-us-stryker',
+    cells: [
+      [img ? imgNode(document, imgSrc(img), img.getAttribute('alt') || headingText) : ''],
+      [el(document, 'div', bodyHtml)],
+      [ctaLabel || ''],
+      [cta ? anchorNode(document, cta.getAttribute('href') || '#', ctaLabel) : ''],
+      ['standard'],
+      [''],
+    ],
+  })];
+}
+
 // c-full-bleed-panel → an experience-fragment promo (image + text). Recover the
 // image and any heading/paragraphs as default content; skip if empty.
 function extractFullBleedPanel(document, section) {
@@ -462,6 +494,20 @@ function isCardUnit(node) {
     && node.querySelector('h2, h3, h4');
 }
 
+// A "promo panel" is a self-contained band with a heading, a short description,
+// a single CTA link and a banner image (e.g. the "Training Calendar" section).
+// Stryker gives these no c-* class, so detect them structurally: exactly one
+// image, one CTA link, a heading, and not a card grid / tab / disclaimer.
+function isPromoPanel(node) {
+  if (!node.querySelector) return false;
+  if (node.querySelector('.xf-master-building-block, .item, table, .c-tabs, .c-disclaimer')) return false;
+  const imgs = node.querySelectorAll('img');
+  const links = node.querySelectorAll('a[href]');
+  const heading = node.querySelector('h1, h2, h3, h4');
+  return imgs.length === 1 && links.length === 1 && !!heading
+    && text(node).length > 30;
+}
+
 // Build a cards-stryker block from a list of card-unit elements. Cell order
 // matches cards-stryker-card field groups: image, ctaLabel, ctaUrl, text.
 function cardsFromUnits(document, units, heading) {
@@ -549,6 +595,7 @@ export default {
         '.c-disclaimer',
         '.text.parbase', '.c-rich-text-editor', '.largeheadline',
         '.sectionseparator', '.c-section-separator', // horizontal content breaks
+        '.pDiv', // bespoke promo bands (e.g. Training Calendar)
       ].join(',');
       const all = [...contentRoot.querySelectorAll(SELECTOR)]
         // Drop header/footer chrome and hidden scaffolding.
@@ -561,6 +608,16 @@ export default {
       // the hero + anchor block.
       const sectionsOut = [{ anchorLabel: '', nodes: [] }];
       let current = sectionsOut[0];
+
+      // Legal/disclaimer copy is collected here (deduped) and emitted as ONE
+      // legal-text-stryker block AFTER every other section, so legal text is
+      // always the final content block on the page. `pushLegal` dedupes by
+      // normalized plain text.
+      const legalParas = [];
+      const pushLegal = (html, plain) => {
+        if (!plain || legalParas.some((p) => p.plain === plain)) return;
+        legalParas.push({ html, plain });
+      };
 
       // Card units (.xf-master-building-block) bundle an image with a hydrated
       // heading + tagline. Collect contiguous units into one cards-stryker
@@ -606,6 +663,16 @@ export default {
           return;
         }
 
+        // Disclaimer / legal copy → defer into the single trailing legal block
+        // (collected in `legalParas`, emitted last), never inline.
+        if (node.matches?.('.c-disclaimer') || componentType(node) === 'c-disclaimer') {
+          flushCards();
+          [...node.querySelectorAll('p')]
+            .forEach((p) => pushLegal(p.innerHTML.trim(), text(p)));
+          if (!node.querySelector('p')) pushLegal(node.innerHTML.trim(), text(node));
+          return;
+        }
+
         // Section-title / anchor → open a new EDS section.
         const titleEl = anchorTitleEl(node);
         if (titleEl && (titleEl.getAttribute('data-title') || text(titleEl))) {
@@ -624,6 +691,11 @@ export default {
         const extractor = type ? EXTRACTORS[type] : null;
         try {
           let produced = extractor ? extractor(document, node) : null;
+          // Unrecognized band that looks like a heading + blurb + CTA + banner
+          // image (e.g. "Training Calendar") → get-to-know-us-stryker.
+          if ((!produced || !produced.length) && isPromoPanel(node)) {
+            produced = extractPromoPanel(document, node);
+          }
           if (!produced || !produced.length) produced = extractAllContent(document, node);
           if (produced && produced.length) current.nodes.push(...produced);
         } catch (compErr) {
@@ -638,32 +710,12 @@ export default {
 
       // Disclaimers/legal text often live in .c-disclaimer elements OUTSIDE the
       // content root (directly under <body>). Collect any that weren't already
-      // captured and append them as a final legal-text block so no legal copy
-      // is lost.
-      // Build captured text from everything the walk already emitted (main is
-      // still empty here — assembly happens later).
-      let capturedText = '';
-      sectionsOut.forEach((sec) => sec.nodes.forEach((node) => {
-        capturedText += ` ${text(node)}`;
-      }));
-      const discParas = [];
+      // captured into the deferred legal collector so no legal copy is lost.
       document.querySelectorAll('.c-disclaimer p, .c-disclaimer').forEach((d) => {
         // Only leaf .c-disclaimer paragraphs (avoid grabbing container twice).
         if (d.matches('.c-disclaimer') && d.querySelector('p')) return;
-        const t = d.innerHTML.trim();
-        const plain = text(d);
-        if (plain && !capturedText.includes(plain) && !discParas.some((p) => p.plain === plain)) {
-          discParas.push({ html: t, plain });
-          capturedText += ` ${plain}`;
-        }
+        pushLegal(d.innerHTML.trim(), text(d));
       });
-      if (discParas.length) {
-        current.nodes.push(WebImporter.Blocks.createBlock(document, {
-          name: 'legal-text-stryker',
-          cells: [[el(document, 'div', discParas.map((p) => `<p>${p.html}</p>`).join(''))]],
-        }));
-        blockNames.push('legal-text-stryker');
-      }
 
       const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
       // Aggressive key for dedup: lowercase alphanumerics only, so differences
@@ -682,6 +734,8 @@ export default {
       sectionsOut.forEach((sec) => sec.nodes.forEach((node) => {
         capturedKey += key(text(node));
       }));
+      // Include deferred legal copy so the sweep never re-captures it loosely.
+      legalParas.forEach((p) => { capturedKey += key(p.plain); });
       // A "text leaf" directly holds text not wholly provided by a single child.
       const isTextLeaf = (n) => {
         const t = norm(text(n));
@@ -766,6 +820,18 @@ export default {
           }));
         }
       });
+
+      // Legal text is ALWAYS the last content block: emit the collected
+      // disclaimer paragraphs as a single legal-text-stryker after every
+      // section (its own EDS section, separated by an <hr>).
+      if (legalParas.length) {
+        main.append(document.createElement('hr'));
+        main.append(WebImporter.Blocks.createBlock(document, {
+          name: 'legal-text-stryker',
+          cells: [[el(document, 'div', legalParas.map((p) => `<p>${p.html}</p>`).join(''))]],
+        }));
+        blockNames.push('legal-text-stryker');
+      }
 
       // Post-assembly dedup: Stryker serves duplicate DOM (mobile + desktop
       // copies) and the aggressive safety-net sweep can re-emit copy the
