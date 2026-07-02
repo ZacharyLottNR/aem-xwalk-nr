@@ -673,6 +673,17 @@ export default {
         || document.querySelector('[role="main"]')
         || document.body;
 
+      // Only pages that actually render the sticky jump/anchor nav should get a
+      // section-anchor-stryker block. Detect the real rendered nav (the
+      // `.jumpbarnav` / `.c-navigation-bar` bar with in-page anchor links) — NOT
+      // just the presence of `.c-section-title` markers, since templates like
+      // the portfolio index carry a lone section-title marker with no rendered
+      // nav. Without this gate the importer would invent an anchor nav the
+      // source page doesn't have.
+      const hasAnchorNav = !!document.querySelector(
+        '.jumpbarnav a[href^="#"], .c-navigation-bar a[href^="#"], .bar-nav a.anchor',
+      );
+
       // Build a flat, document-ORDER list of the "units" to import: recognized
       // Stryker components, section-title anchors, hydrated card units, and any
       // loose text/image blocks. Page structure/nesting varies a lot between
@@ -912,19 +923,25 @@ export default {
         sec.nodes = sec.nodes.filter((n) => !n._dropped);
       });
 
-      // Insert the sticky anchor nav into the first section (after the hero).
-      sectionsOut[0].nodes.push(WebImporter.Blocks.createBlock(document, {
-        name: 'section-anchor-stryker',
-        cells: [['']],
-      }));
-      blockNames.push('section-anchor-stryker');
+      // Insert the sticky anchor nav into the first section (after the hero),
+      // but only when the source page actually renders one (see hasAnchorNav).
+      if (hasAnchorNav) {
+        sectionsOut[0].nodes.push(WebImporter.Blocks.createBlock(document, {
+          name: 'section-anchor-stryker',
+          cells: [['']],
+        }));
+        blockNames.push('section-anchor-stryker');
+      }
 
       // Assemble: <hr> between sections, Section Metadata for labeled ones.
       sectionsOut.forEach((sec, idx) => {
         if (!sec.nodes.length && !sec.anchorLabel) return;
         if (idx > 0) main.append(document.createElement('hr'));
         sec.nodes.forEach((n) => main.append(n));
-        if (sec.anchorLabel) {
+        // Emit the anchorLabel Section Metadata only when the page has the
+        // rendered jump nav; otherwise it's orphan metadata with nothing to
+        // drive.
+        if (sec.anchorLabel && hasAnchorNav) {
           main.append(WebImporter.Blocks.createBlock(document, {
             name: 'Section Metadata',
             cells: { anchorLabel: sec.anchorLabel },

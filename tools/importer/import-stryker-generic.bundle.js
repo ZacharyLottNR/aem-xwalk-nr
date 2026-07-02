@@ -527,6 +527,9 @@ var CustomImportScript = (() => {
         } catch (e) {
         }
         const contentRoot = document.querySelector("main") || document.querySelector('[role="main"]') || document.body;
+        const hasAnchorNav = !!document.querySelector(
+          '.jumpbarnav a[href^="#"], .c-navigation-bar a[href^="#"], .bar-nav a.anchor'
+        );
         const SELECTOR = [
           ".c-section-title",
           ".section-title[data-title]",
@@ -707,16 +710,18 @@ var CustomImportScript = (() => {
           });
           sec.nodes = sec.nodes.filter((n) => !n._dropped);
         });
-        sectionsOut[0].nodes.push(WebImporter.Blocks.createBlock(document, {
-          name: "section-anchor-stryker",
-          cells: [[""]]
-        }));
-        blockNames.push("section-anchor-stryker");
+        if (hasAnchorNav) {
+          sectionsOut[0].nodes.push(WebImporter.Blocks.createBlock(document, {
+            name: "section-anchor-stryker",
+            cells: [[""]]
+          }));
+          blockNames.push("section-anchor-stryker");
+        }
         sectionsOut.forEach((sec, idx) => {
           if (!sec.nodes.length && !sec.anchorLabel) return;
           if (idx > 0) main.append(document.createElement("hr"));
           sec.nodes.forEach((n) => main.append(n));
-          if (sec.anchorLabel) {
+          if (sec.anchorLabel && hasAnchorNav) {
             main.append(WebImporter.Blocks.createBlock(document, {
               name: "Section Metadata",
               cells: { anchorLabel: sec.anchorLabel }
