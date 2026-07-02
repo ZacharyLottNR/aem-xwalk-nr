@@ -683,13 +683,17 @@ export default {
           return;
         }
 
-        // Section-title / anchor → open a new EDS section.
+        // Section-title / anchor → open a new EDS section. The label feeds the
+        // sticky anchor nav (Section Metadata) AND is emitted as a visible <h2>
+        // so the on-page section heading (e.g. "Surgeons, residents and
+        // fellows") is not lost — the original renders it above the card grid.
         const titleEl = anchorTitleEl(node);
         if (titleEl && (titleEl.getAttribute('data-title') || text(titleEl))) {
           flushCards();
           const label = titleEl.getAttribute('data-title') || text(titleEl);
           current = { anchorLabel: label || '', nodes: [] };
           sectionsOut.push(current);
+          if (label) current.nodes.push(el(document, 'h2', label));
           return;
         }
 
@@ -854,8 +858,14 @@ export default {
       // etc.) — both whole cells and their text leaves — so loose paragraphs
       // that merely repeat block copy are dropped, while the blocks themselves
       // stay structurally intact.
+      // A metadata table (Section Metadata / metadata) holds authoring values,
+      // not page content, so its cells must NOT seed the dedup set — otherwise a
+      // visible section heading that matches its anchorLabel gets wrongly dropped.
+      const isMetaTable = (tbl) => /^(section metadata|metadata)$/i
+        .test(text(tbl.querySelector('tr')).trim());
       const seenTextKeys = new Set();
       main.querySelectorAll('table td, table th, table p, table h1, table h2, table h3, table h4, table li').forEach((c) => {
+        if (isMetaTable(c.closest('table'))) return;
         const k = key(text(c));
         if (k) seenTextKeys.add(k);
       });

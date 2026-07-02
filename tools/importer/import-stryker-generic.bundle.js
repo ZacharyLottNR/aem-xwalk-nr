@@ -550,6 +550,7 @@ var CustomImportScript = (() => {
             const label = titleEl.getAttribute("data-title") || text(titleEl);
             current = { anchorLabel: label || "", nodes: [] };
             sectionsOut.push(current);
+            if (label) current.nodes.push(el(document, "h2", label));
             return;
           }
           flushCards();
@@ -669,8 +670,10 @@ var CustomImportScript = (() => {
           }));
           blockNames.push("legal-text-stryker");
         }
+        const isMetaTable = (tbl) => /^(section metadata|metadata)$/i.test(text(tbl.querySelector("tr")).trim());
         const seenTextKeys = /* @__PURE__ */ new Set();
         main.querySelectorAll("table td, table th, table p, table h1, table h2, table h3, table h4, table li").forEach((c) => {
+          if (isMetaTable(c.closest("table"))) return;
           const k = key(text(c));
           if (k) seenTextKeys.add(k);
         });
