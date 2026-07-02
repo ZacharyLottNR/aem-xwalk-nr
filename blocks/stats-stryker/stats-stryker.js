@@ -101,5 +101,19 @@ export default function decorate(block) {
 
   if (grid.children.length) block.append(grid);
 
-  block.querySelectorAll('.stats-stryker-item-icon picture > img').forEach((img) => optimizeBlockImage(img, createOptimizedPicture, [{ width: '200' }]));
+  // A stats block holds either large landscape graphics (the "customers"
+  // infographic maps, ~16:9) or small square icons (Fast facts, 1:1). Tag each
+  // icon wrapper by the image's aspect ratio so CSS can size them differently —
+  // wide graphics render large, square icons render small like the original.
+  block.querySelectorAll('.stats-stryker-item-icon picture > img').forEach((img) => {
+    const tag = () => {
+      const wide = img.naturalWidth && img.naturalHeight
+        && (img.naturalWidth / img.naturalHeight) > 1.3;
+      img.closest('.stats-stryker-item-icon')
+        .classList.add(wide ? 'stats-stryker-item-icon-graphic' : 'stats-stryker-item-icon-badge');
+    };
+    if (img.complete && img.naturalWidth) tag();
+    else img.addEventListener('load', tag, { once: true });
+    optimizeBlockImage(img, createOptimizedPicture, [{ width: '400' }]);
+  });
 }

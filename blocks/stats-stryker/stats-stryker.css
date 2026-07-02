@@ -57,7 +57,7 @@
 
 .stats-stryker-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 32px 24px;
   max-width: var(--stryker-max-width, 1280px);
   margin: 0 auto;
@@ -65,20 +65,26 @@
 }
 
 .stats-stryker-item {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  padding: 0 8px;
 }
 
-/* Big number, above its graphic — mirrors the original's headline stat. */
+/* Big number, above its graphic — mirrors the original's headline stat. Size
+   scales with the ITEM's own column width (container query units) so long
+   values like "$25.1B" don't collide: wide 3-up infographic columns get the
+   large number, narrow 6-up Fast facts columns get a smaller one. */
 .stats-stryker-item-value {
   order: 1;
   font-family: var(--stryker-heading-font);
-  font-size: 68px;
+  font-size: clamp(30px, 26cqi, 68px);
   font-weight: 700;
   line-height: 1;
   color: #1a1a1a;
+  white-space: nowrap;
 }
 
 /* Supporting label sits under the number (the original also shows a small
@@ -101,9 +107,21 @@
 
 .stats-stryker-item-icon img {
   display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Wide landscape graphics (infographic maps) render large; square icons (Fast
+   facts) render small, matching the original ~90px badges. Until the aspect
+   ratio is measured (see block JS), fall back to the smaller size. */
+.stats-stryker-item-icon-graphic img {
   width: 100%;
   max-width: 320px;
-  height: auto;
+}
+
+.stats-stryker-item-icon-badge img {
+  max-width: 90px;
 }
 
 /* Cycle the brand infographic accent colors across the numbers, matching the
