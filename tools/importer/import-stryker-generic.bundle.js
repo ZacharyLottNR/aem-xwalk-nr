@@ -478,7 +478,7 @@ var CustomImportScript = (() => {
           if (slug) path = `/stryker/${slug}`;
         } catch (e) {
         }
-        const contentRoot = document.querySelector("main") || document.body;
+        const contentRoot = document.querySelector("main") || document.querySelector('[role="main"]') || document.body;
         const SELECTOR = [
           ".c-section-title",
           ".section-title[data-title]",
@@ -712,6 +712,28 @@ var CustomImportScript = (() => {
             return;
           }
           seenImgKeys.add(k);
+        });
+        const linkKey = (href) => {
+          if (!href || href === "#") return "";
+          try {
+            return new URL(href, "https://x").pathname.toLowerCase();
+          } catch (e) {
+            return href.split("?")[0].toLowerCase();
+          }
+        };
+        const seenLinkKeys = /* @__PURE__ */ new Set();
+        main.querySelectorAll("table a[href]").forEach((a) => {
+          const k = linkKey(a.getAttribute("href"));
+          if (k) seenLinkKeys.add(k);
+        });
+        main.querySelectorAll("a[href]").forEach((a) => {
+          if (a.closest("table")) return;
+          if (a.querySelector("img, picture")) return;
+          const k = linkKey(a.getAttribute("href"));
+          if (!k || !seenLinkKeys.has(k)) return;
+          const wrap = a.closest("p") || a;
+          a.remove();
+          if (wrap !== a && !text(wrap) && !wrap.querySelector("img, picture, a[href]")) wrap.remove();
         });
         main.append(document.createElement("hr"));
         main.append(WebImporter.Blocks.createBlock(document, {

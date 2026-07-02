@@ -588,7 +588,13 @@ export default {
         if (slug) path = `/stryker/${slug}`;
       } catch (e) { /* keep default */ }
 
-      const contentRoot = document.querySelector('main') || document.body;
+      // Prefer the semantic <main>, then an ARIA main-content region. Some
+      // Stryker templates (e.g. tier1-landing pages) ship NO <main> tag; falling
+      // straight back to <body> then sweeps in header/footer/mobile-nav chrome.
+      // `[role="main"]` wraps just the article content on those pages.
+      const contentRoot = document.querySelector('main')
+        || document.querySelector('[role="main"]')
+        || document.body;
 
       // Build a flat, document-ORDER list of the "units" to import: recognized
       // Stryker components, section-title anchors, hydrated card units, and any
@@ -907,6 +913,30 @@ export default {
           return;
         }
         seenImgKeys.add(k);
+      });
+
+      // Link dedup: the sweep captures a card's `.desc-container` ("Title Learn
+      // more"); the text-dedup above then strips the title (it matches a card
+      // cell) but leaves the CTA anchor behind as a loose "Learn more". Record
+      // every href already inside a block table, then drop loose anchors that
+      // duplicate one — removing the wrapping <p> if it becomes empty.
+      const linkKey = (href) => {
+        if (!href || href === '#') return '';
+        try { return new URL(href, 'https://x').pathname.toLowerCase(); } catch (e) { return href.split('?')[0].toLowerCase(); }
+      };
+      const seenLinkKeys = new Set();
+      main.querySelectorAll('table a[href]').forEach((a) => {
+        const k = linkKey(a.getAttribute('href'));
+        if (k) seenLinkKeys.add(k);
+      });
+      main.querySelectorAll('a[href]').forEach((a) => {
+        if (a.closest('table')) return; // keep block-internal links
+        if (a.querySelector('img, picture')) return; // keep image links
+        const k = linkKey(a.getAttribute('href'));
+        if (!k || !seenLinkKeys.has(k)) return;
+        const wrap = a.closest('p') || a;
+        a.remove();
+        if (wrap !== a && !text(wrap) && !wrap.querySelector('img, picture, a[href]')) wrap.remove();
       });
 
       // Page metadata.
