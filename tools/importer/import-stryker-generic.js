@@ -231,6 +231,31 @@ function extractFilteredGrid(document, section) {
   return [WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells })];
 }
 
+// A "link-card grid" is a section (e.g. the About page's "Learn more about us")
+// holding multiple `.c-standalone-image-content` cells, each an image + an <h4>
+// link with no description. Map the run to cards-stryker. Returns null unless at
+// least two such cells are present (so single standalone images stay images).
+function extractLinkCardGrid(document, section) {
+  const cells = [...section.querySelectorAll('.c-standalone-image-content')]
+    .filter((c) => c.querySelector('img') && c.querySelector('h4'));
+  if (cells.length < 2) return null;
+  const rows = [[''], ['4'], ['default']];
+  cells.forEach((cell) => {
+    const img = cell.querySelector('img');
+    const titleEl = cell.querySelector('h4, h3, h2');
+    const link = cell.querySelector('a[href]');
+    const titleText = text(titleEl);
+    const href = link?.getAttribute('href') || '#';
+    rows.push([
+      imgNode(document, imgSrc(img), titleText),
+      'Learn more',
+      anchorNode(document, href, 'Learn more'),
+      el(document, 'div', `<p>${titleText}</p>`),
+    ]);
+  });
+  return [WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells: rows })];
+}
+
 // c-standalone-video-content → video-stryker. Stryker uses Dynamic Media; we
 // can rarely recover a public URL, so fall back to the brand video.
 function extractVideo(document, section, theme) {
@@ -399,9 +424,85 @@ function extractPromoPanel(document, panel) {
   })];
 }
 
-// c-full-bleed-panel → an experience-fragment promo (image + text). Recover the
-// image and any heading/paragraphs as default content; skip if empty.
+// Pull "stat cells" (a big headline number + its supporting label) out of a
+// container. Stryker marks the number with an enlarged-font span
+// (.fontsize-2-5em / .fontsize-2em / .fontsize-3em); the rest of the containing
+// paragraph is the label. Returns [{ value, label }] in document order, deduped.
+function statCells(container) {
+  const seen = new Set();
+  const cells = [];
+  container.querySelectorAll('.fontsize-2-5em, .fontsize-2em, .fontsize-3em').forEach((big) => {
+    const value = text(big);
+    if (!value || value.length > 24) return; // a real stat number is short
+    const p = big.closest('p') || big.parentElement;
+    const full = text(p);
+    const label = full.replace(value, '').replace(/\s+/g, ' ').trim();
+    const key = `${value}|${label}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    cells.push({ value, label });
+  });
+  return cells;
+}
+
+// Build a stats-stryker block from a heading pair + stat cells (+ optional
+// icons, matched by document order). Cells match the model field groups:
+// block-level titleBlack, titleGold, intro, theme; then per-stat icon, value,
+// label.
+function buildStats(document, {
+  titleBlack = '', titleGold = '', intro = '', theme = 'light', cells = [], icons = [],
+}) {
+  if (!cells.length) return null;
+  const rows = [[titleBlack], [titleGold], [el(document, 'div', intro || '')], [theme]];
+  cells.forEach((c, i) => {
+    const icon = icons[i];
+    rows.push([
+      icon ? imgNode(document, icon.src, icon.alt || '') : '',
+      c.value,
+      el(document, 'div', `<p>${c.label || ''}</p>`),
+    ]);
+  });
+  return [WebImporter.Blocks.createBlock(document, { name: 'stats-stryker', cells: rows })];
+}
+
+// c-full-bleed-panel → depending on content:
+//  - an "Awards"-style badge wall (heading + many images + a "view all" CTA) →
+//    image-gallery-stryker;
+//  - a stats infographic (enlarged number spans) → stats-stryker;
+//  - otherwise an experience-fragment promo (image + text) as default content.
 function extractFullBleedPanel(document, section) {
+  const imgs = [...section.querySelectorAll('img')];
+  const heading = section.querySelector('h1, h2, h3, h4');
+  const headingText = text(heading);
+  const cta = section.querySelector('a[href]');
+
+  // Awards / badge wall: several images with a heading and a single CTA.
+  if (imgs.length >= 3 && cta) {
+    const rows = [
+      [headingText || ''],
+      [text([...section.querySelectorAll('p, span, div')]
+        .find((n) => !n.childElementCount && text(n) && text(n) !== headingText
+          && text(n) !== text(cta)) || null)],
+      [text(cta) || ''],
+      [anchorNode(document, cta.getAttribute('href') || '#', text(cta))],
+    ];
+    imgs.forEach((im) => rows.push([imgNode(document, imgSrc(im), im.getAttribute('alt') || '')]));
+    return [WebImporter.Blocks.createBlock(document, { name: 'image-gallery-stryker', cells: rows })];
+  }
+
+  // Stats infographic: enlarged number spans present.
+  const cells = statCells(section);
+  if (cells.length >= 2) {
+    // The panel heading is often two-tone; keep it all as the black title.
+    return buildStats(document, {
+      titleBlack: headingText,
+      theme: section.className.includes('bg-dark') ? 'dark' : 'light',
+      cells,
+      icons: imgs.map((im) => ({ src: imgSrc(im), alt: im.getAttribute('alt') || '' })),
+    });
+  }
+
+  // Default: image + text as default content.
   const nodes = [];
   const img = section.querySelector('img');
   if (img) nodes.push(imgNode(document, imgSrc(img), img.getAttribute('alt') || ''));
@@ -673,6 +774,64 @@ export default {
         || document.querySelector('[role="main"]')
         || document.body;
 
+      // Fast-facts style stat runs are fragmented across sibling sections: each
+      // icon sits in its own `.c-standalone-image` and each number in a separate
+      // rich-text section. Collapse such a run (a `.c-section-title` whose label
+      // is followed by stat-number paragraphs) into ONE injected stats-stryker
+      // block, then remove the consumed source sections so they don't fall
+      // through to loose content. Runs in document order, pairing each number
+      // with the most recent preceding icon image.
+      const collapseStatRun = (titleSection) => {
+        const label = titleSection.getAttribute('data-title') || text(titleSection);
+        // The stat run lives in a self-contained experience fragment carousel:
+        // the title, the stat numbers and their icons are all inside one
+        // `.experienceFragment`. Pull every stat cell (enlarged number span +
+        // its label) from it in document order, pairing each with the icon in
+        // the same slide/cell.
+        const xf = titleSection.closest('.experienceFragment, .experiencefragment')
+          || titleSection.parentElement;
+        if (!xf) return;
+        const cells = [];
+        const icons = [];
+        const consumed = [];
+        xf.querySelectorAll('.fontsize-2-5em, .fontsize-2em, .fontsize-3em').forEach((big) => {
+          const value = text(big);
+          if (!value || value.length > 24 || /fast facts/i.test(value)) return;
+          const p = big.closest('p') || big.parentElement;
+          const label2 = text(p).replace(value, '').replace(/\s+/g, ' ').trim();
+          // Icon: nearest image within the same slide (walk up a few levels).
+          let slide = p;
+          let icon = null;
+          for (let i = 0; i < 5 && slide; i += 1) {
+            icon = slide.querySelector?.('img');
+            if (icon) break;
+            slide = slide.parentElement;
+          }
+          cells.push({ value, label: label2 });
+          icons.push(icon ? { src: imgSrc(icon), alt: icon.getAttribute('alt') || '' } : null);
+          consumed.push(p);
+          if (icon) consumed.push(icon);
+        });
+        if (cells.length < 2) return;
+        const block = buildStats(document, { titleBlack: label, cells, icons });
+        if (!block) return;
+        // Attach the finished block to the title section; the walker emits it.
+        titleSection._statsBlock = block[0];
+        statScopes.push({ scope: xf, title: titleSection });
+        // Physically remove the consumed number paragraphs + icon images from
+        // the source DOM so neither the unit walk nor the safety-net sweep can
+        // re-emit them as loose content. (Mutating the source document at the
+        // start of transform is honoured for the rest of this pass.)
+        consumed.forEach((n) => n.remove());
+      };
+      // Trigger for known stat-run titles (currently "Fast facts").
+      const statScopes = [];
+      document.querySelectorAll('.c-section-title[data-title], [data-title]').forEach((t) => {
+        if (/^fast facts$/i.test((t.getAttribute('data-title') || text(t)).trim())) {
+          collapseStatRun(t);
+        }
+      });
+
       // Only pages that actually render the sticky jump/anchor nav should get a
       // section-anchor-stryker block. Detect the real rendered nav (the
       // `.jumpbarnav` / `.c-navigation-bar` bar with in-page anchor links) — NOT
@@ -703,10 +862,20 @@ export default {
       ].join(',');
       const all = [...contentRoot.querySelectorAll(SELECTOR)]
         // Drop header/footer chrome and hidden scaffolding.
-        .filter((n) => !n.closest('header, footer, nav'));
+        .filter((n) => !n.closest('header, footer, nav'))
+        // Drop units inside a collapsed stat run's scope (except the stat title
+        // itself, which carries the finished block), so the run's number/icon
+        // sub-sections aren't re-emitted as loose content.
+        .filter((n) => !statScopes.some(({ scope, title }) => n !== title
+          && scope.contains(n) && scope !== n));
       // Keep only outermost units (skip any node contained by another selected
       // node) so each piece of content is emitted exactly once.
       const units = all.filter((n) => !all.some((o) => o !== n && o.contains(n)));
+
+      // Nodes whose whole subtree an extractor turned into block(s); the
+      // safety-net sweep skips them so duplicate mobile/desktop copy inside
+      // isn't re-emitted as loose content.
+      const consumedScopes = [];
 
       // sectionsOut: array of { anchorLabel, nodes: [] }. First section holds
       // the hero + anchor block.
@@ -793,6 +962,13 @@ export default {
           current = { anchorLabel: label || '', nodes: [] };
           sectionsOut.push(current);
           if (label) current.nodes.push(el(document, 'h2', label));
+          // A pre-collapsed stat run (see collapseStatRun) carries its finished
+          // stats-stryker block; emit it here and stop.
+          if (node._statsBlock || titleEl._statsBlock) {
+            current.nodes.push(node._statsBlock || titleEl._statsBlock);
+            blockNames.push('stats-stryker');
+            return;
+          }
           // Only a bare title marker stops here; a node that also carries real
           // content (a recognized component or product/card items) continues to
           // the extractor below so that content isn't dropped.
@@ -808,13 +984,26 @@ export default {
         const extractor = type ? EXTRACTORS[type] : null;
         try {
           let produced = extractor ? extractor(document, node) : null;
+          // A run of image+title link cards (e.g. "Learn more about us") →
+          // cards-stryker.
+          if ((!produced || !produced.length)
+            && node.querySelectorAll('.c-standalone-image-content').length >= 2) {
+            produced = extractLinkCardGrid(document, node);
+          }
           // Unrecognized band that looks like a heading + blurb + CTA + banner
           // image (e.g. "Training Calendar") → get-to-know-us-stryker.
           if ((!produced || !produced.length) && isPromoPanel(node)) {
             produced = extractPromoPanel(document, node);
           }
           if (!produced || !produced.length) produced = extractAllContent(document, node);
-          if (produced && produced.length) current.nodes.push(...produced);
+          if (produced && produced.length) {
+            current.nodes.push(...produced);
+            // If this whole node became block(s) (e.g. a full-bleed panel →
+            // stats/gallery, or a link-card run → cards), exclude its subtree
+            // from the safety-net sweep so mobile/desktop duplicate copy inside
+            // it isn't re-emitted as loose content.
+            if (produced[0]?.tagName === 'TABLE') consumedScopes.push(node);
+          }
         } catch (compErr) {
           const fallback = extractAllContent(document, node);
           if (fallback) current.nodes.push(...fallback);
@@ -881,6 +1070,11 @@ export default {
         // Exclude true page chrome and known widget/modal scaffolding.
         if (n.closest('header, footer, nav')) return;
         if (n.closest(JUNK)) return;
+        // Skip anything inside a collapsed stat run — it's already in the stats
+        // block (its number/label text differs from the split cells, so the
+        // dedup key wouldn't otherwise catch it).
+        if (statScopes.some(({ scope }) => scope.contains(n))) return;
+        if (consumedScopes.some((scope) => scope.contains(n))) return;
         if (!isTextLeaf(n)) return;
         const plain = norm(text(n));
         if (isJunkText(plain)) return; // drop known widget/nav/cookie chrome

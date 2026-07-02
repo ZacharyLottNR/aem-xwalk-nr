@@ -6114,6 +6114,84 @@
     ]
   },
   {
+    "id": "stats-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "titleBlack",
+        "label": "Title (black)",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "titleGold",
+        "label": "Title (gold)",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "intro",
+        "label": "Intro",
+        "value": ""
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "theme",
+        "label": "Theme",
+        "value": "light",
+        "options": [
+          {
+            "name": "Light",
+            "value": "light"
+          },
+          {
+            "name": "Dark",
+            "value": "dark"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "stats-stryker-item",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "icon",
+        "label": "Icon",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "iconAlt",
+        "label": "Icon Alt",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "value",
+        "label": "Value",
+        "description": "The headline number, e.g. \"$25.1B\" or \"56K\".",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "label",
+        "label": "Label",
+        "description": "The supporting text under the number.",
+        "value": ""
+      }
+    ]
+  },
+  {
     "id": "tabbed-content-item-stryker",
     "fields": [
       {

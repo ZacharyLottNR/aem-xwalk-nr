@@ -293,6 +293,12 @@
     ]
   },
   {
+    "id": "stats-stryker",
+    "components": [
+      "stats-stryker-item"
+    ]
+  },
+  {
     "id": "tabbed-content-stryker",
     "components": [
       "tabbed-content-item-stryker"

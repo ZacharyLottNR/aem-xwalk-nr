@@ -210,6 +210,25 @@ var CustomImportScript = (() => {
     });
     return [WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells })];
   }
+  function extractLinkCardGrid(document, section) {
+    const cells = [...section.querySelectorAll(".c-standalone-image-content")].filter((c) => c.querySelector("img") && c.querySelector("h4"));
+    if (cells.length < 2) return null;
+    const rows = [[""], ["4"], ["default"]];
+    cells.forEach((cell) => {
+      const img = cell.querySelector("img");
+      const titleEl = cell.querySelector("h4, h3, h2");
+      const link = cell.querySelector("a[href]");
+      const titleText = text(titleEl);
+      const href = (link == null ? void 0 : link.getAttribute("href")) || "#";
+      rows.push([
+        imgNode(document, imgSrc(img), titleText),
+        "Learn more",
+        anchorNode(document, href, "Learn more"),
+        el(document, "div", `<p>${titleText}</p>`)
+      ]);
+    });
+    return [WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells: rows })];
+  }
   function extractVideo(document, section, theme) {
     const a = section.querySelector('a[href*="youtu"], a[href*="vimeo"]');
     const iframe = section.querySelector("iframe[src]");
@@ -333,7 +352,66 @@ var CustomImportScript = (() => {
       ]
     })];
   }
+  function statCells(container) {
+    const seen = /* @__PURE__ */ new Set();
+    const cells = [];
+    container.querySelectorAll(".fontsize-2-5em, .fontsize-2em, .fontsize-3em").forEach((big) => {
+      const value = text(big);
+      if (!value || value.length > 24) return;
+      const p = big.closest("p") || big.parentElement;
+      const full = text(p);
+      const label = full.replace(value, "").replace(/\s+/g, " ").trim();
+      const key = `${value}|${label}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      cells.push({ value, label });
+    });
+    return cells;
+  }
+  function buildStats(document, {
+    titleBlack = "",
+    titleGold = "",
+    intro = "",
+    theme = "light",
+    cells = [],
+    icons = []
+  }) {
+    if (!cells.length) return null;
+    const rows = [[titleBlack], [titleGold], [el(document, "div", intro || "")], [theme]];
+    cells.forEach((c, i) => {
+      const icon = icons[i];
+      rows.push([
+        icon ? imgNode(document, icon.src, icon.alt || "") : "",
+        c.value,
+        el(document, "div", `<p>${c.label || ""}</p>`)
+      ]);
+    });
+    return [WebImporter.Blocks.createBlock(document, { name: "stats-stryker", cells: rows })];
+  }
   function extractFullBleedPanel(document, section) {
+    const imgs = [...section.querySelectorAll("img")];
+    const heading = section.querySelector("h1, h2, h3, h4");
+    const headingText = text(heading);
+    const cta = section.querySelector("a[href]");
+    if (imgs.length >= 3 && cta) {
+      const rows = [
+        [headingText || ""],
+        [text([...section.querySelectorAll("p, span, div")].find((n) => !n.childElementCount && text(n) && text(n) !== headingText && text(n) !== text(cta)) || null)],
+        [text(cta) || ""],
+        [anchorNode(document, cta.getAttribute("href") || "#", text(cta))]
+      ];
+      imgs.forEach((im) => rows.push([imgNode(document, imgSrc(im), im.getAttribute("alt") || "")]));
+      return [WebImporter.Blocks.createBlock(document, { name: "image-gallery-stryker", cells: rows })];
+    }
+    const cells = statCells(section);
+    if (cells.length >= 2) {
+      return buildStats(document, {
+        titleBlack: headingText,
+        theme: section.className.includes("bg-dark") ? "dark" : "light",
+        cells,
+        icons: imgs.map((im) => ({ src: imgSrc(im), alt: im.getAttribute("alt") || "" }))
+      });
+    }
     const nodes = [];
     const img = section.querySelector("img");
     if (img) nodes.push(imgNode(document, imgSrc(img), img.getAttribute("alt") || ""));
@@ -527,6 +605,44 @@ var CustomImportScript = (() => {
         } catch (e) {
         }
         const contentRoot = document.querySelector("main") || document.querySelector('[role="main"]') || document.body;
+        const collapseStatRun = (titleSection) => {
+          const label = titleSection.getAttribute("data-title") || text(titleSection);
+          const xf = titleSection.closest(".experienceFragment, .experiencefragment") || titleSection.parentElement;
+          if (!xf) return;
+          const cells = [];
+          const icons = [];
+          const consumed2 = [];
+          xf.querySelectorAll(".fontsize-2-5em, .fontsize-2em, .fontsize-3em").forEach((big) => {
+            var _a;
+            const value = text(big);
+            if (!value || value.length > 24 || /fast facts/i.test(value)) return;
+            const p = big.closest("p") || big.parentElement;
+            const label2 = text(p).replace(value, "").replace(/\s+/g, " ").trim();
+            let slide = p;
+            let icon = null;
+            for (let i = 0; i < 5 && slide; i += 1) {
+              icon = (_a = slide.querySelector) == null ? void 0 : _a.call(slide, "img");
+              if (icon) break;
+              slide = slide.parentElement;
+            }
+            cells.push({ value, label: label2 });
+            icons.push(icon ? { src: imgSrc(icon), alt: icon.getAttribute("alt") || "" } : null);
+            consumed2.push(p);
+            if (icon) consumed2.push(icon);
+          });
+          if (cells.length < 2) return;
+          const block = buildStats(document, { titleBlack: label, cells, icons });
+          if (!block) return;
+          titleSection._statsBlock = block[0];
+          statScopes.push({ scope: xf, title: titleSection });
+          consumed2.forEach((n) => n.remove());
+        };
+        const statScopes = [];
+        document.querySelectorAll(".c-section-title[data-title], [data-title]").forEach((t) => {
+          if (/^fast facts$/i.test((t.getAttribute("data-title") || text(t)).trim())) {
+            collapseStatRun(t);
+          }
+        });
         const hasAnchorNav = !!document.querySelector(
           '.jumpbarnav a[href^="#"], .c-navigation-bar a[href^="#"], .bar-nav a.anchor'
         );
@@ -546,8 +662,9 @@ var CustomImportScript = (() => {
           ".pDiv"
           // bespoke promo bands (e.g. Training Calendar)
         ].join(",");
-        const all = [...contentRoot.querySelectorAll(SELECTOR)].filter((n) => !n.closest("header, footer, nav"));
+        const all = [...contentRoot.querySelectorAll(SELECTOR)].filter((n) => !n.closest("header, footer, nav")).filter((n) => !statScopes.some(({ scope, title }) => n !== title && scope.contains(n) && scope !== n));
         const units = all.filter((n) => !all.some((o) => o !== n && o.contains(n)));
+        const consumedScopes = [];
         const sectionsOut = [{ anchorLabel: "", nodes: [] }];
         let current = sectionsOut[0];
         const legalParas = [];
@@ -572,7 +689,7 @@ var CustomImportScript = (() => {
         };
         const consumed = [];
         const processNode = (node) => {
-          var _a, _b;
+          var _a, _b, _c;
           if (node.nodeType !== 1) return;
           if (["SCRIPT", "STYLE", "LINK", "NOSCRIPT"].includes(node.tagName)) return;
           consumed.push(node);
@@ -603,6 +720,11 @@ var CustomImportScript = (() => {
             current = { anchorLabel: label || "", nodes: [] };
             sectionsOut.push(current);
             if (label) current.nodes.push(el(document, "h2", label));
+            if (node._statsBlock || titleEl._statsBlock) {
+              current.nodes.push(node._statsBlock || titleEl._statsBlock);
+              blockNames.push("stats-stryker");
+              return;
+            }
             const hasContent = type && EXTRACTORS[type] && type !== "c-section-title" || node.querySelector(".product-item, .item, .xf-master-building-block");
             if (!hasContent) return;
           }
@@ -610,11 +732,17 @@ var CustomImportScript = (() => {
           const extractor = type ? EXTRACTORS[type] : null;
           try {
             let produced = extractor ? extractor(document, node) : null;
+            if ((!produced || !produced.length) && node.querySelectorAll(".c-standalone-image-content").length >= 2) {
+              produced = extractLinkCardGrid(document, node);
+            }
             if ((!produced || !produced.length) && isPromoPanel(node)) {
               produced = extractPromoPanel(document, node);
             }
             if (!produced || !produced.length) produced = extractAllContent(document, node);
-            if (produced && produced.length) current.nodes.push(...produced);
+            if (produced && produced.length) {
+              current.nodes.push(...produced);
+              if (((_c = produced[0]) == null ? void 0 : _c.tagName) === "TABLE") consumedScopes.push(node);
+            }
           } catch (compErr) {
             const fallback = extractAllContent(document, node);
             if (fallback) current.nodes.push(...fallback);
@@ -674,6 +802,8 @@ var CustomImportScript = (() => {
         contentRoot.querySelectorAll("h1, h2, h3, h4, h5, h6, p, li, div, span").forEach((n) => {
           if (n.closest("header, footer, nav")) return;
           if (n.closest(JUNK)) return;
+          if (statScopes.some(({ scope }) => scope.contains(n))) return;
+          if (consumedScopes.some((scope) => scope.contains(n))) return;
           if (!isTextLeaf(n)) return;
           const plain = norm(text(n));
           if (isJunkText(plain)) return;
