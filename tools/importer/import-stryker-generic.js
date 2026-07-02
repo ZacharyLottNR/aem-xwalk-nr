@@ -143,6 +143,7 @@ const JUNK_PATTERNS = [
   /these cookies (are|enable|allow|may)/i, // OneTrust cookie descriptions
   /localpage_nav|hcp-banner-overlay|first-item/i, // widget config tokens
   /copy and past this (code|link)/i, // embed/share instructions
+  /^(load more|show more|view more|no items were found|no results found)$/i, // filter-grid widget chrome
 ];
 
 function isJunkText(t) {
@@ -197,6 +198,34 @@ function extractCustomizeable(document, section) {
       ctaLabel,
       anchorNode(document, ctaHref, ctaLabel),
       el(document, 'div', `<p>${titleText}</p>${desc.map((d) => `<p>${d}</p>`).join('')}`),
+    ]);
+  });
+  return [WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells })];
+}
+
+// c-filtered-content-type-grid-content → cards-stryker. A portfolio index grid:
+// each `.product-item` is a link card wrapping an image + an <h4> title, with no
+// description. The grid also ships hidden filter chrome (a "No items were found"
+// notice and a "Load More" button); we read only the real, non-hidden product
+// items. Cells match cards-stryker-card field groups: image, ctaLabel, ctaUrl,
+// text (title only).
+function extractFilteredGrid(document, section) {
+  const items = [...section.querySelectorAll('.product-item')]
+    // Skip hidden template/placeholder cells; keep only real product tiles.
+    .filter((it) => !it.classList.contains('hidden') && it.querySelector('a[href] h4'));
+  if (!items.length) return null;
+  const cells = [[''], ['4'], ['default']];
+  items.forEach((item) => {
+    const link = item.querySelector('a[href]');
+    const img = item.querySelector('img');
+    const titleEl = item.querySelector('h4, h3, h2');
+    const titleText = text(titleEl);
+    const href = link?.getAttribute('href') || '#';
+    cells.push([
+      imgNode(document, imgSrc(img), titleText),
+      'Learn more',
+      anchorNode(document, href, 'Learn more'),
+      el(document, 'div', `<p>${titleText}</p>`),
     ]);
   });
   return [WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells })];
@@ -470,6 +499,8 @@ const EXTRACTORS = {
   'c-table': extractTable,
   'c-marketo-form': extractMarketoForm,
   'c-resourcesanddownload': extractResources,
+  'c-filtered-content-type-grid': extractFilteredGrid,
+  'c-filtered-content-type-grid-content': extractFilteredGrid,
   'c-tabs': extractTabs,
   'c-text': extractText,
   // c-title / c-tagline hold a hydrated heading or tagline; emit their text.
@@ -604,6 +635,20 @@ export default {
     const blockNames = [];
 
     try {
+      // Strip filter-grid widget chrome up front so no extractor or the
+      // safety-net sweep can capture it. These nodes ("Load More" button, the
+      // hidden "No items were found" notice, and the empty pager/anchor stubs
+      // the grid script leaves behind) are non-content and their hydration state
+      // is unreliable at import time, so remove them from the source DOM before
+      // anything reads it.
+      document.querySelectorAll(
+        '.btn-load-more, .load-more, .no-results, .filter-results, .pagination, .load-more-container',
+      ).forEach((n) => n.remove());
+      // Empty anchors (no text, no image) are pager/JS stubs — drop them too.
+      document.querySelectorAll('a[href=""], a:not([href])').forEach((a) => {
+        if (!text(a) && !a.querySelector('img, picture')) a.remove();
+      });
+
       // Page title from <title> or first h1.
       const pageTitle = text(document.querySelector('title'))
         || text(document.querySelector('h1'))
@@ -725,6 +770,11 @@ export default {
         // sticky anchor nav (Section Metadata) AND is emitted as a visible <h2>
         // so the on-page section heading (e.g. "Surgeons, residents and
         // fellows") is not lost — the original renders it above the card grid.
+        // Some templates NEST the section-title marker inside a content section
+        // (e.g. the portfolio grid wraps a .c-section-title beside its product
+        // items). In that case, open the anchored section AND fall through to
+        // extract the content, rather than returning early and losing the grid.
+        const type = componentType(node);
         const titleEl = anchorTitleEl(node);
         if (titleEl && (titleEl.getAttribute('data-title') || text(titleEl))) {
           flushCards();
@@ -732,14 +782,18 @@ export default {
           current = { anchorLabel: label || '', nodes: [] };
           sectionsOut.push(current);
           if (label) current.nodes.push(el(document, 'h2', label));
-          return;
+          // Only a bare title marker stops here; a node that also carries real
+          // content (a recognized component or product/card items) continues to
+          // the extractor below so that content isn't dropped.
+          const hasContent = (type && EXTRACTORS[type] && type !== 'c-section-title')
+            || node.querySelector('.product-item, .item, .xf-master-building-block');
+          if (!hasContent) return;
         }
 
         // Any other unit flushes buffered cards, then extracts. Recognized
         // components use their extractor; everything else falls back to a
         // lossless text/image capture so no copy is dropped.
         flushCards();
-        const type = componentType(node);
         const extractor = type ? EXTRACTORS[type] : null;
         try {
           let produced = extractor ? extractor(document, node) : null;
@@ -805,7 +859,10 @@ export default {
         '[class*="s7"]', '[id*="s7"]', '[class*="scene7"]', '[data-widget*="video"]',
         '[class*="cq-dd-image"]', '[class*="dynamicmedia"]',
         '[class*="mobile-nav"]', '[class*="nav-overlay"]', '[class*="jumpbarnav"]',
-        '[aria-hidden="true"]', '[hidden]',
+        // Filter-grid widget chrome: hidden "No items were found" notice,
+        // "Load More" button, and empty pager anchors.
+        '.no-results', '.btn-load-more', '.load-more', '.filter-results',
+        '[aria-hidden="true"]', '[hidden]', '.hidden',
       ].join(',');
       const missed = [];
       const queuedNodes = [];

@@ -144,8 +144,10 @@ var CustomImportScript = (() => {
     // OneTrust cookie descriptions
     /localpage_nav|hcp-banner-overlay|first-item/i,
     // widget config tokens
-    /copy and past this (code|link)/i
+    /copy and past this (code|link)/i,
     // embed/share instructions
+    /^(load more|show more|view more|no items were found|no results found)$/i
+    // filter-grid widget chrome
   ];
   function isJunkText(t) {
     if (!t) return true;
@@ -185,6 +187,25 @@ var CustomImportScript = (() => {
         ctaLabel,
         anchorNode(document, ctaHref, ctaLabel),
         el(document, "div", `<p>${titleText}</p>${desc.map((d) => `<p>${d}</p>`).join("")}`)
+      ]);
+    });
+    return [WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells })];
+  }
+  function extractFilteredGrid(document, section) {
+    const items = [...section.querySelectorAll(".product-item")].filter((it) => !it.classList.contains("hidden") && it.querySelector("a[href] h4"));
+    if (!items.length) return null;
+    const cells = [[""], ["4"], ["default"]];
+    items.forEach((item) => {
+      const link = item.querySelector("a[href]");
+      const img = item.querySelector("img");
+      const titleEl = item.querySelector("h4, h3, h2");
+      const titleText = text(titleEl);
+      const href = (link == null ? void 0 : link.getAttribute("href")) || "#";
+      cells.push([
+        imgNode(document, imgSrc(img), titleText),
+        "Learn more",
+        anchorNode(document, href, "Learn more"),
+        el(document, "div", `<p>${titleText}</p>`)
       ]);
     });
     return [WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells })];
@@ -390,6 +411,8 @@ var CustomImportScript = (() => {
     "c-table": extractTable,
     "c-marketo-form": extractMarketoForm,
     "c-resourcesanddownload": extractResources,
+    "c-filtered-content-type-grid": extractFilteredGrid,
+    "c-filtered-content-type-grid-content": extractFilteredGrid,
     "c-tabs": extractTabs,
     "c-text": extractText,
     // c-title / c-tagline hold a hydrated heading or tagline; emit their text.
@@ -490,6 +513,12 @@ var CustomImportScript = (() => {
       const main = document.createElement("div");
       const blockNames = [];
       try {
+        document.querySelectorAll(
+          ".btn-load-more, .load-more, .no-results, .filter-results, .pagination, .load-more-container"
+        ).forEach((n) => n.remove());
+        document.querySelectorAll('a[href=""], a:not([href])').forEach((a) => {
+          if (!text(a) && !a.querySelector("img, picture")) a.remove();
+        });
         const pageTitle = text(document.querySelector("title")) || text(document.querySelector("h1")) || "Stryker";
         let path = "/stryker/imported";
         try {
@@ -563,6 +592,7 @@ var CustomImportScript = (() => {
             if (!node.querySelector("p")) pushLegal(node.innerHTML.trim(), text(node));
             return;
           }
+          const type = componentType(node);
           const titleEl = anchorTitleEl(node);
           if (titleEl && (titleEl.getAttribute("data-title") || text(titleEl))) {
             flushCards();
@@ -570,10 +600,10 @@ var CustomImportScript = (() => {
             current = { anchorLabel: label || "", nodes: [] };
             sectionsOut.push(current);
             if (label) current.nodes.push(el(document, "h2", label));
-            return;
+            const hasContent = type && EXTRACTORS[type] && type !== "c-section-title" || node.querySelector(".product-item, .item, .xf-master-building-block");
+            if (!hasContent) return;
           }
           flushCards();
-          const type = componentType(node);
           const extractor = type ? EXTRACTORS[type] : null;
           try {
             let produced = extractor ? extractor(document, node) : null;
@@ -626,8 +656,15 @@ var CustomImportScript = (() => {
           '[class*="mobile-nav"]',
           '[class*="nav-overlay"]',
           '[class*="jumpbarnav"]',
+          // Filter-grid widget chrome: hidden "No items were found" notice,
+          // "Load More" button, and empty pager anchors.
+          ".no-results",
+          ".btn-load-more",
+          ".load-more",
+          ".filter-results",
           '[aria-hidden="true"]',
-          "[hidden]"
+          "[hidden]",
+          ".hidden"
         ].join(",");
         const missed = [];
         const queuedNodes = [];
