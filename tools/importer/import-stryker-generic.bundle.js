@@ -146,8 +146,10 @@ var CustomImportScript = (() => {
     // widget config tokens
     /copy and past this (code|link)/i,
     // embed/share instructions
-    /^(load more|show more|view more|no items were found|no results found)$/i
+    /^(load more|show more|view more|no items were found|no results found)$/i,
     // filter-grid widget chrome
+    /^data as of .+all numbers are approximate/i
+    // infographic footnote (repeats per carousel copy)
   ];
   function isJunkText(t) {
     if (!t) return true;
@@ -228,6 +230,24 @@ var CustomImportScript = (() => {
       ]);
     });
     return [WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells: rows })];
+  }
+  function extractGroupList(document, section, heading) {
+    const lis = [...section.querySelectorAll("ul li")];
+    if (!lis.length) return null;
+    const cells = [[heading || "Quick links"]];
+    lis.forEach((li) => {
+      const link = li.querySelector("a[href]");
+      if (link) {
+        const label = text(link);
+        if (!label) return;
+        cells.push([label, anchorNode(document, link.getAttribute("href") || "#", label)]);
+      } else {
+        const label = text(li);
+        if (label) cells.push([label, ""]);
+      }
+    });
+    if (cells.length <= 1) return null;
+    return [WebImporter.Blocks.createBlock(document, { name: "quick-links-stryker", cells })];
   }
   function extractVideo(document, section, theme) {
     const a = section.querySelector('a[href*="youtu"], a[href*="vimeo"]');
@@ -491,6 +511,7 @@ var CustomImportScript = (() => {
     "c-resourcesanddownload": extractResources,
     "c-filtered-content-type-grid": extractFilteredGrid,
     "c-filtered-content-type-grid-content": extractFilteredGrid,
+    "c-grouplist": extractGroupList,
     "c-tabs": extractTabs,
     "c-text": extractText,
     // c-title / c-tagline hold a hydrated heading or tagline; emit their text.
@@ -503,7 +524,7 @@ var CustomImportScript = (() => {
     var _a;
     const own = [...section.classList || []].find((c) => c.startsWith("c-"));
     if (own) return own;
-    const inner = (_a = section.querySelector) == null ? void 0 : _a.call(section, "[class]");
+    const inner = (_a = section.querySelector) == null ? void 0 : _a.call(section, '[class*="c-"]');
     if (inner) {
       const nested = [...inner.classList || []].find((c) => c.startsWith("c-"));
       if (nested) return nested;
@@ -659,8 +680,10 @@ var CustomImportScript = (() => {
           ".sectionseparator",
           ".c-section-separator",
           // horizontal content breaks
-          ".pDiv"
+          ".pDiv",
           // bespoke promo bands (e.g. Training Calendar)
+          ".c-grouplist"
+          // grouped link lists (e.g. "Our businesses")
         ].join(",");
         const all = [...contentRoot.querySelectorAll(SELECTOR)].filter((n) => !n.closest("header, footer, nav")).filter((n) => !statScopes.some(({ scope, title }) => n !== title && scope.contains(n) && scope !== n));
         const units = all.filter((n) => !all.some((o) => o !== n && o.contains(n)));
@@ -731,9 +754,12 @@ var CustomImportScript = (() => {
           flushCards();
           const extractor = type ? EXTRACTORS[type] : null;
           try {
-            let produced = extractor ? extractor(document, node) : null;
-            if ((!produced || !produced.length) && node.querySelectorAll(".c-standalone-image-content").length >= 2) {
+            let produced = null;
+            if (node.querySelectorAll(".c-standalone-image-content").length >= 2) {
               produced = extractLinkCardGrid(document, node);
+            }
+            if (!produced || !produced.length) {
+              produced = extractor ? type === "c-grouplist" ? extractor(document, node, "") : extractor(document, node) : null;
             }
             if ((!produced || !produced.length) && isPromoPanel(node)) {
               produced = extractPromoPanel(document, node);
@@ -741,7 +767,7 @@ var CustomImportScript = (() => {
             if (!produced || !produced.length) produced = extractAllContent(document, node);
             if (produced && produced.length) {
               current.nodes.push(...produced);
-              if (((_c = produced[0]) == null ? void 0 : _c.tagName) === "TABLE") consumedScopes.push(node);
+              if (extractor || ((_c = produced[0]) == null ? void 0 : _c.tagName) === "TABLE") consumedScopes.push(node);
             }
           } catch (compErr) {
             const fallback = extractAllContent(document, node);
@@ -764,9 +790,13 @@ var CustomImportScript = (() => {
         legalParas.forEach((p) => {
           capturedKey += key(p.plain);
         });
+        consumedScopes.forEach((scope) => {
+          capturedKey += key(text(scope));
+        });
         const isTextLeaf = (n) => {
           const t = norm(text(n));
           if (!t || t.length < 3) return false;
+          if (/^(DIV|SPAN)$/.test(n.tagName) && n.querySelector("p, h1, h2, h3, h4, h5, h6, li, ul, ol")) return false;
           return ![...n.children].some((c) => norm(text(c)) === t);
         };
         const JUNK = [

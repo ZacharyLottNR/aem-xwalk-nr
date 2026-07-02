@@ -144,6 +144,7 @@ const JUNK_PATTERNS = [
   /localpage_nav|hcp-banner-overlay|first-item/i, // widget config tokens
   /copy and past this (code|link)/i, // embed/share instructions
   /^(load more|show more|view more|no items were found|no results found)$/i, // filter-grid widget chrome
+  /^data as of .+all numbers are approximate/i, // infographic footnote (repeats per carousel copy)
 ];
 
 function isJunkText(t) {
@@ -254,6 +255,29 @@ function extractLinkCardGrid(document, section) {
     ]);
   });
   return [WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells: rows })];
+}
+
+// c-grouplist → quick-links-stryker. A grouped list of links (e.g. the About
+// page's "Our businesses" portfolio index). Each <li> link becomes a quick-link
+// item; an <li> without a link becomes a column header (blank URL). The block
+// heading comes from the caller (the preceding section-title label).
+function extractGroupList(document, section, heading) {
+  const lis = [...section.querySelectorAll('ul li')];
+  if (!lis.length) return null;
+  const cells = [[heading || 'Quick links']];
+  lis.forEach((li) => {
+    const link = li.querySelector('a[href]');
+    if (link) {
+      const label = text(link);
+      if (!label) return;
+      cells.push([label, anchorNode(document, link.getAttribute('href') || '#', label)]);
+    } else {
+      const label = text(li);
+      if (label) cells.push([label, '']); // column header (blank URL)
+    }
+  });
+  if (cells.length <= 1) return null;
+  return [WebImporter.Blocks.createBlock(document, { name: 'quick-links-stryker', cells })];
 }
 
 // c-standalone-video-content → video-stryker. Stryker uses Dynamic Media; we
@@ -602,6 +626,7 @@ const EXTRACTORS = {
   'c-resourcesanddownload': extractResources,
   'c-filtered-content-type-grid': extractFilteredGrid,
   'c-filtered-content-type-grid-content': extractFilteredGrid,
+  'c-grouplist': extractGroupList,
   'c-tabs': extractTabs,
   'c-text': extractText,
   // c-title / c-tagline hold a hydrated heading or tagline; emit their text.
@@ -611,12 +636,14 @@ const EXTRACTORS = {
   // extractText which returns null, so it is safely skipped.
 };
 
-// Identify the c-{type} token on an element (searches its own classes, then a
-// descendant/ancestor that carries one).
+// Identify the c-{type} token on an element (searches its own classes, then any
+// descendant that carries one). Some Stryker wrappers have a bare class (e.g. a
+// `.largeheadline` div wrapping the real `.c-largeheadline`), so we scan the
+// closest c-* descendant rather than only the first [class] child.
 function componentType(section) {
   const own = [...(section.classList || [])].find((c) => c.startsWith('c-'));
   if (own) return own;
-  const inner = section.querySelector?.('[class]');
+  const inner = section.querySelector?.('[class*="c-"]');
   if (inner) {
     const nested = [...(inner.classList || [])].find((c) => c.startsWith('c-'));
     if (nested) return nested;
@@ -859,6 +886,7 @@ export default {
         '.text.parbase', '.c-rich-text-editor', '.largeheadline',
         '.sectionseparator', '.c-section-separator', // horizontal content breaks
         '.pDiv', // bespoke promo bands (e.g. Training Calendar)
+        '.c-grouplist', // grouped link lists (e.g. "Our businesses")
       ].join(',');
       const all = [...contentRoot.querySelectorAll(SELECTOR)]
         // Drop header/footer chrome and hidden scaffolding.
@@ -983,12 +1011,23 @@ export default {
         flushCards();
         const extractor = type ? EXTRACTORS[type] : null;
         try {
-          let produced = extractor ? extractor(document, node) : null;
           // A run of image+title link cards (e.g. "Learn more about us") →
-          // cards-stryker.
-          if ((!produced || !produced.length)
-            && node.querySelectorAll('.c-standalone-image-content').length >= 2) {
+          // cards-stryker. Checked BEFORE the per-type extractor because such a
+          // section resolves to c-standalone-image (which would emit just one
+          // image); the multi-cell grid must win.
+          let produced = null;
+          if (node.querySelectorAll('.c-standalone-image-content').length >= 2) {
             produced = extractLinkCardGrid(document, node);
+          }
+          // The grouped-link list heading is already emitted as an <h2> by the
+          // section-title branch (e.g. "Our businesses"), so pass a blank
+          // heading to avoid duplicating it inside the block.
+          if (!produced || !produced.length) {
+            produced = extractor
+              ? (type === 'c-grouplist'
+                ? extractor(document, node, '')
+                : extractor(document, node))
+              : null;
           }
           // Unrecognized band that looks like a heading + blurb + CTA + banner
           // image (e.g. "Training Calendar") → get-to-know-us-stryker.
@@ -998,11 +1037,13 @@ export default {
           if (!produced || !produced.length) produced = extractAllContent(document, node);
           if (produced && produced.length) {
             current.nodes.push(...produced);
-            // If this whole node became block(s) (e.g. a full-bleed panel →
-            // stats/gallery, or a link-card run → cards), exclude its subtree
-            // from the safety-net sweep so mobile/desktop duplicate copy inside
-            // it isn't re-emitted as loose content.
-            if (produced[0]?.tagName === 'TABLE') consumedScopes.push(node);
+            // A recognized extractor has fully represented this node's content
+            // (as block(s) or a consolidated heading), so exclude its subtree
+            // from the safety-net sweep — otherwise mobile/desktop duplicate copy
+            // or the sub-fragments it collapsed get re-emitted as loose content.
+            // (extractAllContent, the lossless fallback, is NOT a recognized
+            // extractor, so its nodes stay sweepable.)
+            if (extractor || produced[0]?.tagName === 'TABLE') consumedScopes.push(node);
           }
         } catch (compErr) {
           const fallback = extractAllContent(document, node);
@@ -1042,10 +1083,24 @@ export default {
       }));
       // Include deferred legal copy so the sweep never re-captures it loosely.
       legalParas.forEach((p) => { capturedKey += key(p.plain); });
+      // Seed from the FULL text of every consumed scope (a unit an extractor
+      // turned into a block). The block's cells reword/split the source (e.g. a
+      // stats block emits "61"/"in countries" from a "in 61 countries" leaf), so
+      // the emitted-node keys above miss the original prose. Adding each scope's
+      // raw subtree text means the sweep won't re-emit that unit's mobile/desktop
+      // duplicate copy as loose content.
+      consumedScopes.forEach((scope) => { capturedKey += key(text(scope)); });
       // A "text leaf" directly holds text not wholly provided by a single child.
+      // For div/span candidates we additionally require that the node is NOT a
+      // multi-block container: a wrapper holding several <p>/<h*>/<li> children
+      // is a container whose pieces are captured individually, and grabbing its
+      // combined text would both duplicate that copy and dodge the dedup key
+      // (the aggregate key never matches any single captured paragraph).
       const isTextLeaf = (n) => {
         const t = norm(text(n));
         if (!t || t.length < 3) return false;
+        if (/^(DIV|SPAN)$/.test(n.tagName)
+          && n.querySelector('p, h1, h2, h3, h4, h5, h6, li, ul, ol')) return false;
         return ![...n.children].some((c) => norm(text(c)) === t);
       };
       // Well-known non-article scaffolding to skip even in "capture everything"
