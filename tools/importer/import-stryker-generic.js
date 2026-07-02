@@ -83,6 +83,29 @@ function toEmbed(url) {
   return url;
 }
 
+// Stryker decorates styled headings as paragraphs with span classes rather
+// than heading tags: `.futura-bold` is a bold Futura eyebrow/kicker (e.g.
+// "Services", "Solutions") and `.urw-egyptienne` / `.fontsize-1-75em` is an
+// enlarged serif headline (e.g. "Maximizing your investment"). The html2md/
+// md2jcr round-trip strips arbitrary span classes, flattening every such line
+// to an identical body paragraph and losing the visual hierarchy. Map them to
+// heading tags — which the round-trip preserves — so the imported page keeps
+// the bold kicker + larger headline. Returns a heading tag name, or null to
+// keep the node's original tag.
+function styledHeadingTag(node) {
+  if (!node || !node.querySelector) return null;
+  const whole = text(node);
+  if (!whole) return null;
+  // Only reclassify when a styling span wraps essentially the entire line.
+  const wraps = (sel) => {
+    const s = node.querySelector(sel);
+    return s && text(s) === whole;
+  };
+  if (wraps('.futura-bold')) return 'h3'; // bold Futura kicker
+  if (wraps('.urw-egyptienne') || wraps('.fontsize-1-75em')) return 'h2'; // serif headline
+  return null;
+}
+
 // -------------------------------------------------------------------------
 // Junk filter
 // -------------------------------------------------------------------------
@@ -366,7 +389,11 @@ function extractText(document, section) {
   const nodes = [];
   section.querySelectorAll('h1, h2, h3, h4, p').forEach((n) => {
     const t = n.innerHTML.trim();
-    if (t && !isJunkText(text(n))) nodes.push(el(document, n.tagName.toLowerCase(), t));
+    if (!t || isJunkText(text(n))) return;
+    const tag = styledHeadingTag(n) || n.tagName.toLowerCase();
+    // When promoting a styled paragraph to a heading, emit its plain text so the
+    // decorative spans (which md2jcr would strip anyway) don't ride along.
+    nodes.push(el(document, tag, tag === n.tagName.toLowerCase() ? t : text(n)));
   });
   return nodes.length ? nodes : null;
 }
@@ -487,6 +514,11 @@ function extractAllContent(document, root) {
     if (seenText.has(plain)) return;
     if (isJunkText(plain)) return; // drop known widget/nav/cookie chrome
     seenText.add(plain);
+    // Promote Stryker's styled title paragraphs (bold Futura kicker / enlarged
+    // serif headline) to heading tags so the hierarchy survives md2jcr; emit
+    // plain text for those since the decorative spans would be stripped anyway.
+    const styled = n.tagName === 'P' ? styledHeadingTag(n) : null;
+    if (styled) { nodes.push(el(document, styled, plain)); return; }
     const tag = n.tagName.toLowerCase();
     nodes.push(el(document, tag === 'li' ? 'p' : tag, t));
   });
@@ -789,6 +821,8 @@ export default {
         if (queuedNodes.some((q) => q.contains(n) || n.contains(q))) return;
         capturedKey += k;
         queuedNodes.push(n);
+        const styled = styledHeadingTag(n);
+        if (styled) { missed.push(el(document, styled, plain)); return; }
         const tag = /^H[1-6]$/.test(n.tagName) ? n.tagName.toLowerCase() : 'p';
         missed.push(el(document, tag, n.innerHTML.trim() || plain));
       });

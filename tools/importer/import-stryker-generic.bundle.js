@@ -76,6 +76,18 @@ var CustomImportScript = (() => {
     const cand = img.getAttribute("src") || img.getAttribute("data-src") || (img.getAttribute("srcset") || "").split(",")[0].trim().split(" ")[0];
     return cand || "";
   }
+  function styledHeadingTag(node) {
+    if (!node || !node.querySelector) return null;
+    const whole = text(node);
+    if (!whole) return null;
+    const wraps = (sel) => {
+      const s = node.querySelector(sel);
+      return s && text(s) === whole;
+    };
+    if (wraps(".futura-bold")) return "h3";
+    if (wraps(".urw-egyptienne") || wraps(".fontsize-1-75em")) return "h2";
+    return null;
+  }
   var JUNK_EXACT = /* @__PURE__ */ new Set([
     "audio",
     "menu",
@@ -314,7 +326,9 @@ var CustomImportScript = (() => {
     const nodes = [];
     section.querySelectorAll("h1, h2, h3, h4, p").forEach((n) => {
       const t = n.innerHTML.trim();
-      if (t && !isJunkText(text(n))) nodes.push(el(document, n.tagName.toLowerCase(), t));
+      if (!t || isJunkText(text(n))) return;
+      const tag = styledHeadingTag(n) || n.tagName.toLowerCase();
+      nodes.push(el(document, tag, tag === n.tagName.toLowerCase() ? t : text(n)));
     });
     return nodes.length ? nodes : null;
   }
@@ -411,6 +425,11 @@ var CustomImportScript = (() => {
       if (seenText.has(plain)) return;
       if (isJunkText(plain)) return;
       seenText.add(plain);
+      const styled = n.tagName === "P" ? styledHeadingTag(n) : null;
+      if (styled) {
+        nodes.push(el(document, styled, plain));
+        return;
+      }
       const tag = n.tagName.toLowerCase();
       nodes.push(el(document, tag === "li" ? "p" : tag, t));
     });
@@ -623,6 +642,11 @@ var CustomImportScript = (() => {
           if (queuedNodes.some((q) => q.contains(n) || n.contains(q))) return;
           capturedKey += k;
           queuedNodes.push(n);
+          const styled = styledHeadingTag(n);
+          if (styled) {
+            missed.push(el(document, styled, plain));
+            return;
+          }
           const tag = /^H[1-6]$/.test(n.tagName) ? n.tagName.toLowerCase() : "p";
           missed.push(el(document, tag, n.innerHTML.trim() || plain));
         });
