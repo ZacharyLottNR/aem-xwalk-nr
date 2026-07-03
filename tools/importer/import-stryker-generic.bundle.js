@@ -341,6 +341,13 @@ var CustomImportScript = (() => {
   function extractLargeHeadline(document, section) {
     const label = text(section.querySelector(".largeheadline")) || text(section);
     if (!label) return null;
+    const isSentence = /[.!?]$/.test(label) || label.split(/\s+/).length >= 6;
+    if (isSentence) {
+      return [WebImporter.Blocks.createBlock(document, {
+        name: "center-justified-text-stryker",
+        cells: [[el(document, "div", `<p>${label}</p>`)]]
+      })];
+    }
     return [el(document, "h2", label)];
   }
   function extractPromoPanel(document, panel) {
@@ -415,6 +422,23 @@ var CustomImportScript = (() => {
       );
     });
     return [WebImporter.Blocks.createBlock(document, { name: "double-text-and-media-stryker", cells })];
+  }
+  function extractValueCards(document, section) {
+    const paras = [...section.querySelectorAll("p")].filter((p) => p.querySelector(".futura-bold"));
+    const cards = [];
+    paras.forEach((p) => {
+      const headingEl = p.querySelector(".futura-bold");
+      const heading = text(headingEl);
+      if (!heading) return;
+      const sub = text(p).replace(heading, "").replace(/\s+/g, " ").trim();
+      cards.push({ heading, sub });
+    });
+    if (cards.length < 3) return null;
+    const rows = [[""], [""], [el(document, "div", "")], ["plain"]];
+    cards.forEach((c) => {
+      rows.push(["", c.heading, el(document, "div", `<p>${c.sub}</p>`)]);
+    });
+    return [WebImporter.Blocks.createBlock(document, { name: "stats-stryker", cells: rows })];
   }
   function statCells(container) {
     const seen = /* @__PURE__ */ new Set();
@@ -826,6 +850,9 @@ var CustomImportScript = (() => {
             let produced = null;
             if (node.querySelectorAll(".c-standalone-image-content").length >= 2) {
               produced = extractLinkCardGrid(document, node);
+            }
+            if ((!produced || !produced.length) && node.querySelectorAll("p .futura-bold").length >= 3 && node.querySelectorAll("img").length === 0) {
+              produced = extractValueCards(document, node);
             }
             if (!produced || !produced.length) {
               produced = extractor ? type === "c-grouplist" ? extractor(document, node, "") : extractor(document, node) : null;

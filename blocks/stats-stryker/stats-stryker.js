@@ -19,8 +19,8 @@ export default function decorate(block) {
   const themeRow = rows[3];
   const themeText = innerCell(themeRow)?.textContent?.trim().toLowerCase() || '';
   const hasThemeRow = themeRow && !themeRow.querySelector('picture')
-    && ['light', 'dark'].includes(themeText);
-  const themeVal = hasThemeRow && themeText === 'dark' ? 'dark' : 'light';
+    && ['light', 'dark', 'plain'].includes(themeText);
+  const themeVal = hasThemeRow && ['dark', 'plain'].includes(themeText) ? themeText : 'light';
   const statRows = rows.slice(hasThemeRow ? 4 : 3);
 
   block.textContent = '';

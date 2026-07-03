@@ -441,6 +441,18 @@
     ]
   },
   {
+    "id": "center-justified-text-stryker",
+    "fields": [
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "value": ""
+      }
+    ]
+  },
+  {
     "id": "columns-casestudy",
     "fields": [
       {
@@ -6189,6 +6201,10 @@
           {
             "name": "Dark",
             "value": "dark"
+          },
+          {
+            "name": "Plain (dark heading + subtext, no big numbers)",
+            "value": "plain"
           }
         ]
       }

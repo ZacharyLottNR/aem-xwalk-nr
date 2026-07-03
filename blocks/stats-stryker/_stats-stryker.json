@@ -71,6 +71,10 @@
             {
               "name": "Dark",
               "value": "dark"
+            },
+            {
+              "name": "Plain (dark heading + subtext, no big numbers)",
+              "value": "plain"
             }
           ]
         }

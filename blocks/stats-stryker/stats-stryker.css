@@ -125,17 +125,47 @@
 }
 
 /* Cycle the brand infographic accent colors across the numbers, matching the
-   original (teal, purple, blue). */
-.stats-stryker-item:nth-child(3n + 1) .stats-stryker-item-value {
+   original (teal, purple, blue). Not applied to the plain theme. */
+.stats-stryker:not(.stats-stryker-plain) .stats-stryker-item:nth-child(3n + 1) .stats-stryker-item-value {
   color: #4c7d7a;
 }
 
-.stats-stryker-item:nth-child(3n + 2) .stats-stryker-item-value {
+.stats-stryker:not(.stats-stryker-plain) .stats-stryker-item:nth-child(3n + 2) .stats-stryker-item-value {
   color: #85458a;
 }
 
-.stats-stryker-item:nth-child(3n) .stats-stryker-item-value {
+.stats-stryker:not(.stats-stryker-plain) .stats-stryker-item:nth-child(3n) .stats-stryker-item-value {
   color: #1c5687;
+}
+
+/*
+ * Plain theme: no band, no big colored numbers — a simple row of text "cards"
+ * (bold dark heading + small subtext), left-aligned, matching the About page's
+ * Values section. The "value" cell is the heading, the "label" the subtext.
+ */
+.stats-stryker.stats-stryker-plain {
+  padding: 24px;
+}
+
+.stats-stryker.stats-stryker-plain .stats-stryker-item {
+  align-items: flex-start;
+  text-align: left;
+  padding: 0;
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.stats-stryker.stats-stryker-plain .stats-stryker-item-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--stryker-black, #1a1a1a);
+  white-space: normal;
+}
+
+.stats-stryker.stats-stryker-plain .stats-stryker-item-label {
+  font-family: var(--stryker-body-font);
+  font-size: 16px;
+  color: var(--stryker-black, #1a1a1a);
+  margin-top: 2px;
 }
 
 @media (width <= 700px) {
@@ -147,7 +177,7 @@
     font-size: 32px;
   }
 
-  .stats-stryker-item-value {
+  .stats-stryker:not(.stats-stryker-plain) .stats-stryker-item-value {
     font-size: 56px;
   }
 }

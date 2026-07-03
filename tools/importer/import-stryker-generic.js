@@ -398,11 +398,24 @@ function extractLatestNews(document, section) {
   return [WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells })];
 }
 
-// c-largeheadline → a two-tone heading. Stryker nests color spans; we keep the
-// plain text as an <h2> (default content) so it round-trips simply.
+// c-largeheadline → normally a two-tone heading kept as plain <h2>. But a
+// standalone largeheadline that is a full sentence (e.g. the Mission statement
+// "Together with our customers, we are driven to make healthcare better.") is
+// display copy, not a heading — map it to a center-justified-text block. The
+// infographic's headline lives inside a full-bleed panel and is handled there,
+// so it never reaches this extractor.
 function extractLargeHeadline(document, section) {
   const label = text(section.querySelector('.largeheadline')) || text(section);
   if (!label) return null;
+  // A multi-word sentence (has a space and ends with sentence punctuation, or is
+  // long) reads as display copy → center-justified block.
+  const isSentence = /[.!?]$/.test(label) || label.split(/\s+/).length >= 6;
+  if (isSentence) {
+    return [WebImporter.Blocks.createBlock(document, {
+      name: 'center-justified-text-stryker',
+      cells: [[el(document, 'div', `<p>${label}</p>`)]],
+    })];
+  }
   return [el(document, 'h2', label)];
 }
 
@@ -509,6 +522,33 @@ function extractCuratedTiles(document, section) {
     );
   });
   return [WebImporter.Blocks.createBlock(document, { name: 'double-text-and-media-stryker', cells })];
+}
+
+// A "values grid" is a section of short text cards — a bold heading + a one-line
+// subtext, no image (e.g. the About page's Values: Integrity / We do what's
+// right, ...). Each card is a rich-text column whose paragraph nests a
+// .futura-bold heading and a following subtext span. Map to a plain-theme
+// stats-stryker block (value = heading, label = subtext). Returns null unless
+// at least three such cards are present (so ordinary rich text isn't captured).
+function extractValueCards(document, section) {
+  const paras = [...section.querySelectorAll('p')].filter((p) => p.querySelector('.futura-bold'));
+  const cards = [];
+  paras.forEach((p) => {
+    const headingEl = p.querySelector('.futura-bold');
+    const heading = text(headingEl);
+    if (!heading) return;
+    // Subtext = the paragraph text minus the heading.
+    const sub = text(p).replace(heading, '').replace(/\s+/g, ' ').trim();
+    cards.push({ heading, sub });
+  });
+  if (cards.length < 3) return null;
+  // stats-stryker cells: block-level titleBlack, titleGold, intro, theme; then
+  // per-item icon, value (heading), label (subtext). No icon for value cards.
+  const rows = [[''], [''], [el(document, 'div', '')], ['plain']];
+  cards.forEach((c) => {
+    rows.push(['', c.heading, el(document, 'div', `<p>${c.sub}</p>`)]);
+  });
+  return [WebImporter.Blocks.createBlock(document, { name: 'stats-stryker', cells: rows })];
 }
 
 // Pull "stat cells" (a big headline number + its supporting label) out of a
@@ -1120,6 +1160,14 @@ export default {
           let produced = null;
           if (node.querySelectorAll('.c-standalone-image-content').length >= 2) {
             produced = extractLinkCardGrid(document, node);
+          }
+          // A values grid (3+ bold-heading + subtext text cards, no images) →
+          // plain-theme stats-stryker. Checked before the per-type extractor
+          // since the section has no distinguishing c-type.
+          if ((!produced || !produced.length)
+            && node.querySelectorAll('p .futura-bold').length >= 3
+            && node.querySelectorAll('img').length === 0) {
+            produced = extractValueCards(document, node);
           }
           // The grouped-link list heading is already emitted as an <h2> by the
           // section-title branch (e.g. "Our businesses"), so pass a blank
