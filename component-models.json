@@ -6054,6 +6054,23 @@
         "name": "heading",
         "label": "Heading",
         "value": "Quick links"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "theme",
+        "label": "Theme",
+        "value": "default",
+        "options": [
+          {
+            "name": "Default (category columns)",
+            "value": "default"
+          },
+          {
+            "name": "Columned (flat link list flowing across columns)",
+            "value": "columned"
+          }
+        ]
       }
     ]
   },

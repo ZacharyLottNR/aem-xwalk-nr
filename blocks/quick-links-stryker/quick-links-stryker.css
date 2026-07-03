@@ -57,11 +57,49 @@
   color: var(--stryker-teal-dark, #3a615f);
 }
 
+/*
+ * Columned theme: one flat list of links flowing top-to-bottom then across four
+ * CSS columns (fills column 1, then 2, ...), matching the source "Our
+ * businesses" list. Links are title-case (not uppercased) and a touch larger.
+ */
+.quick-links-stryker.quick-links-stryker-columned .quick-links-stryker-grid {
+  display: block;
+}
+
+.quick-links-stryker.quick-links-stryker-columned .quick-links-stryker-links {
+  columns: 4;
+  column-gap: 40px;
+}
+
+.quick-links-stryker.quick-links-stryker-columned .quick-links-stryker-links li {
+  margin: 0 0 16px;
+
+  /* Keep each link on a single column (don't split across a column break). */
+  break-inside: avoid;
+}
+
+.quick-links-stryker.quick-links-stryker-columned .quick-links-stryker-link:any-link {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.quick-links-stryker.quick-links-stryker-columned .quick-links-stryker-link:any-link::after {
+  content: " \25B6";
+  font-size: 10px;
+  vertical-align: middle;
+}
+
 /* Tablet: 2 columns */
 @media (width < 900px) {
   .quick-links-stryker .quick-links-stryker-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 32px;
+  }
+
+  .quick-links-stryker.quick-links-stryker-columned .quick-links-stryker-links {
+    columns: 2;
   }
 }
 
@@ -70,5 +108,9 @@
   .quick-links-stryker .quick-links-stryker-grid {
     grid-template-columns: 1fr;
     gap: 24px;
+  }
+
+  .quick-links-stryker.quick-links-stryker-columned .quick-links-stryker-links {
+    columns: 1;
   }
 }

@@ -2,21 +2,32 @@ export default function decorate(block) {
   const rows = [...block.children];
 
   let heading = 'Quick links';
+  let theme = 'default';
   const itemRows = [];
+  const singleCellValues = [];
 
-  // The parent block has a single-cell heading row; item rows have two cells
-  // (linkLabel, linkUrl). A blank URL marks a column header.
+  // Item rows have two cells (linkLabel, linkUrl) or contain a link. The block
+  // also has single-cell rows for the model's text fields (heading, theme) in
+  // order; collect those separately so we can assign them.
   rows.forEach((row) => {
     const cells = [...row.children];
     const hasLink = row.querySelector('a');
     if (cells.length >= 2 || hasLink) {
       itemRows.push(row);
     } else if (row.textContent.trim()) {
-      heading = row.textContent.trim();
+      singleCellValues.push(row.textContent.trim());
     }
   });
 
+  // First single-cell value is the heading; a later value naming a theme sets it.
+  if (singleCellValues.length) [heading] = singleCellValues;
+  singleCellValues.slice(1).forEach((v) => {
+    if (/^columned$/i.test(v)) theme = 'columned';
+    else if (/^default$/i.test(v)) theme = 'default';
+  });
+
   block.textContent = '';
+  block.classList.add(`quick-links-stryker-${theme}`);
 
   const h = document.createElement('h2');
   h.className = 'quick-links-stryker-heading';
@@ -26,6 +37,30 @@ export default function decorate(block) {
   const grid = document.createElement('div');
   grid.className = 'quick-links-stryker-grid';
 
+  // Columned theme: a single flat list of links that CSS flows into columns.
+  if (theme === 'columned') {
+    const list = document.createElement('ul');
+    list.className = 'quick-links-stryker-links';
+    itemRows.forEach((row) => {
+      const cells = [...row.children];
+      const label = cells[0]?.textContent?.trim() || '';
+      const urlCell = cells[1];
+      const href = urlCell?.querySelector('a')?.href || urlCell?.textContent?.trim() || '';
+      if (!label || !href) return; // skip header / blank-URL rows in this theme
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.className = 'quick-links-stryker-link';
+      a.href = href;
+      a.textContent = label;
+      li.append(a);
+      list.append(li);
+    });
+    grid.append(list);
+    if (list.children.length) block.append(grid);
+    return;
+  }
+
+  // Default theme: header items (blank URL) start a new category column.
   let currentCol = null;
   let currentList = null;
 

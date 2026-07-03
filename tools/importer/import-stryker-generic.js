@@ -257,26 +257,20 @@ function extractLinkCardGrid(document, section) {
   return [WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells: rows })];
 }
 
-// c-grouplist → quick-links-stryker. A grouped list of links (e.g. the About
-// page's "Our businesses" portfolio index). Each <li> link becomes a quick-link
-// item; an <li> without a link becomes a column header (blank URL). The block
-// heading comes from the caller (the preceding section-title label).
+// c-grouplist → quick-links-stryker (Columned theme). A flat portfolio index
+// (e.g. the About page's "Our businesses"): every <li> link becomes a quick-link
+// item, and the block's Columned theme flows them across four columns. Block
+// cells are heading, theme, then [label, url] items.
 function extractGroupList(document, section, heading) {
-  const lis = [...section.querySelectorAll('ul li')];
-  if (!lis.length) return null;
-  const cells = [[heading || 'Quick links']];
-  lis.forEach((li) => {
-    const link = li.querySelector('a[href]');
-    if (link) {
-      const label = text(link);
-      if (!label) return;
-      cells.push([label, anchorNode(document, link.getAttribute('href') || '#', label)]);
-    } else {
-      const label = text(li);
-      if (label) cells.push([label, '']); // column header (blank URL)
-    }
+  const links = [...section.querySelectorAll('ul li a[href]')];
+  if (!links.length) return null;
+  const cells = [[heading || 'Quick links'], ['columned']];
+  links.forEach((link) => {
+    const label = text(link);
+    if (!label) return;
+    cells.push([label, anchorNode(document, link.getAttribute('href') || '#', label)]);
   });
-  if (cells.length <= 1) return null;
+  if (cells.length <= 2) return null;
   return [WebImporter.Blocks.createBlock(document, { name: 'quick-links-stryker', cells })];
 }
 
@@ -1169,15 +1163,22 @@ export default {
             && node.querySelectorAll('img').length === 0) {
             produced = extractValueCards(document, node);
           }
-          // The grouped-link list heading is already emitted as an <h2> by the
-          // section-title branch (e.g. "Our businesses"), so pass a blank
-          // heading to avoid duplicating it inside the block.
+          // The grouped-link list carries the section heading itself (e.g.
+          // "Our businesses"), so pass the current section's label and drop the
+          // separate <h2> the section-title branch just emitted, avoiding a
+          // duplicate heading above the block.
           if (!produced || !produced.length) {
-            produced = extractor
-              ? (type === 'c-grouplist'
-                ? extractor(document, node, '')
-                : extractor(document, node))
-              : null;
+            if (type === 'c-grouplist') {
+              const groupHeading = current.anchorLabel || '';
+              if (groupHeading && current.nodes.length
+                && current.nodes[current.nodes.length - 1].tagName === 'H2'
+                && text(current.nodes[current.nodes.length - 1]) === groupHeading) {
+                current.nodes.pop();
+              }
+              produced = extractor(document, node, groupHeading);
+            } else {
+              produced = extractor ? extractor(document, node) : null;
+            }
           }
           // Unrecognized band that looks like a heading + blurb + CTA + banner
           // image (e.g. "Training Calendar") → get-to-know-us-stryker.

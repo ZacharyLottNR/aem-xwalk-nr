@@ -232,21 +232,15 @@ var CustomImportScript = (() => {
     return [WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells: rows })];
   }
   function extractGroupList(document, section, heading) {
-    const lis = [...section.querySelectorAll("ul li")];
-    if (!lis.length) return null;
-    const cells = [[heading || "Quick links"]];
-    lis.forEach((li) => {
-      const link = li.querySelector("a[href]");
-      if (link) {
-        const label = text(link);
-        if (!label) return;
-        cells.push([label, anchorNode(document, link.getAttribute("href") || "#", label)]);
-      } else {
-        const label = text(li);
-        if (label) cells.push([label, ""]);
-      }
+    const links = [...section.querySelectorAll("ul li a[href]")];
+    if (!links.length) return null;
+    const cells = [[heading || "Quick links"], ["columned"]];
+    links.forEach((link) => {
+      const label = text(link);
+      if (!label) return;
+      cells.push([label, anchorNode(document, link.getAttribute("href") || "#", label)]);
     });
-    if (cells.length <= 1) return null;
+    if (cells.length <= 2) return null;
     return [WebImporter.Blocks.createBlock(document, { name: "quick-links-stryker", cells })];
   }
   function extractVideo(document, section, theme) {
@@ -855,7 +849,15 @@ var CustomImportScript = (() => {
               produced = extractValueCards(document, node);
             }
             if (!produced || !produced.length) {
-              produced = extractor ? type === "c-grouplist" ? extractor(document, node, "") : extractor(document, node) : null;
+              if (type === "c-grouplist") {
+                const groupHeading = current.anchorLabel || "";
+                if (groupHeading && current.nodes.length && current.nodes[current.nodes.length - 1].tagName === "H2" && text(current.nodes[current.nodes.length - 1]) === groupHeading) {
+                  current.nodes.pop();
+                }
+                produced = extractor(document, node, groupHeading);
+              } else {
+                produced = extractor ? extractor(document, node) : null;
+              }
             }
             if ((!produced || !produced.length) && isPromoPanel(node)) {
               produced = extractPromoPanel(document, node);
