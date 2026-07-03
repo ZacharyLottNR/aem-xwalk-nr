@@ -25,6 +25,7 @@ export default function decorate(block) {
   let layout = 'standard';
   if (layoutRaw === 'banner') layout = 'banner';
   else if (layoutRaw === 'fullbleed' || layoutRaw === 'full-bleed') layout = 'fullbleed';
+  else if (layoutRaw === 'tile') layout = 'tile';
 
   block.textContent = '';
   block.classList.add(`get-to-know-us-stryker-${layout}`);

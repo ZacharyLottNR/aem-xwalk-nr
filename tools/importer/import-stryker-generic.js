@@ -507,7 +507,7 @@ function extractCuratedTiles(document, section) {
         [el(document, 'div', bodyHtml)],
         [ctaLabel || 'Learn more'],
         [anchorNode(document, link.getAttribute('href') || '#', ctaLabel)],
-        ['standard'],
+        ['tile'],
         [''],
       ],
     }));

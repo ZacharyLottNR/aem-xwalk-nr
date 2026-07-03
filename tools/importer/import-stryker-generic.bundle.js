@@ -403,7 +403,7 @@ var CustomImportScript = (() => {
           [el(document, "div", bodyHtml)],
           [ctaLabel || "Learn more"],
           [anchorNode(document, link.getAttribute("href") || "#", ctaLabel)],
-          ["standard"],
+          ["tile"],
           [""]
         ]
       }));

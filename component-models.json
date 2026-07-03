@@ -5524,6 +5524,10 @@
           {
             "name": "Full bleed (full-width image, text overlaid right)",
             "value": "fullbleed"
+          },
+          {
+            "name": "Tile (text above image; two sit side by side)",
+            "value": "tile"
           }
         ]
       },
