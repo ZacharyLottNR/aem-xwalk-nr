@@ -11,7 +11,7 @@ export default function decorate(block) {
   const imageRows = [];
 
   // Image rows contain a picture; the remaining rows carry the text fields in
-  // model order: heading, description, cta text, cta url.
+  // model order: heading, description, cta text, cta url, theme.
   const textRows = [];
   rows.forEach((row) => {
     if (row.querySelector('picture')) imageRows.push(row);
@@ -21,8 +21,10 @@ export default function decorate(block) {
   [heading, description, ctaText] = textRows.map((r) => r.textContent.trim());
   const ctaUrlRow = textRows[3];
   ctaHref = ctaUrlRow?.querySelector('a')?.href || ctaUrlRow?.textContent?.trim() || '';
+  const theme = /^big$/i.test(textRows[4]?.textContent.trim() || '') ? 'big' : 'standard';
 
   block.textContent = '';
+  block.classList.add(`image-gallery-stryker-${theme}`);
 
   if (heading) {
     const h = document.createElement('h2');

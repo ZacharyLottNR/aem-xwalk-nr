@@ -1,10 +1,3 @@
-main .section.image-gallery-stryker-container > .image-gallery-stryker-wrapper {
-  background-color: var(--stryker-light-gray, #f2f2f2);
-  width: auto;
-  max-width: none;
-  margin: 0;
-}
-
 .image-gallery-stryker {
   max-width: var(--stryker-max-width, 1280px);
   margin: 0 auto;
@@ -31,21 +24,11 @@ main .section.image-gallery-stryker-container > .image-gallery-stryker-wrapper {
   margin: 0 0 32px;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
   gap: 24px;
-  place-items: center;
 }
 
 .image-gallery-stryker .image-gallery-stryker-item {
   line-height: 0;
-}
-
-.image-gallery-stryker .image-gallery-stryker-item img {
-  width: 100%;
-  height: auto;
-  max-height: 130px;
-  object-fit: contain;
-  display: block;
 }
 
 .image-gallery-stryker .image-gallery-stryker-cta:any-link {
@@ -68,21 +51,76 @@ main .section.image-gallery-stryker-container > .image-gallery-stryker-wrapper {
   color: var(--stryker-white, #fff);
 }
 
-/* Tablet: 3 across */
+/*
+ * Standard theme: a tight grid of small, contained images (e.g. award badges
+ * or partner logos) sitting on a light-gray band.
+ */
+main .section.image-gallery-stryker-container
+  > .image-gallery-stryker-wrapper:has(.image-gallery-stryker-standard) {
+  background-color: var(--stryker-light-gray, #f2f2f2);
+  width: auto;
+  max-width: none;
+  margin: 0;
+}
+
+.image-gallery-stryker.image-gallery-stryker-standard .image-gallery-stryker-list {
+  grid-template-columns: repeat(6, 1fr);
+  place-items: center;
+}
+
+.image-gallery-stryker.image-gallery-stryker-standard .image-gallery-stryker-item img {
+  width: 100%;
+  height: auto;
+  max-height: 130px;
+  object-fit: contain;
+  display: block;
+}
+
+/*
+ * Big theme: large edge-to-edge photos in a three-across grid (e.g. the Sage
+ * injury-prevention collage). Images fill their cell and are cropped to a
+ * consistent landscape ratio so the rows line up.
+ */
+.image-gallery-stryker.image-gallery-stryker-big .image-gallery-stryker-list {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.image-gallery-stryker.image-gallery-stryker-big .image-gallery-stryker-item {
+  width: 100%;
+}
+
+.image-gallery-stryker.image-gallery-stryker-big .image-gallery-stryker-item img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 11;
+  object-fit: cover;
+  display: block;
+}
+
+/* Tablet */
 @media (width < 900px) {
   .image-gallery-stryker {
     padding: 32px 24px;
   }
 
-  .image-gallery-stryker .image-gallery-stryker-list {
+  .image-gallery-stryker.image-gallery-stryker-standard .image-gallery-stryker-list {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .image-gallery-stryker.image-gallery-stryker-big .image-gallery-stryker-list {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Mobile: 2 across */
+/* Mobile */
 @media (width < 600px) {
-  .image-gallery-stryker .image-gallery-stryker-list {
+  .image-gallery-stryker.image-gallery-stryker-standard .image-gallery-stryker-list {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .image-gallery-stryker.image-gallery-stryker-big .image-gallery-stryker-list {
+    grid-template-columns: 1fr;
   }
 
   .image-gallery-stryker .image-gallery-stryker-cta:any-link {

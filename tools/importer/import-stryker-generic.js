@@ -257,6 +257,74 @@ function extractLinkCardGrid(document, section) {
   return [WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells: rows })];
 }
 
+// A "column-card grid" is a Bootstrap row of `.col-md-*` columns where each
+// column bundles an image, a heading, a short description and a CTA link (e.g.
+// the Sage product grids and the "Partner with Sage" tiles). Stryker assembles
+// each column from separate image/rich-text sub-components, so no single
+// `.c-standalone-image-content` holds both the image and the <h4> — the grid
+// only reads correctly at the column level. Map the run to cards-stryker.
+// Returns null unless at least two qualifying columns are present.
+function extractColumnCards(document, section) {
+  const cols = [...section.querySelectorAll('[class*="col-md-"]')]
+    .filter((c) => c.querySelector('img')
+      && c.querySelector('h2, h3, h4')
+      && c.querySelector('a[href]'));
+  if (cols.length < 2) return null;
+  const cells = [[''], [String(Math.min(cols.length, 4))], ['default']];
+  cols.forEach((col) => {
+    const img = col.querySelector('img');
+    const titleEl = col.querySelector('h2, h3, h4');
+    const titleText = text(titleEl);
+    // CTA = the first link with visible text (the image is also wrapped in a
+    // link with no text, which we ignore in favour of the "Learn more"-style
+    // action link). Preserve the source label's casing.
+    const cta = [...col.querySelectorAll('a[href]')].find((a) => text(a))
+      || col.querySelector('a[href]');
+    const ctaLabel = text(cta) || 'Learn more';
+    const ctaHref = cta?.getAttribute('href') || '#';
+    // Description = non-CTA paragraphs that aren't just the title.
+    const desc = [...col.querySelectorAll('p')]
+      .filter((p) => !p.querySelector('a[href]') && text(p) && text(p) !== titleText)
+      .map((p) => p.innerHTML.trim());
+    cells.push([
+      imgNode(document, imgSrc(img), titleText),
+      ctaLabel,
+      anchorNode(document, ctaHref, ctaLabel),
+      el(document, 'div', `<p>${titleText}</p>${desc.map((d) => `<p>${d}</p>`).join('')}`),
+    ]);
+  });
+  return [WebImporter.Blocks.createBlock(document, { name: 'cards-stryker', cells })];
+}
+
+// A "link-column list" is a section of rich-text columns, each led by a
+// `.futura-bold` category header followed by a list of links, with no images
+// (e.g. the Sage "Resources" footer: Explore / Learn / Support). Map to a
+// default-theme quick-links-stryker where each bold header (emitted with a
+// blank URL) opens a category column and each link becomes an item. Returns
+// null unless there is at least one link.
+function extractLinkColumns(document, section, heading) {
+  const cols = [...section.querySelectorAll('.c-rich-text-editor')];
+  if (!cols.length) return null;
+  const cells = [[heading || 'Quick links'], ['default']];
+  let added = 0;
+  cols.forEach((col) => {
+    const links = [...col.querySelectorAll('a[href]')];
+    if (!links.length) return;
+    const boldHeader = col.querySelector('.futura-bold');
+    const headerLabel = boldHeader ? text(boldHeader) : '';
+    // A bold header with no URL starts a new column in the default theme.
+    if (headerLabel) cells.push([headerLabel, '']);
+    links.forEach((a) => {
+      const label = text(a);
+      if (!label) return;
+      cells.push([label, anchorNode(document, a.getAttribute('href') || '#', label)]);
+      added += 1;
+    });
+  });
+  if (!added) return null;
+  return [WebImporter.Blocks.createBlock(document, { name: 'quick-links-stryker', cells })];
+}
+
 // c-grouplist → quick-links-stryker (Columned theme). A flat portfolio index
 // (e.g. the About page's "Our businesses"): every <li> link becomes a quick-link
 // item, and the block's Columned theme flows them across four columns. Block
@@ -287,13 +355,79 @@ function extractVideo(document, section, theme) {
   })];
 }
 
-// c-autocarousel → the page hero. Each slide wraps an experience fragment whose
-// content is a standalone image or video. We recover the first slide's image as
-// a full-width hero image (default content); if the slide is a video, fall
-// through to a video block.
+// c-autocarousel → either an image gallery or the page hero. A multi-image
+// carousel (e.g. the Sage injury-products collage: 6 rotating photos, no
+// heading or CTA) maps to image-gallery-stryker. A single-image carousel is the
+// page hero, recovered as a full-width image (default content); a video slide
+// falls through to a video block. The slick slider duplicates slides as
+// `.slick-cloned`, so dedupe images by src.
 function extractCarousel(document, section) {
+  const seen = new Set();
+  const imgs = [...section.querySelectorAll('img')].filter((im) => {
+    const src = imgSrc(im);
+    if (!src || !isUsableUrl(src)) return false;
+    const keySrc = src.split('?')[0];
+    if (seen.has(keySrc)) return false;
+    seen.add(keySrc);
+    return true;
+  });
+
+  // Multiple distinct images → gallery. Cells match image-gallery-stryker:
+  // block-level heading, description, ctaText, ctaUrl (all blank here), theme,
+  // then one image per row. A rotating photo carousel maps to the "big" theme
+  // (large edge-to-edge photos), not the small-badge "standard" layout.
+  if (imgs.length >= 2) {
+    const rows = [[''], [''], [''], [''], ['big']];
+    imgs.forEach((im) => rows.push([imgNode(document, imgSrc(im), im.getAttribute('alt') || '')]));
+    return [WebImporter.Blocks.createBlock(document, { name: 'image-gallery-stryker', cells: rows })];
+  }
+
   const firstSlide = section.querySelector('.carouselslide, .autoplay-slide') || section;
-  const img = firstSlide.querySelector('img');
+  const img = imgs[0] || firstSlide.querySelector('img');
+
+  // Single-image hero with an overlay (eyebrow/heading/subtext + CTA) →
+  // home-hero-stryker. Stryker builds the overlay from a `.largeheadline`
+  // (h1 = eyebrow, h2 = heading, a trailing `.line2` span = subtext) beside a
+  // `.c-curatedcta` button, layered over the background image. Recover those so
+  // the hero copy and call-to-action aren't lost.
+  const overlayHeading = section.querySelector('.largeheadline h1, .largeheadline h2, h1, h2');
+  const overlayCta = section.querySelector('.c-curatedcta a[href], .cta-container a[href]');
+  if (img && imgSrc(img) && (overlayHeading || overlayCta)) {
+    const headline = section.querySelector('.largeheadline') || section;
+    const h1 = headline.querySelector('h1');
+    const h2 = headline.querySelector('h2');
+    // With both headings present, h1 is the small eyebrow and h2 the headline.
+    // With only one, treat it as the headline (no eyebrow).
+    const eyebrow = h1 && h2 ? text(h1) : '';
+    const heading = text(h2) || text(h1) || '';
+    // Subtext = the largeheadline's `.line2` (or any text leaf) that isn't a
+    // heading or the CTA label.
+    const headingText = new Set([text(h1), text(h2)].filter(Boolean));
+    const ctaLabel = text(overlayCta) || '';
+    const subEl = headline.querySelector('.line2')
+      || [...headline.querySelectorAll('p, span, div')]
+        .find((n) => !n.querySelector('h1, h2, h3, h4')
+          && text(n) && !headingText.has(text(n)) && text(n) !== ctaLabel
+          && text(n).length > 10);
+    const subtext = subEl ? text(subEl) : '';
+    const ctaHref = overlayCta?.getAttribute('href') || '';
+    if (heading || ctaLabel) {
+      return [WebImporter.Blocks.createBlock(document, {
+        name: 'home-hero-stryker',
+        // Cells follow the model field order: eyebrow, heading, subtext,
+        // ctaUrl, ctaLabel, image (imageAlt folds into the image).
+        cells: [
+          [eyebrow],
+          [heading],
+          [subtext],
+          ctaHref ? [anchorNode(document, ctaHref, ctaLabel)] : [''],
+          [ctaLabel],
+          [imgNode(document, imgSrc(img), img.getAttribute('alt') || '')],
+        ],
+      })];
+    }
+  }
+
   if (img && imgSrc(img)) {
     return [imgNode(document, imgSrc(img), img.getAttribute('alt') || '')];
   }
@@ -606,6 +740,8 @@ function extractFullBleedPanel(document, section) {
           && text(n) !== text(cta)) || null)],
       [text(cta) || ''],
       [anchorNode(document, cta.getAttribute('href') || '#', text(cta))],
+      // Standard theme: small contained badges on a light-gray band.
+      ['standard'],
     ];
     imgs.forEach((im) => rows.push([imgNode(document, imgSrc(im), im.getAttribute('alt') || '')]));
     return [WebImporter.Blocks.createBlock(document, { name: 'image-gallery-stryker', cells: rows })];
@@ -790,6 +926,46 @@ function isCardUnit(node) {
   return node.classList?.contains('xf-master-building-block')
     && node.querySelector('img')
     && node.querySelector('h2, h3, h4');
+}
+
+// A "stat unit" is a grid column (.xf-master-building-block) that pairs an icon
+// image with an enlarged headline number and a supporting label, but has no
+// heading (e.g. the Sage hero's 633K / 2.5M / 52% fast-facts). Stryker renders
+// each as its own sibling column, so the run must be buffered and collapsed
+// into a single stats-stryker block. Detected structurally since the columns
+// carry no distinguishing c-* class.
+function isStatUnit(node) {
+  if (!node.classList?.contains('xf-master-building-block')) return false;
+  if (node.querySelector('h1, h2, h3, h4')) return false;
+  if (!node.querySelector('img')) return false;
+  const big = node.querySelector('.fontsize-3em, .fontsize-2-5em, .fontsize-2em');
+  return !!big && !!text(big) && text(big).length <= 24;
+}
+
+// Build a stats-stryker block from a run of stat units (see isStatUnit). Each
+// unit contributes an icon, the enlarged number, and the remaining paragraph
+// text as its label.
+function statsFromUnits(document, units) {
+  const cells = [];
+  const icons = [];
+  units.forEach((unit) => {
+    const big = unit.querySelector('.fontsize-3em, .fontsize-2-5em, .fontsize-2em');
+    const value = text(big);
+    if (!value) return;
+    const p = big.closest('p') || big.parentElement;
+    // Label = the OTHER paragraph(s) in the unit (not the number paragraph).
+    const label = [...unit.querySelectorAll('p')]
+      .filter((para) => para !== p && text(para))
+      .map((para) => text(para))
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const icon = unit.querySelector('img');
+    cells.push({ value, label });
+    icons.push(icon ? { src: imgSrc(icon), alt: icon.getAttribute('alt') || '' } : null);
+  });
+  if (!cells.length) return null;
+  return buildStats(document, { titleBlack: '', theme: 'light', cells, icons });
 }
 
 // A "promo panel" is a self-contained band with a heading, a short description,
@@ -1049,7 +1225,22 @@ export default {
       // heading + tagline. Collect contiguous units into one cards-stryker
       // block. `pendingCards` buffers units until a non-card node flushes them.
       let pendingCards = [];
+      let pendingStats = [];
+      const flushStats = () => {
+        if (!pendingStats.length) return;
+        try {
+          const block = statsFromUnits(document, pendingStats);
+          if (block && block.length) {
+            current.nodes.push(...block);
+            blockNames.push('stats-stryker');
+          }
+        } catch (e) {
+          current.nodes.push(errorBlock(document, `failed to build stats — ${e.message}`));
+        }
+        pendingStats = [];
+      };
       const flushCards = () => {
+        flushStats();
         if (!pendingCards.length) return;
         try {
           current.nodes.push(cardsFromUnits(document, pendingCards));
@@ -1084,8 +1275,21 @@ export default {
           return;
         }
 
+        // Fast-facts stat unit (icon + enlarged number + label, no heading) →
+        // buffer into the current stats run. Checked before isCardUnit since a
+        // stat unit is also an .xf-master-building-block.
+        if (isStatUnit(node)) {
+          if (pendingCards.length) flushCards();
+          pendingStats.push(node);
+          return;
+        }
+
         // Hydrated card unit → buffer into the current card grid.
-        if (isCardUnit(node)) { pendingCards.push(node); return; }
+        if (isCardUnit(node)) {
+          if (pendingStats.length) flushStats();
+          pendingCards.push(node);
+          return;
+        }
 
         // Horizontal content break (Stryker .sectionseparator / hr) →
         // content-break-stryker (little = thin grey rule).
@@ -1152,15 +1356,44 @@ export default {
           // section resolves to c-standalone-image (which would emit just one
           // image); the multi-cell grid must win.
           let produced = null;
-          if (node.querySelectorAll('.c-standalone-image-content').length >= 2) {
+          // A Bootstrap column grid whose columns each pair an image, a heading
+          // and a CTA link (e.g. Sage product grids, "Partner with Sage" tiles)
+          // → cards-stryker. Checked first: these columns fragment the image and
+          // heading into separate sub-components, so neither the link-card-grid
+          // nor a per-type extractor would reassemble them.
+          if (node.querySelectorAll('[class*="col-md-"]').length >= 2) {
+            produced = extractColumnCards(document, node);
+          }
+          // A run of image+title link cards (e.g. "Learn more about us").
+          if ((!produced || !produced.length)
+            && node.querySelectorAll('.c-standalone-image-content').length >= 2) {
             produced = extractLinkCardGrid(document, node);
           }
-          // A values grid (3+ bold-heading + subtext text cards, no images) →
-          // plain-theme stats-stryker. Checked before the per-type extractor
-          // since the section has no distinguishing c-type.
+          // A link-column list: bold category headers each followed by links,
+          // no images (e.g. the Sage "Resources" footer) → quick-links-stryker
+          // (default category-column theme). Checked before value-cards so a
+          // link list isn't misread as a plain stats grid.
+          if ((!produced || !produced.length)
+            && node.querySelectorAll('p .futura-bold').length >= 2
+            && node.querySelectorAll('img').length === 0
+            && node.querySelectorAll('a[href]').length >= 2) {
+            produced = extractLinkColumns(document, node, current.anchorLabel || '');
+            // The section heading is carried inside the block; drop the separate
+            // <h2> the section-title branch just emitted to avoid a duplicate.
+            if (produced && produced.length && current.anchorLabel
+              && current.nodes.length
+              && current.nodes[current.nodes.length - 1].tagName === 'H2'
+              && text(current.nodes[current.nodes.length - 1]) === current.anchorLabel) {
+              current.nodes.pop();
+            }
+          }
+          // A values grid (3+ bold-heading + subtext text cards, no images and
+          // no links) → plain-theme stats-stryker. Checked before the per-type
+          // extractor since the section has no distinguishing c-type.
           if ((!produced || !produced.length)
             && node.querySelectorAll('p .futura-bold').length >= 3
-            && node.querySelectorAll('img').length === 0) {
+            && node.querySelectorAll('img').length === 0
+            && node.querySelectorAll('a[href]').length === 0) {
             produced = extractValueCards(document, node);
           }
           // The grouped-link list carries the section heading itself (e.g.

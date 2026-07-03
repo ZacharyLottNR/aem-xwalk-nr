@@ -77,9 +77,51 @@ var CustomImportScript = (() => {
         overviewCard("Orthopaedics", "Leading what's next."),
         overviewCard("Neurotechnology", "Better connected.")
       ]]);
+      blocks.push(["title-stryker", [
+        ["Gold heading, h2"],
+        ["gold"],
+        ["h2"]
+      ]]);
+      blocks.push(["title-stryker", [
+        ["Teal heading, h3"],
+        ["teal"],
+        ["h3"]
+      ]]);
       blocks.push(["content-break-stryker", [[""]]]);
       blocks.push(["section-banner-stryker", [
         [el(document, "div", "<p>Interested in learning more? <strong>Talk to a rep today.</strong></p>")]
+      ]]);
+      const statItem = (value, label2) => [
+        img(document, IMG(96, 96, "Icon"), label2),
+        value,
+        el(document, "div", `<p>${label2}</p>`)
+      ];
+      blocks.push(["stats-stryker", [
+        ["Proven"],
+        ["outcomes"],
+        [el(document, "div", "<p>Results backed by published studies across our portfolio.</p>")],
+        ["light"],
+        statItem("633K", "patients affected by hospital-acquired infections each year"),
+        statItem("2.5M", "patients per year are affected by pressure injuries"),
+        statItem("52%", "of nurses suffer chronic back pain")
+      ]]);
+      blocks.push(["stats-stryker", [
+        ["Proven"],
+        ["outcomes"],
+        [el(document, "div", "<p>Dark theme variant.</p>")],
+        ["dark"],
+        statItem("150+", "published outcomes"),
+        statItem("75", "countries served"),
+        statItem("40yrs", "of innovation")
+      ]]);
+      blocks.push(["stats-stryker", [
+        ["Our"],
+        ["values"],
+        [el(document, "div", "<p>Plain theme: dark heading and subtext, no big numbers.</p>")],
+        ["plain"],
+        ["", "Integrity", el(document, "div", "<p>We do what's right.</p>")],
+        ["", "Accountability", el(document, "div", "<p>We do what we say.</p>")],
+        ["", "People", el(document, "div", "<p>We grow talent.</p>")]
       ]]);
       blocks.push(["social-cta-stryker", [
         ["Connect with us"],
@@ -140,12 +182,26 @@ var CustomImportScript = (() => {
         ["We owe our achievements to our dedicated employees"],
         ["View all awards"],
         [anchor(document, "https://www.stryker.com/awards", "Awards")],
+        ["standard"],
         [img(document, IMG(160, 130, "Award 1"), "Award 1")],
         [img(document, IMG(160, 130, "Award 2"), "Award 2")],
         [img(document, IMG(160, 130, "Award 3"), "Award 3")],
         [img(document, IMG(160, 130, "Award 4"), "Award 4")],
         [img(document, IMG(160, 130, "Award 5"), "Award 5")],
         [img(document, IMG(160, 130, "Award 6"), "Award 6")]
+      ]]);
+      blocks.push(["image-gallery-stryker", [
+        [""],
+        [""],
+        [""],
+        [""],
+        ["big"],
+        [img(document, IMG(800, 550, "Photo 1"), "Photo 1")],
+        [img(document, IMG(800, 550, "Photo 2"), "Photo 2")],
+        [img(document, IMG(800, 550, "Photo 3"), "Photo 3")],
+        [img(document, IMG(800, 550, "Photo 4"), "Photo 4")],
+        [img(document, IMG(800, 550, "Photo 5"), "Photo 5")],
+        [img(document, IMG(800, 550, "Photo 6"), "Photo 6")]
       ]]);
       blocks.push(["video-stryker", [
         [anchor(document, "https://youtu.be/kRIuiIy_SCs", "https://youtu.be/kRIuiIy_SCs")],
@@ -185,6 +241,33 @@ var CustomImportScript = (() => {
         ["advanced"],
         ["media-right"]
       ]]);
+      blocks.push(["double-text-and-media-stryker", [
+        [img(document, IMG(520, 360, "Tile 1"), "Code of Conduct")],
+        ["Code of Conduct"],
+        [el(document, "div", "<p>Our commitment to integrity guides every decision we make.</p>")],
+        ["Read more"],
+        [anchor(document, "https://www.stryker.com/conduct", "Conduct")],
+        [img(document, IMG(520, 360, "Tile 2"), "Quality Policy")],
+        ["Quality Policy"],
+        [el(document, "div", "<p>Delivering safe, effective products that improve patient care.</p>")],
+        ["Read more"],
+        [anchor(document, "https://www.stryker.com/quality", "Quality")]
+      ]]);
+      blocks.push(["center-justified-text-stryker", [
+        [el(document, "div", "<h2>Our mission</h2><p>Together with our customers, we are driven to make healthcare better.</p>")]
+      ]]);
+      blocks.push(["right-justified-text-stryker", [
+        [el(document, "div", "<h2>Our vision</h2><p>To be the most trusted partner in advancing patient care worldwide.</p>")]
+      ]]);
+      blocks.push(["text-and-media-stryker", [
+        [img(document, IMG(1440, 600, "Super"), "Super")],
+        [""],
+        ["Powering"],
+        ["possibility"],
+        [el(document, "div", "<p>A full-bleed super theme for high-impact statements.</p>")],
+        ["super"],
+        ["media-right"]
+      ]]);
       ["left", "center", "right"].forEach((align) => {
         blocks.push(["cross-promo-stryker", [
           [img(document, IMG(420, 240, `ProCare ${align}`), "ProCare Services")],
@@ -211,6 +294,18 @@ var CustomImportScript = (() => {
       quickGroup("Our company", [["Contact Us", "https://www.stryker.com/contact"], ["Investor Relations", "https://www.stryker.com/investors"], ["Comprehensive Report", "https://www.stryker.com/report"]]);
       quickGroup("More information", [["Advanced Digital Healthcare", "https://www.stryker.com/adh"], ["Patients", "https://www.stryker.com/patients"]]);
       blocks.push(["quick-links-stryker", quickItems]);
+      const columnedItems = [["Our businesses"], ["columned"]];
+      [
+        ["Endoscopy", "https://www.stryker.com/endoscopy"],
+        ["Instruments", "https://www.stryker.com/instruments"],
+        ["Medical", "https://www.stryker.com/medical"],
+        ["Neurovascular", "https://www.stryker.com/neurovascular"],
+        ["Craniomaxillofacial", "https://www.stryker.com/cmf"],
+        ["Joint Replacement", "https://www.stryker.com/joint-replacement"],
+        ["Spine", "https://www.stryker.com/spine"],
+        ["Trauma and Extremities", "https://www.stryker.com/trauma"]
+      ].forEach(([text, href]) => columnedItems.push([text, anchor(document, href, href)]));
+      blocks.push(["quick-links-stryker", columnedItems]);
       const galleryItem = (title, body, url) => {
         const cells = [
           [img(document, IMG(560, 360, title), title)],

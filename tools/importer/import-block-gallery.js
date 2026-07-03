@@ -82,12 +82,59 @@ export default {
       overviewCard('Neurotechnology', 'Better connected.'),
     ]]);
 
+    // title-stryker — title, color, size. One per color to show the palette.
+    blocks.push(['title-stryker', [
+      ['Gold heading, h2'],
+      ['gold'],
+      ['h2'],
+    ]]);
+    blocks.push(['title-stryker', [
+      ['Teal heading, h3'],
+      ['teal'],
+      ['h3'],
+    ]]);
+
     // 2. content-break-stryker — no fields
     blocks.push(['content-break-stryker', [['']]]);
 
     // section-banner-stryker — single richtext cell
     blocks.push(['section-banner-stryker', [
       [el(document, 'div', '<p>Interested in learning more? <strong>Talk to a rep today.</strong></p>')],
+    ]]);
+
+    // stats-stryker — block-level rows (titleBlack, titleGold, intro, theme)
+    // then per-stat rows (icon, value, label). One per theme: light, dark, plain.
+    const statItem = (value, label) => [
+      img(document, IMG(96, 96, 'Icon'), label),
+      value,
+      el(document, 'div', `<p>${label}</p>`),
+    ];
+    blocks.push(['stats-stryker', [
+      ['Proven'],
+      ['outcomes'],
+      [el(document, 'div', '<p>Results backed by published studies across our portfolio.</p>')],
+      ['light'],
+      statItem('633K', 'patients affected by hospital-acquired infections each year'),
+      statItem('2.5M', 'patients per year are affected by pressure injuries'),
+      statItem('52%', 'of nurses suffer chronic back pain'),
+    ]]);
+    blocks.push(['stats-stryker', [
+      ['Proven'],
+      ['outcomes'],
+      [el(document, 'div', '<p>Dark theme variant.</p>')],
+      ['dark'],
+      statItem('150+', 'published outcomes'),
+      statItem('75', 'countries served'),
+      statItem('40yrs', 'of innovation'),
+    ]]);
+    blocks.push(['stats-stryker', [
+      ['Our'],
+      ['values'],
+      [el(document, 'div', '<p>Plain theme: dark heading and subtext, no big numbers.</p>')],
+      ['plain'],
+      ['', 'Integrity', el(document, 'div', "<p>We do what's right.</p>")],
+      ['', 'Accountability', el(document, 'div', '<p>We do what we say.</p>')],
+      ['', 'People', el(document, 'div', '<p>We grow talent.</p>')],
     ]]);
 
     // social-cta-stryker — row0: heading; then item rows [label-or-icon, href]
@@ -154,18 +201,35 @@ export default {
       focusCard('Neurotechnology', 'Better connected.'),
     ]]);
 
-    // 7. image-gallery-stryker
+    // 7. image-gallery-stryker (standard theme — small contained badges).
+    // Cells: heading, description, ctaLabel, ctaUrl, theme, then image rows.
     blocks.push(['image-gallery-stryker', [
       ['Awards'],
       ['We owe our achievements to our dedicated employees'],
       ['View all awards'],
       [anchor(document, 'https://www.stryker.com/awards', 'Awards')],
+      ['standard'],
       [img(document, IMG(160, 130, 'Award 1'), 'Award 1')],
       [img(document, IMG(160, 130, 'Award 2'), 'Award 2')],
       [img(document, IMG(160, 130, 'Award 3'), 'Award 3')],
       [img(document, IMG(160, 130, 'Award 4'), 'Award 4')],
       [img(document, IMG(160, 130, 'Award 5'), 'Award 5')],
       [img(document, IMG(160, 130, 'Award 6'), 'Award 6')],
+    ]]);
+
+    // image-gallery-stryker (big theme — large edge-to-edge photos, no heading).
+    blocks.push(['image-gallery-stryker', [
+      [''],
+      [''],
+      [''],
+      [''],
+      ['big'],
+      [img(document, IMG(800, 550, 'Photo 1'), 'Photo 1')],
+      [img(document, IMG(800, 550, 'Photo 2'), 'Photo 2')],
+      [img(document, IMG(800, 550, 'Photo 3'), 'Photo 3')],
+      [img(document, IMG(800, 550, 'Photo 4'), 'Photo 4')],
+      [img(document, IMG(800, 550, 'Photo 5'), 'Photo 5')],
+      [img(document, IMG(800, 550, 'Photo 6'), 'Photo 6')],
     ]]);
 
     // 8. video-stryker — cells: video, theme, poster
@@ -214,6 +278,42 @@ export default {
       ['media-right'],
     ]]);
 
+    // double-text-and-media-stryker — two side-by-side text+media items. Cells
+    // per item: image, heading, body, ctaLabel, ctaLink.
+    blocks.push(['double-text-and-media-stryker', [
+      [img(document, IMG(520, 360, 'Tile 1'), 'Code of Conduct')],
+      ['Code of Conduct'],
+      [el(document, 'div', '<p>Our commitment to integrity guides every decision we make.</p>')],
+      ['Read more'],
+      [anchor(document, 'https://www.stryker.com/conduct', 'Conduct')],
+      [img(document, IMG(520, 360, 'Tile 2'), 'Quality Policy')],
+      ['Quality Policy'],
+      [el(document, 'div', '<p>Delivering safe, effective products that improve patient care.</p>')],
+      ['Read more'],
+      [anchor(document, 'https://www.stryker.com/quality', 'Quality')],
+    ]]);
+
+    // center-justified-text-stryker — single richtext cell, centered.
+    blocks.push(['center-justified-text-stryker', [
+      [el(document, 'div', '<h2>Our mission</h2><p>Together with our customers, we are driven to make healthcare better.</p>')],
+    ]]);
+
+    // right-justified-text-stryker — single richtext cell, right-aligned.
+    blocks.push(['right-justified-text-stryker', [
+      [el(document, 'div', '<h2>Our vision</h2><p>To be the most trusted partner in advancing patient care worldwide.</p>')],
+    ]]);
+
+    // text-and-media-stryker (super theme — full-bleed hero-style band)
+    blocks.push(['text-and-media-stryker', [
+      [img(document, IMG(1440, 600, 'Super'), 'Super')],
+      [''],
+      ['Powering'],
+      ['possibility'],
+      [el(document, 'div', '<p>A full-bleed super theme for high-impact statements.</p>')],
+      ['super'],
+      ['media-right'],
+    ]]);
+
     // cross-promo-stryker — one per alignment (left, center, right)
     ['left', 'center', 'right'].forEach((align) => {
       blocks.push(['cross-promo-stryker', [
@@ -253,6 +353,21 @@ export default {
     quickGroup('Our company', [['Contact Us', 'https://www.stryker.com/contact'], ['Investor Relations', 'https://www.stryker.com/investors'], ['Comprehensive Report', 'https://www.stryker.com/report']]);
     quickGroup('More information', [['Advanced Digital Healthcare', 'https://www.stryker.com/adh'], ['Patients', 'https://www.stryker.com/patients']]);
     blocks.push(['quick-links-stryker', quickItems]);
+
+    // quick-links-stryker (Columned theme) — heading, a theme row naming
+    // "columned", then a flat list of links that CSS flows across four columns.
+    const columnedItems = [['Our businesses'], ['columned']];
+    [
+      ['Endoscopy', 'https://www.stryker.com/endoscopy'],
+      ['Instruments', 'https://www.stryker.com/instruments'],
+      ['Medical', 'https://www.stryker.com/medical'],
+      ['Neurovascular', 'https://www.stryker.com/neurovascular'],
+      ['Craniomaxillofacial', 'https://www.stryker.com/cmf'],
+      ['Joint Replacement', 'https://www.stryker.com/joint-replacement'],
+      ['Spine', 'https://www.stryker.com/spine'],
+      ['Trauma and Extremities', 'https://www.stryker.com/trauma'],
+    ].forEach(([text, href]) => columnedItems.push([text, anchor(document, href, href)]));
+    blocks.push(['quick-links-stryker', columnedItems]);
 
     // image-collection-stryker → image-gallery-item-stryker children (img, text, optional link)
     const galleryItem = (title, body, url) => {

@@ -231,6 +231,48 @@ var CustomImportScript = (() => {
     });
     return [WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells: rows })];
   }
+  function extractColumnCards(document, section) {
+    const cols = [...section.querySelectorAll('[class*="col-md-"]')].filter((c) => c.querySelector("img") && c.querySelector("h2, h3, h4") && c.querySelector("a[href]"));
+    if (cols.length < 2) return null;
+    const cells = [[""], [String(Math.min(cols.length, 4))], ["default"]];
+    cols.forEach((col) => {
+      const img = col.querySelector("img");
+      const titleEl = col.querySelector("h2, h3, h4");
+      const titleText = text(titleEl);
+      const cta = [...col.querySelectorAll("a[href]")].find((a) => text(a)) || col.querySelector("a[href]");
+      const ctaLabel = text(cta) || "Learn more";
+      const ctaHref = (cta == null ? void 0 : cta.getAttribute("href")) || "#";
+      const desc = [...col.querySelectorAll("p")].filter((p) => !p.querySelector("a[href]") && text(p) && text(p) !== titleText).map((p) => p.innerHTML.trim());
+      cells.push([
+        imgNode(document, imgSrc(img), titleText),
+        ctaLabel,
+        anchorNode(document, ctaHref, ctaLabel),
+        el(document, "div", `<p>${titleText}</p>${desc.map((d) => `<p>${d}</p>`).join("")}`)
+      ]);
+    });
+    return [WebImporter.Blocks.createBlock(document, { name: "cards-stryker", cells })];
+  }
+  function extractLinkColumns(document, section, heading) {
+    const cols = [...section.querySelectorAll(".c-rich-text-editor")];
+    if (!cols.length) return null;
+    const cells = [[heading || "Quick links"], ["default"]];
+    let added = 0;
+    cols.forEach((col) => {
+      const links = [...col.querySelectorAll("a[href]")];
+      if (!links.length) return;
+      const boldHeader = col.querySelector(".futura-bold");
+      const headerLabel = boldHeader ? text(boldHeader) : "";
+      if (headerLabel) cells.push([headerLabel, ""]);
+      links.forEach((a) => {
+        const label = text(a);
+        if (!label) return;
+        cells.push([label, anchorNode(document, a.getAttribute("href") || "#", label)]);
+        added += 1;
+      });
+    });
+    if (!added) return null;
+    return [WebImporter.Blocks.createBlock(document, { name: "quick-links-stryker", cells })];
+  }
   function extractGroupList(document, section, heading) {
     const links = [...section.querySelectorAll("ul li a[href]")];
     if (!links.length) return null;
@@ -253,8 +295,51 @@ var CustomImportScript = (() => {
     })];
   }
   function extractCarousel(document, section) {
+    const seen = /* @__PURE__ */ new Set();
+    const imgs = [...section.querySelectorAll("img")].filter((im) => {
+      const src = imgSrc(im);
+      if (!src || !isUsableUrl(src)) return false;
+      const keySrc = src.split("?")[0];
+      if (seen.has(keySrc)) return false;
+      seen.add(keySrc);
+      return true;
+    });
+    if (imgs.length >= 2) {
+      const rows = [[""], [""], [""], [""], ["big"]];
+      imgs.forEach((im) => rows.push([imgNode(document, imgSrc(im), im.getAttribute("alt") || "")]));
+      return [WebImporter.Blocks.createBlock(document, { name: "image-gallery-stryker", cells: rows })];
+    }
     const firstSlide = section.querySelector(".carouselslide, .autoplay-slide") || section;
-    const img = firstSlide.querySelector("img");
+    const img = imgs[0] || firstSlide.querySelector("img");
+    const overlayHeading = section.querySelector(".largeheadline h1, .largeheadline h2, h1, h2");
+    const overlayCta = section.querySelector(".c-curatedcta a[href], .cta-container a[href]");
+    if (img && imgSrc(img) && (overlayHeading || overlayCta)) {
+      const headline = section.querySelector(".largeheadline") || section;
+      const h1 = headline.querySelector("h1");
+      const h2 = headline.querySelector("h2");
+      const eyebrow = h1 && h2 ? text(h1) : "";
+      const heading = text(h2) || text(h1) || "";
+      const headingText = new Set([text(h1), text(h2)].filter(Boolean));
+      const ctaLabel = text(overlayCta) || "";
+      const subEl = headline.querySelector(".line2") || [...headline.querySelectorAll("p, span, div")].find((n) => !n.querySelector("h1, h2, h3, h4") && text(n) && !headingText.has(text(n)) && text(n) !== ctaLabel && text(n).length > 10);
+      const subtext = subEl ? text(subEl) : "";
+      const ctaHref = (overlayCta == null ? void 0 : overlayCta.getAttribute("href")) || "";
+      if (heading || ctaLabel) {
+        return [WebImporter.Blocks.createBlock(document, {
+          name: "home-hero-stryker",
+          // Cells follow the model field order: eyebrow, heading, subtext,
+          // ctaUrl, ctaLabel, image (imageAlt folds into the image).
+          cells: [
+            [eyebrow],
+            [heading],
+            [subtext],
+            ctaHref ? [anchorNode(document, ctaHref, ctaLabel)] : [""],
+            [ctaLabel],
+            [imgNode(document, imgSrc(img), img.getAttribute("alt") || "")]
+          ]
+        })];
+      }
+    }
     if (img && imgSrc(img)) {
       return [imgNode(document, imgSrc(img), img.getAttribute("alt") || "")];
     }
@@ -480,7 +565,9 @@ var CustomImportScript = (() => {
         [headingText || ""],
         [text([...section.querySelectorAll("p, span, div")].find((n) => !n.childElementCount && text(n) && text(n) !== headingText && text(n) !== text(cta)) || null)],
         [text(cta) || ""],
-        [anchorNode(document, cta.getAttribute("href") || "#", text(cta))]
+        [anchorNode(document, cta.getAttribute("href") || "#", text(cta))],
+        // Standard theme: small contained badges on a light-gray band.
+        ["standard"]
       ];
       imgs.forEach((im) => rows.push([imgNode(document, imgSrc(im), im.getAttribute("alt") || "")]));
       return [WebImporter.Blocks.createBlock(document, { name: "image-gallery-stryker", cells: rows })];
@@ -622,6 +709,30 @@ var CustomImportScript = (() => {
   function isCardUnit(node) {
     var _a;
     return ((_a = node.classList) == null ? void 0 : _a.contains("xf-master-building-block")) && node.querySelector("img") && node.querySelector("h2, h3, h4");
+  }
+  function isStatUnit(node) {
+    var _a;
+    if (!((_a = node.classList) == null ? void 0 : _a.contains("xf-master-building-block"))) return false;
+    if (node.querySelector("h1, h2, h3, h4")) return false;
+    if (!node.querySelector("img")) return false;
+    const big = node.querySelector(".fontsize-3em, .fontsize-2-5em, .fontsize-2em");
+    return !!big && !!text(big) && text(big).length <= 24;
+  }
+  function statsFromUnits(document, units) {
+    const cells = [];
+    const icons = [];
+    units.forEach((unit) => {
+      const big = unit.querySelector(".fontsize-3em, .fontsize-2-5em, .fontsize-2em");
+      const value = text(big);
+      if (!value) return;
+      const p = big.closest("p") || big.parentElement;
+      const label = [...unit.querySelectorAll("p")].filter((para) => para !== p && text(para)).map((para) => text(para)).join(" ").replace(/\s+/g, " ").trim();
+      const icon = unit.querySelector("img");
+      cells.push({ value, label });
+      icons.push(icon ? { src: imgSrc(icon), alt: icon.getAttribute("alt") || "" } : null);
+    });
+    if (!cells.length) return null;
+    return buildStats(document, { titleBlack: "", theme: "light", cells, icons });
   }
   function isPromoPanel(node) {
     if (!node.querySelector) return false;
@@ -775,7 +886,22 @@ var CustomImportScript = (() => {
           legalParas.push({ html, plain });
         };
         let pendingCards = [];
+        let pendingStats = [];
+        const flushStats = () => {
+          if (!pendingStats.length) return;
+          try {
+            const block = statsFromUnits(document, pendingStats);
+            if (block && block.length) {
+              current.nodes.push(...block);
+              blockNames.push("stats-stryker");
+            }
+          } catch (e) {
+            current.nodes.push(errorBlock(document, `failed to build stats \u2014 ${e.message}`));
+          }
+          pendingStats = [];
+        };
         const flushCards = () => {
+          flushStats();
           if (!pendingCards.length) return;
           try {
             current.nodes.push(cardsFromUnits(document, pendingCards));
@@ -803,7 +929,13 @@ var CustomImportScript = (() => {
             });
             return;
           }
+          if (isStatUnit(node)) {
+            if (pendingCards.length) flushCards();
+            pendingStats.push(node);
+            return;
+          }
           if (isCardUnit(node)) {
+            if (pendingStats.length) flushStats();
             pendingCards.push(node);
             return;
           }
@@ -842,10 +974,19 @@ var CustomImportScript = (() => {
           const extractor = type ? EXTRACTORS[type] : null;
           try {
             let produced = null;
-            if (node.querySelectorAll(".c-standalone-image-content").length >= 2) {
+            if (node.querySelectorAll('[class*="col-md-"]').length >= 2) {
+              produced = extractColumnCards(document, node);
+            }
+            if ((!produced || !produced.length) && node.querySelectorAll(".c-standalone-image-content").length >= 2) {
               produced = extractLinkCardGrid(document, node);
             }
-            if ((!produced || !produced.length) && node.querySelectorAll("p .futura-bold").length >= 3 && node.querySelectorAll("img").length === 0) {
+            if ((!produced || !produced.length) && node.querySelectorAll("p .futura-bold").length >= 2 && node.querySelectorAll("img").length === 0 && node.querySelectorAll("a[href]").length >= 2) {
+              produced = extractLinkColumns(document, node, current.anchorLabel || "");
+              if (produced && produced.length && current.anchorLabel && current.nodes.length && current.nodes[current.nodes.length - 1].tagName === "H2" && text(current.nodes[current.nodes.length - 1]) === current.anchorLabel) {
+                current.nodes.pop();
+              }
+            }
+            if ((!produced || !produced.length) && node.querySelectorAll("p .futura-bold").length >= 3 && node.querySelectorAll("img").length === 0 && node.querySelectorAll("a[href]").length === 0) {
               produced = extractValueCards(document, node);
             }
             if (!produced || !produced.length) {

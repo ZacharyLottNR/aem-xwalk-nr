@@ -5861,6 +5861,23 @@
         "valueType": "string",
         "name": "ctaUrl",
         "label": "CTA URL"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "theme",
+        "label": "Theme",
+        "value": "standard",
+        "options": [
+          {
+            "name": "Standard (small contained images)",
+            "value": "standard"
+          },
+          {
+            "name": "Big (large edge-to-edge photos)",
+            "value": "big"
+          }
+        ]
       }
     ]
   },

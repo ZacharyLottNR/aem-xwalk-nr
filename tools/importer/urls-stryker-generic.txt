@@ -1,3 +1,2 @@
-# Generic Stryker importer — point at any Stryker page, one URL per line.
-# Example:
-# https://www.stryker.com/us/en/acute-care/products/ibed-wireless.html
+# Generic Stryker importer
+https://www.stryker.com/us/en/sage.html
