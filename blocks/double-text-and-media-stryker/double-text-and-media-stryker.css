@@ -1,21 +1,26 @@
 .double-text-and-media-stryker {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  align-items: center;
+  align-items: start;
   gap: 48px;
   max-width: var(--stryker-max-width, 1280px);
   margin: 0 auto;
-  padding: 48px 24px;
+  padding: 48px 0;
 }
 
+/* Each item: text/CTA on the left, image on the right. */
 .double-text-and-media-stryker .double-text-and-media-stryker-item {
-  display: flex;
-  align-items: center;
-  gap: 32px;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: start;
+  gap: 24px;
+}
+
+.double-text-and-media-stryker .double-text-and-media-stryker-content {
+  min-width: 0;
 }
 
 .double-text-and-media-stryker .double-text-and-media-stryker-media {
-  flex: 0 0 auto;
   line-height: 0;
 }
 
@@ -31,10 +36,39 @@
   font-size: 28px;
   line-height: 1.2;
   color: var(--stryker-black, #000);
-  margin: 0;
+  margin: 0 0 12px;
 }
 
-/* Stacked vertically on mobile */
+.double-text-and-media-stryker .double-text-and-media-stryker-body p {
+  font-family: var(--stryker-body-font);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--stryker-black, #000);
+  margin: 0 0 12px;
+}
+
+.double-text-and-media-stryker .double-text-and-media-stryker-cta:any-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: var(--stryker-heading-font);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--stryker-white, #fff);
+  background-color: var(--stryker-teal, #4c7d7a);
+  border: 1px solid var(--stryker-teal, #4c7d7a);
+  padding: 12px 22px;
+  transition: background-color 0.2s;
+}
+
+.double-text-and-media-stryker .double-text-and-media-stryker-cta:any-link:hover {
+  background-color: var(--stryker-teal-dark, #3a615f);
+  color: var(--stryker-white, #fff);
+}
+
+/* Stack the two items, and each item's text over image, on smaller viewports */
 @media (width < 900px) {
   .double-text-and-media-stryker {
     grid-template-columns: 1fr;
@@ -42,8 +76,7 @@
   }
 
   .double-text-and-media-stryker .double-text-and-media-stryker-item {
-    flex-direction: column;
-    align-items: flex-start;
+    grid-template-columns: 1fr;
     gap: 16px;
   }
 }

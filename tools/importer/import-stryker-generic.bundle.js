@@ -374,9 +374,9 @@ var CustomImportScript = (() => {
   }
   function extractCuratedTiles(document, section) {
     const ctas = [...section.querySelectorAll(".c-curatedcta")];
-    if (ctas.length < 1) return null;
-    const blocks = [];
-    ctas.forEach((cta) => {
+    if (ctas.length < 2) return null;
+    const tiles = [];
+    ctas.slice(0, 2).forEach((cta) => {
       var _a;
       const link = cta.querySelector("a[href]");
       if (!link) return;
@@ -393,22 +393,28 @@ var CustomImportScript = (() => {
         if ((_a = sib.classList) == null ? void 0 : _a.contains("buildingblock")) break;
         sib = sib.nextElementSibling;
       }
-      const ctaLabel = text(link);
       const title = heading || eyebrow;
-      const bodyHtml = `${title ? `<h3>${title}</h3>` : ""}${heading && eyebrow ? `<p><strong>${eyebrow}</strong></p>` : ""}${bodyP ? `<p>${bodyP.html}</p>` : ""}`;
-      blocks.push(WebImporter.Blocks.createBlock(document, {
-        name: "get-to-know-us-stryker",
-        cells: [
-          [img ? imgNode(document, imgSrc(img), img.getAttribute("alt") || title) : ""],
-          [el(document, "div", bodyHtml)],
-          [ctaLabel || "Learn more"],
-          [anchorNode(document, link.getAttribute("href") || "#", ctaLabel)],
-          ["tile"],
-          [""]
-        ]
-      }));
+      const bodyHtml = `${eyebrow && heading ? `<p><strong>${eyebrow}</strong></p>` : ""}${bodyP ? `<p>${bodyP.html}</p>` : ""}`;
+      tiles.push({
+        img,
+        title,
+        bodyHtml,
+        ctaLabel: text(link),
+        ctaHref: link.getAttribute("href") || "#"
+      });
     });
-    return blocks.length ? blocks : null;
+    if (tiles.length < 2) return null;
+    const cells = [];
+    tiles.forEach((t) => {
+      cells.push(
+        [t.img ? imgNode(document, imgSrc(t.img), t.img.getAttribute("alt") || t.title) : ""],
+        [t.title || ""],
+        [el(document, "div", t.bodyHtml)],
+        [t.ctaLabel || "Learn more"],
+        [anchorNode(document, t.ctaHref, t.ctaLabel)]
+      );
+    });
+    return [WebImporter.Blocks.createBlock(document, { name: "double-text-and-media-stryker", cells })];
   }
   function statCells(container) {
     const seen = /* @__PURE__ */ new Set();
@@ -775,7 +781,7 @@ var CustomImportScript = (() => {
             flushCards();
             node._curatedBlocks.forEach((b) => {
               current.nodes.push(b);
-              blockNames.push("get-to-know-us-stryker");
+              blockNames.push("double-text-and-media-stryker");
             });
             return;
           }

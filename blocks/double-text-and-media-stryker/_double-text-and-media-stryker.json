@@ -38,8 +38,27 @@
           "component": "text",
           "valueType": "string",
           "name": "textOne",
-          "label": "Text 1",
+          "label": "Text 1 (heading)",
           "value": ""
+        },
+        {
+          "component": "richtext",
+          "valueType": "string",
+          "name": "bodyOne",
+          "label": "Body 1",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "ctaLabelOne",
+          "label": "CTA 1 Text"
+        },
+        {
+          "component": "aem-content",
+          "valueType": "string",
+          "name": "ctaLinkOne",
+          "label": "CTA 1 Link"
         },
         {
           "component": "reference",
@@ -59,8 +78,27 @@
           "component": "text",
           "valueType": "string",
           "name": "textTwo",
-          "label": "Text 2",
+          "label": "Text 2 (heading)",
           "value": ""
+        },
+        {
+          "component": "richtext",
+          "valueType": "string",
+          "name": "bodyTwo",
+          "label": "Body 2",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "ctaLabelTwo",
+          "label": "CTA 2 Text"
+        },
+        {
+          "component": "aem-content",
+          "valueType": "string",
+          "name": "ctaLinkTwo",
+          "label": "CTA 2 Link"
         }
       ]
     }

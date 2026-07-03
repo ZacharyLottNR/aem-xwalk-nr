@@ -6,28 +6,55 @@ function innerCell(row) {
 }
 
 export default function decorate(block) {
-  const rows = [...block.children];
+  const rows = [...block.children].map(innerCell);
 
-  // Field order: imageOne, textOne, imageTwo, textTwo (alt is carried on the
-  // image). Classify by picture presence so authored order changes are safe.
-  const pictures = [];
-  const texts = [];
-  rows.forEach((row) => {
-    const cell = innerCell(row);
-    const picture = cell?.querySelector('picture');
-    if (picture) {
-      pictures.push(picture);
-    } else {
-      const text = cell?.textContent?.trim();
-      if (text) texts.push(text);
-    }
-  });
+  // Rows arrive in model order. The rich format is two items of five rows each:
+  // image, heading, body, ctaLabel, ctaLink. The legacy format is two items of
+  // image + heading only. Split into two items at the SECOND image-bearing row
+  // so both formats work.
+  const imageRowIdx = [];
+  rows.forEach((cell, i) => { if (cell?.querySelector('picture')) imageRowIdx.push(i); });
+  const splitAt = imageRowIdx.length > 1 ? imageRowIdx[1] : Math.ceil(rows.length / 2);
+  const groups = [rows.slice(0, splitAt), rows.slice(splitAt)];
 
   block.textContent = '';
 
-  const buildItem = (picture, text) => {
+  const buildItem = (cells) => {
     const item = document.createElement('div');
     item.className = 'double-text-and-media-stryker-item';
+
+    const picture = cells.find((c) => c?.querySelector('picture'))?.querySelector('picture');
+    // The remaining non-image cells, in order: heading, body, ctaLabel, ctaLink.
+    const textCells = cells.filter((c) => c && !c.querySelector('picture'));
+    const headingText = textCells[0]?.textContent?.trim();
+    const bodyCell = textCells[1];
+    const ctaLabel = textCells[2]?.textContent?.trim();
+    const ctaCell = textCells[3];
+    const ctaHref = ctaCell?.querySelector('a')?.getAttribute('href') || ctaCell?.textContent?.trim();
+
+    const content = document.createElement('div');
+    content.className = 'double-text-and-media-stryker-content';
+
+    if (headingText) {
+      const heading = document.createElement('h3');
+      heading.className = 'double-text-and-media-stryker-heading';
+      heading.textContent = headingText;
+      content.append(heading);
+    }
+    if (bodyCell?.textContent?.trim()) {
+      const body = document.createElement('div');
+      body.className = 'double-text-and-media-stryker-body';
+      body.innerHTML = bodyCell.innerHTML;
+      content.append(body);
+    }
+    if (ctaLabel && ctaHref) {
+      const cta = document.createElement('a');
+      cta.className = 'double-text-and-media-stryker-cta button';
+      cta.href = ctaHref;
+      cta.textContent = ctaLabel;
+      content.append(cta);
+    }
+    if (content.children.length) item.append(content);
 
     if (picture) {
       const media = document.createElement('div');
@@ -36,20 +63,10 @@ export default function decorate(block) {
       item.append(media);
     }
 
-    if (text) {
-      const heading = document.createElement('h3');
-      heading.className = 'double-text-and-media-stryker-heading';
-      heading.textContent = text;
-      item.append(heading);
-    }
-
     return item;
   };
 
-  block.append(
-    buildItem(pictures[0], texts[0]),
-    buildItem(pictures[1], texts[1]),
-  );
+  block.append(buildItem(groups[0]), buildItem(groups[1]));
 
   block.querySelectorAll('picture > img').forEach((img) => optimizeBlockImage(img, createOptimizedPicture));
 }

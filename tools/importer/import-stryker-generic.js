@@ -456,63 +456,59 @@ function extractPromoPanel(document, panel) {
 // (richtext body), buttonLabel, buttonLink, layout, backgroundImage.
 function extractCuratedTiles(document, section) {
   const ctas = [...section.querySelectorAll('.c-curatedcta')];
-  if (ctas.length < 1) return null;
-  const blocks = [];
-  ctas.forEach((cta) => {
+  if (ctas.length < 2) return null;
+  // Collect each tile's parts, then emit ONE double-text-and-media-stryker block
+  // holding both tiles side by side (its centered 2-column layout aligns the
+  // pair to the page content edges — no per-block centering to fight).
+  const tiles = [];
+  ctas.slice(0, 2).forEach((cta) => {
     const link = cta.querySelector('a[href]');
     if (!link) return;
-    // The tile's text block is the .buildingblock ancestor of this CTA; its
-    // paired image is the nearest standalone image among following siblings.
     const textBlock = cta.closest('.buildingblock') || cta.parentElement;
-    // The tile's heading paragraph nests both labels: a small serif lead-in
-    // (.urw-egyptienne, e.g. "We do what's right") = eyebrow, followed by the
-    // bold label (e.g. "Code of Conduct") = heading. Derive the heading as the
-    // heading paragraph's text with the eyebrow removed (robust to the exact
-    // span classes/nesting, which vary and hydrate late).
+    // Heading paragraph nests a serif lead-in (.urw-egyptienne, the eyebrow)
+    // followed by the bold label (the heading). Derive heading = heading-para
+    // text minus eyebrow (robust to the exact span classes, which hydrate late).
     const eyebrowEl = textBlock.querySelector('.urw-egyptienne');
     const eyebrow = text(eyebrowEl);
     const headingPara = eyebrowEl?.closest('p');
     const heading = headingPara
       ? text(headingPara).replace(eyebrow, '').replace(/\s+/g, ' ').trim()
       : text(textBlock.querySelector('.futura-bold'));
-    // Body = the descriptive paragraph: the longest one that ISN'T the heading
-    // paragraph.
+    // Body = the longest paragraph that isn't the heading paragraph.
     const bodyP = [...textBlock.querySelectorAll('p')]
       .filter((p) => p !== headingPara)
       .map((p) => ({ html: p.innerHTML.trim(), plain: text(p) }))
       .filter((p) => p.plain.length > 60)
       .sort((a, b) => b.plain.length - a.plain.length)[0];
-    // Find the tile image: search following siblings of the text block for a
-    // standalone image; fall back to any image the section provides in order.
+    // Tile image: nearest standalone image after the text block, up to the next
+    // tile's text block.
     let img = null;
     let sib = textBlock.nextElementSibling;
     while (sib && !img) {
       if (sib.querySelector) img = sib.querySelector('img');
-      if (sib.classList?.contains('buildingblock')) break; // next tile — stop
+      if (sib.classList?.contains('buildingblock')) break;
       sib = sib.nextElementSibling;
     }
-    const ctaLabel = text(link);
     const title = heading || eyebrow;
-    // Lead with the heading as an <h3> (a heading that leads a rich-text cell
-    // survives the md2jcr round-trip; one sandwiched between paragraphs is
-    // dropped). The eyebrow becomes a bold lead-in paragraph beneath it, then
-    // the body copy.
-    const bodyHtml = `${title ? `<h3>${title}</h3>` : ''}`
-      + `${heading && eyebrow ? `<p><strong>${eyebrow}</strong></p>` : ''}`
+    // Body cell keeps the eyebrow (bold lead-in) above the descriptive copy.
+    const bodyHtml = `${eyebrow && heading ? `<p><strong>${eyebrow}</strong></p>` : ''}`
       + `${bodyP ? `<p>${bodyP.html}</p>` : ''}`;
-    blocks.push(WebImporter.Blocks.createBlock(document, {
-      name: 'get-to-know-us-stryker',
-      cells: [
-        [img ? imgNode(document, imgSrc(img), img.getAttribute('alt') || title) : ''],
-        [el(document, 'div', bodyHtml)],
-        [ctaLabel || 'Learn more'],
-        [anchorNode(document, link.getAttribute('href') || '#', ctaLabel)],
-        ['tile'],
-        [''],
-      ],
-    }));
+    tiles.push({
+      img, title, bodyHtml, ctaLabel: text(link), ctaHref: link.getAttribute('href') || '#',
+    });
   });
-  return blocks.length ? blocks : null;
+  if (tiles.length < 2) return null;
+  const cells = [];
+  tiles.forEach((t) => {
+    cells.push(
+      [t.img ? imgNode(document, imgSrc(t.img), t.img.getAttribute('alt') || t.title) : ''],
+      [t.title || ''],
+      [el(document, 'div', t.bodyHtml)],
+      [t.ctaLabel || 'Learn more'],
+      [anchorNode(document, t.ctaHref, t.ctaLabel)],
+    );
+  });
+  return [WebImporter.Blocks.createBlock(document, { name: 'double-text-and-media-stryker', cells })];
 }
 
 // Pull "stat cells" (a big headline number + its supporting label) out of a
@@ -1044,12 +1040,12 @@ export default {
         consumed.push(node);
 
         // Collapsed curated-tiles placeholder → emit its prebuilt
-        // get-to-know-us blocks (one per tile) in document order.
+        // double-text-and-media block (both tiles, side by side).
         if (node._curatedBlocks) {
           flushCards();
           node._curatedBlocks.forEach((b) => {
             current.nodes.push(b);
-            blockNames.push('get-to-know-us-stryker');
+            blockNames.push('double-text-and-media-stryker');
           });
           return;
         }

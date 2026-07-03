@@ -189,58 +189,6 @@
   max-width: 50%;
 }
 
-/*
- * Tile layout: a compact promo with the text/CTA on the LEFT and its image on
- * the RIGHT (mirrors the source "Code of Conduct" + "Quality Policy" pair).
- * Two adjacent tile blocks in one section are placed in a 2-column row via the
- * section rule below, so the row reads text|image | text|image.
- */
-.get-to-know-us-stryker.get-to-know-us-stryker-tile {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  align-items: start;
-  gap: 24px;
-  padding: 0 24px;
-}
-
-.get-to-know-us-stryker.get-to-know-us-stryker-tile .get-to-know-us-stryker-content {
-  grid-column: 1;
-}
-
-.get-to-know-us-stryker.get-to-know-us-stryker-tile .get-to-know-us-stryker-image {
-  grid-column: 2;
-}
-
-.get-to-know-us-stryker.get-to-know-us-stryker-tile .get-to-know-us-stryker-card {
-  background-color: transparent;
-  border: 0;
-  padding: 0;
-}
-
-.get-to-know-us-stryker.get-to-know-us-stryker-tile .get-to-know-us-stryker-image img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Two adjacent tile blocks in the same section → side-by-side columns. The
-   wrapper divs are laid out in a 2-column grid; each spans one column. */
-main .section:has(.get-to-know-us-stryker-tile) {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px 48px;
-  align-items: start;
-  max-width: var(--stryker-max-width, 1280px);
-  margin: 0 auto;
-}
-
-/* Full-width items (headings, other blocks) in that section still span both
-   columns; only the tile wrappers occupy single columns. */
-main .section:has(.get-to-know-us-stryker-tile) > .default-content-wrapper,
-main .section:has(.get-to-know-us-stryker-tile) > div:not(.get-to-know-us-stryker-wrapper) {
-  grid-column: 1 / -1;
-}
-
 /* Stacked layout on smaller viewports */
 @media (width < 900px) {
   .get-to-know-us-stryker {
@@ -257,11 +205,6 @@ main .section:has(.get-to-know-us-stryker-tile) > div:not(.get-to-know-us-stryke
   .get-to-know-us-stryker .get-to-know-us-stryker-image img {
     max-width: 540px;
     margin: 0 auto;
-  }
-
-  /* Tile pair stacks to a single column on small screens */
-  main .section:has(.get-to-know-us-stryker-tile) {
-    grid-template-columns: 1fr;
   }
 
   /* Banner: stack image over text; band spans full height behind both */
