@@ -372,6 +372,44 @@ var CustomImportScript = (() => {
       ]
     })];
   }
+  function extractCuratedTiles(document, section) {
+    const ctas = [...section.querySelectorAll(".c-curatedcta")];
+    if (ctas.length < 1) return null;
+    const blocks = [];
+    ctas.forEach((cta) => {
+      var _a;
+      const link = cta.querySelector("a[href]");
+      if (!link) return;
+      const textBlock = cta.closest(".buildingblock") || cta.parentElement;
+      const eyebrowEl = textBlock.querySelector(".urw-egyptienne");
+      const eyebrow = text(eyebrowEl);
+      const headingPara = eyebrowEl == null ? void 0 : eyebrowEl.closest("p");
+      const heading = headingPara ? text(headingPara).replace(eyebrow, "").replace(/\s+/g, " ").trim() : text(textBlock.querySelector(".futura-bold"));
+      const bodyP = [...textBlock.querySelectorAll("p")].filter((p) => p !== headingPara).map((p) => ({ html: p.innerHTML.trim(), plain: text(p) })).filter((p) => p.plain.length > 60).sort((a, b) => b.plain.length - a.plain.length)[0];
+      let img = null;
+      let sib = textBlock.nextElementSibling;
+      while (sib && !img) {
+        if (sib.querySelector) img = sib.querySelector("img");
+        if ((_a = sib.classList) == null ? void 0 : _a.contains("buildingblock")) break;
+        sib = sib.nextElementSibling;
+      }
+      const ctaLabel = text(link);
+      const title = heading || eyebrow;
+      const bodyHtml = `${title ? `<h3>${title}</h3>` : ""}${heading && eyebrow ? `<p><strong>${eyebrow}</strong></p>` : ""}${bodyP ? `<p>${bodyP.html}</p>` : ""}`;
+      blocks.push(WebImporter.Blocks.createBlock(document, {
+        name: "get-to-know-us-stryker",
+        cells: [
+          [img ? imgNode(document, imgSrc(img), img.getAttribute("alt") || title) : ""],
+          [el(document, "div", bodyHtml)],
+          [ctaLabel || "Learn more"],
+          [anchorNode(document, link.getAttribute("href") || "#", ctaLabel)],
+          ["standard"],
+          [""]
+        ]
+      }));
+    });
+    return blocks.length ? blocks : null;
+  }
   function statCells(container) {
     const seen = /* @__PURE__ */ new Set();
     const cells = [];
@@ -664,6 +702,21 @@ var CustomImportScript = (() => {
             collapseStatRun(t);
           }
         });
+        const curatedScopes = [];
+        const seenCuratedXf = /* @__PURE__ */ new Set();
+        document.querySelectorAll(".c-curatedcta").forEach((cta) => {
+          const xf = cta.closest(".experienceFragment, .experiencefragment");
+          if (!xf || seenCuratedXf.has(xf)) return;
+          if (xf.querySelectorAll(".c-curatedcta").length < 2) return;
+          seenCuratedXf.add(xf);
+          const blocks = extractCuratedTiles(document, xf);
+          if (!blocks || !blocks.length) return;
+          const placeholder = document.createElement("div");
+          placeholder.setAttribute("data-curated-tiles", "true");
+          placeholder._curatedBlocks = blocks;
+          xf.parentElement.insertBefore(placeholder, xf);
+          curatedScopes.push(xf);
+        });
         const hasAnchorNav = !!document.querySelector(
           '.jumpbarnav a[href^="#"], .c-navigation-bar a[href^="#"], .bar-nav a.anchor'
         );
@@ -682,10 +735,12 @@ var CustomImportScript = (() => {
           // horizontal content breaks
           ".pDiv",
           // bespoke promo bands (e.g. Training Calendar)
-          ".c-grouplist"
+          ".c-grouplist",
           // grouped link lists (e.g. "Our businesses")
+          "[data-curated-tiles]"
+          // collapsed curated-CTA tile pairs
         ].join(",");
-        const all = [...contentRoot.querySelectorAll(SELECTOR)].filter((n) => !n.closest("header, footer, nav")).filter((n) => !statScopes.some(({ scope, title }) => n !== title && scope.contains(n) && scope !== n));
+        const all = [...contentRoot.querySelectorAll(SELECTOR)].filter((n) => !n.closest("header, footer, nav")).filter((n) => !statScopes.some(({ scope, title }) => n !== title && scope.contains(n) && scope !== n)).filter((n) => !curatedScopes.some((scope) => scope.contains(n)));
         const units = all.filter((n) => !all.some((o) => o !== n && o.contains(n)));
         const consumedScopes = [];
         const sectionsOut = [{ anchorLabel: "", nodes: [] }];
@@ -716,6 +771,14 @@ var CustomImportScript = (() => {
           if (node.nodeType !== 1) return;
           if (["SCRIPT", "STYLE", "LINK", "NOSCRIPT"].includes(node.tagName)) return;
           consumed.push(node);
+          if (node._curatedBlocks) {
+            flushCards();
+            node._curatedBlocks.forEach((b) => {
+              current.nodes.push(b);
+              blockNames.push("get-to-know-us-stryker");
+            });
+            return;
+          }
           if (isCardUnit(node)) {
             pendingCards.push(node);
             return;
@@ -834,6 +897,7 @@ var CustomImportScript = (() => {
           if (n.closest(JUNK)) return;
           if (statScopes.some(({ scope }) => scope.contains(n))) return;
           if (consumedScopes.some((scope) => scope.contains(n))) return;
+          if (curatedScopes.some((scope) => scope.contains(n))) return;
           if (!isTextLeaf(n)) return;
           const plain = norm(text(n));
           if (isJunkText(plain)) return;

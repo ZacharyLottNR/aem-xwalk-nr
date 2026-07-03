@@ -448,6 +448,73 @@ function extractPromoPanel(document, panel) {
   })];
 }
 
+// A curated-CTA tile section (e.g. the About page's "Code of Conduct" +
+// "Quality Policy" pair) holds two or more `.c-curatedcta` promos, each an
+// eyebrow (serif span) + heading (bold span) + body paragraph + a "Learn More"
+// button, with a sibling standalone image. Map EACH tile to its own
+// get-to-know-us-stryker block. Cell order matches the model: image, text
+// (richtext body), buttonLabel, buttonLink, layout, backgroundImage.
+function extractCuratedTiles(document, section) {
+  const ctas = [...section.querySelectorAll('.c-curatedcta')];
+  if (ctas.length < 1) return null;
+  const blocks = [];
+  ctas.forEach((cta) => {
+    const link = cta.querySelector('a[href]');
+    if (!link) return;
+    // The tile's text block is the .buildingblock ancestor of this CTA; its
+    // paired image is the nearest standalone image among following siblings.
+    const textBlock = cta.closest('.buildingblock') || cta.parentElement;
+    // The tile's heading paragraph nests both labels: a small serif lead-in
+    // (.urw-egyptienne, e.g. "We do what's right") = eyebrow, followed by the
+    // bold label (e.g. "Code of Conduct") = heading. Derive the heading as the
+    // heading paragraph's text with the eyebrow removed (robust to the exact
+    // span classes/nesting, which vary and hydrate late).
+    const eyebrowEl = textBlock.querySelector('.urw-egyptienne');
+    const eyebrow = text(eyebrowEl);
+    const headingPara = eyebrowEl?.closest('p');
+    const heading = headingPara
+      ? text(headingPara).replace(eyebrow, '').replace(/\s+/g, ' ').trim()
+      : text(textBlock.querySelector('.futura-bold'));
+    // Body = the descriptive paragraph: the longest one that ISN'T the heading
+    // paragraph.
+    const bodyP = [...textBlock.querySelectorAll('p')]
+      .filter((p) => p !== headingPara)
+      .map((p) => ({ html: p.innerHTML.trim(), plain: text(p) }))
+      .filter((p) => p.plain.length > 60)
+      .sort((a, b) => b.plain.length - a.plain.length)[0];
+    // Find the tile image: search following siblings of the text block for a
+    // standalone image; fall back to any image the section provides in order.
+    let img = null;
+    let sib = textBlock.nextElementSibling;
+    while (sib && !img) {
+      if (sib.querySelector) img = sib.querySelector('img');
+      if (sib.classList?.contains('buildingblock')) break; // next tile — stop
+      sib = sib.nextElementSibling;
+    }
+    const ctaLabel = text(link);
+    const title = heading || eyebrow;
+    // Lead with the heading as an <h3> (a heading that leads a rich-text cell
+    // survives the md2jcr round-trip; one sandwiched between paragraphs is
+    // dropped). The eyebrow becomes a bold lead-in paragraph beneath it, then
+    // the body copy.
+    const bodyHtml = `${title ? `<h3>${title}</h3>` : ''}`
+      + `${heading && eyebrow ? `<p><strong>${eyebrow}</strong></p>` : ''}`
+      + `${bodyP ? `<p>${bodyP.html}</p>` : ''}`;
+    blocks.push(WebImporter.Blocks.createBlock(document, {
+      name: 'get-to-know-us-stryker',
+      cells: [
+        [img ? imgNode(document, imgSrc(img), img.getAttribute('alt') || title) : ''],
+        [el(document, 'div', bodyHtml)],
+        [ctaLabel || 'Learn more'],
+        [anchorNode(document, link.getAttribute('href') || '#', ctaLabel)],
+        ['standard'],
+        [''],
+      ],
+    }));
+  });
+  return blocks.length ? blocks : null;
+}
+
 // Pull "stat cells" (a big headline number + its supporting label) out of a
 // container. Stryker marks the number with an enlarged-font span
 // (.fontsize-2-5em / .fontsize-2em / .fontsize-3em); the rest of the containing
@@ -859,6 +926,30 @@ export default {
         }
       });
 
+      // Curated-CTA tile pairs (e.g. "Code of Conduct" + "Quality Policy") live
+      // in a self-contained experience fragment whose text blocks and images are
+      // separate sibling columns — so no single walked unit holds a whole tile.
+      // Collapse each such XF into per-tile get-to-know-us blocks up front,
+      // attaching them to a placeholder the walker emits in document order, and
+      // scope the XF out of the walk + sweep so its pieces aren't re-captured.
+      const curatedScopes = [];
+      const seenCuratedXf = new Set();
+      document.querySelectorAll('.c-curatedcta').forEach((cta) => {
+        const xf = cta.closest('.experienceFragment, .experiencefragment');
+        if (!xf || seenCuratedXf.has(xf)) return;
+        if (xf.querySelectorAll('.c-curatedcta').length < 2) return; // a tile pair
+        seenCuratedXf.add(xf);
+        const blocks = extractCuratedTiles(document, xf);
+        if (!blocks || !blocks.length) return;
+        // Placeholder marks the XF's document position; the walk emits its
+        // attached blocks and skips the rest of the XF subtree.
+        const placeholder = document.createElement('div');
+        placeholder.setAttribute('data-curated-tiles', 'true');
+        placeholder._curatedBlocks = blocks;
+        xf.parentElement.insertBefore(placeholder, xf);
+        curatedScopes.push(xf);
+      });
+
       // Only pages that actually render the sticky jump/anchor nav should get a
       // section-anchor-stryker block. Detect the real rendered nav (the
       // `.jumpbarnav` / `.c-navigation-bar` bar with in-page anchor links) — NOT
@@ -887,6 +978,7 @@ export default {
         '.sectionseparator', '.c-section-separator', // horizontal content breaks
         '.pDiv', // bespoke promo bands (e.g. Training Calendar)
         '.c-grouplist', // grouped link lists (e.g. "Our businesses")
+        '[data-curated-tiles]', // collapsed curated-CTA tile pairs
       ].join(',');
       const all = [...contentRoot.querySelectorAll(SELECTOR)]
         // Drop header/footer chrome and hidden scaffolding.
@@ -895,7 +987,10 @@ export default {
         // itself, which carries the finished block), so the run's number/icon
         // sub-sections aren't re-emitted as loose content.
         .filter((n) => !statScopes.some(({ scope, title }) => n !== title
-          && scope.contains(n) && scope !== n));
+          && scope.contains(n) && scope !== n))
+        // Drop units inside a collapsed curated-tiles XF (its blocks are emitted
+        // via the placeholder), so the tile pieces aren't re-captured.
+        .filter((n) => !curatedScopes.some((scope) => scope.contains(n)));
       // Keep only outermost units (skip any node contained by another selected
       // node) so each piece of content is emitted exactly once.
       const units = all.filter((n) => !all.some((o) => o !== n && o.contains(n)));
@@ -947,6 +1042,17 @@ export default {
         if (node.nodeType !== 1) return;
         if (['SCRIPT', 'STYLE', 'LINK', 'NOSCRIPT'].includes(node.tagName)) return;
         consumed.push(node);
+
+        // Collapsed curated-tiles placeholder → emit its prebuilt
+        // get-to-know-us blocks (one per tile) in document order.
+        if (node._curatedBlocks) {
+          flushCards();
+          node._curatedBlocks.forEach((b) => {
+            current.nodes.push(b);
+            blockNames.push('get-to-know-us-stryker');
+          });
+          return;
+        }
 
         // Hydrated card unit → buffer into the current card grid.
         if (isCardUnit(node)) { pendingCards.push(node); return; }
@@ -1130,6 +1236,7 @@ export default {
         // dedup key wouldn't otherwise catch it).
         if (statScopes.some(({ scope }) => scope.contains(n))) return;
         if (consumedScopes.some((scope) => scope.contains(n))) return;
+        if (curatedScopes.some((scope) => scope.contains(n))) return;
         if (!isTextLeaf(n)) return;
         const plain = norm(text(n));
         if (isJunkText(plain)) return; // drop known widget/nav/cookie chrome
