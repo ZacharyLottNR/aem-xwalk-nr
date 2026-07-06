@@ -661,6 +661,8 @@ var CustomImportScript = (() => {
     "c-filtered-content-type-grid": extractFilteredGrid,
     "c-filtered-content-type-grid-content": extractFilteredGrid,
     "c-grouplist": extractGroupList,
+    // c-accordion is handled by a pre-pass (collapsed into a placeholder) since it
+    // usually nests inside a content wrapper and is never the outermost unit.
     "c-tabs": extractTabs,
     "c-text": extractText,
     // c-title / c-tagline hold a hydrated heading or tagline; emit their text.
@@ -733,6 +735,59 @@ var CustomImportScript = (() => {
     });
     if (!cells.length) return null;
     return buildStats(document, { titleBlack: "", theme: "light", cells, icons });
+  }
+  function isProfileUnit(node) {
+    var _a;
+    if (!((_a = node.classList) == null ? void 0 : _a.contains("xf-master-building-block"))) return false;
+    if (node.querySelector("h1, h2, h3, h4")) return false;
+    if (!node.querySelector("img")) return false;
+    const links = [...node.querySelectorAll("a[href]")];
+    const hasLeaderLink = links.some((a) => /\/leaders?\//.test(a.getAttribute("href") || ""));
+    const hasMeetLink = links.some((a) => /^meet\b/i.test(text(a)));
+    return (hasLeaderLink || hasMeetLink) && !!node.querySelector(".futura-bold, .urw-egyptienne");
+  }
+  function profilesFromUnits(document, units, heading) {
+    const cells = [[heading || ""], ["grid"]];
+    units.forEach((unit) => {
+      const img = unit.querySelector("img");
+      const detailLink = [...unit.querySelectorAll("a[href]")].find((a) => /\/leaders?\//.test(a.getAttribute("href") || "")) || unit.querySelector("a[href]");
+      const href = (detailLink == null ? void 0 : detailLink.getAttribute("href")) || "";
+      const name = text(unit.querySelector(".futura-bold")) || text(img) || (img == null ? void 0 : img.getAttribute("alt")) || "";
+      const role = text(unit.querySelector(".urw-egyptienne")) || "";
+      cells.push([
+        imgNode(document, imgSrc(img), (img == null ? void 0 : img.getAttribute("alt")) || name),
+        name,
+        role,
+        el(document, "div", ""),
+        href ? anchorNode(document, href, name) : ""
+      ]);
+    });
+    return [WebImporter.Blocks.createBlock(document, { name: "profile-stryker", cells })];
+  }
+  function extractAccordion(document, section, heading) {
+    const panels = [...section.querySelectorAll(".panel")];
+    if (!panels.length) return null;
+    const cells = [[heading || ""], ["standard"]];
+    let added = 0;
+    panels.forEach((panel) => {
+      const title = text(panel.querySelector(".panel-title"));
+      const body = panel.querySelector(".panel-body");
+      if (!title) return;
+      const links = body ? [...body.querySelectorAll("a[href]")] : [];
+      let bodyHtml;
+      if (links.length) {
+        bodyHtml = `<ul>${links.map((a) => {
+          const href = a.getAttribute("href") || "#";
+          return `<li><a href="${href}">${text(a)}</a></li>`;
+        }).join("")}</ul>`;
+      } else {
+        bodyHtml = (body == null ? void 0 : body.innerHTML.trim()) || "";
+      }
+      cells.push([title, el(document, "div", bodyHtml)]);
+      added += 1;
+    });
+    if (!added) return null;
+    return [WebImporter.Blocks.createBlock(document, { name: "accordion-stryker", cells })];
   }
   function isPromoPanel(node) {
     if (!node.querySelector) return false;
@@ -852,6 +907,35 @@ var CustomImportScript = (() => {
           xf.parentElement.insertBefore(placeholder, xf);
           curatedScopes.push(xf);
         });
+        const accordionScopes = [];
+        document.querySelectorAll(".c-accordion").forEach((acc) => {
+          var _a, _b;
+          if (!acc.querySelector(".panel")) return;
+          let headingText = "";
+          let cursor = acc;
+          while (cursor && !headingText) {
+            let sib = cursor.previousElementSibling;
+            while (sib) {
+              const h = ((_a = sib.matches) == null ? void 0 : _a.call(sib, "h1, h2, h3, h4")) ? sib : (_b = sib.querySelector) == null ? void 0 : _b.call(sib, "h1, h2, h3, h4");
+              if (h && text(h)) {
+                headingText = text(h);
+                break;
+              }
+              sib = sib.previousElementSibling;
+            }
+            cursor = cursor.parentElement;
+          }
+          const blocks = extractAccordion(document, acc, headingText);
+          if (!blocks || !blocks.length) return;
+          const placeholder = document.createElement("div");
+          placeholder.setAttribute("data-accordion", "true");
+          placeholder._accordionBlocks = blocks;
+          placeholder._accordionHeading = headingText;
+          const ownerSection = acc.closest(".page-section") || acc.parentElement;
+          ownerSection.parentElement.insertBefore(placeholder, ownerSection.nextSibling);
+          accordionScopes.push(placeholder);
+          acc.remove();
+        });
         const hasAnchorNav = !!document.querySelector(
           '.jumpbarnav a[href^="#"], .c-navigation-bar a[href^="#"], .bar-nav a.anchor'
         );
@@ -872,8 +956,10 @@ var CustomImportScript = (() => {
           // bespoke promo bands (e.g. Training Calendar)
           ".c-grouplist",
           // grouped link lists (e.g. "Our businesses")
-          "[data-curated-tiles]"
+          "[data-curated-tiles]",
           // collapsed curated-CTA tile pairs
+          "[data-accordion]"
+          // collapsed policy / FAQ accordions
         ].join(",");
         const all = [...contentRoot.querySelectorAll(SELECTOR)].filter((n) => !n.closest("header, footer, nav")).filter((n) => !statScopes.some(({ scope, title }) => n !== title && scope.contains(n) && scope !== n)).filter((n) => !curatedScopes.some((scope) => scope.contains(n)));
         const units = all.filter((n) => !all.some((o) => o !== n && o.contains(n)));
@@ -887,6 +973,8 @@ var CustomImportScript = (() => {
         };
         let pendingCards = [];
         let pendingStats = [];
+        let pendingProfiles = [];
+        let profileHeading = "";
         const flushStats = () => {
           if (!pendingStats.length) return;
           try {
@@ -900,8 +988,29 @@ var CustomImportScript = (() => {
           }
           pendingStats = [];
         };
+        const flushProfiles = () => {
+          if (!pendingProfiles.length) return;
+          try {
+            const block = profilesFromUnits(document, pendingProfiles, profileHeading);
+            if (block && block.length) {
+              current.nodes.push(...block);
+              blockNames.push("profile-stryker");
+              if (profileHeading) {
+                const idx = current.nodes.findIndex((n) => n.tagName === "H2" && text(n) === profileHeading);
+                if (idx !== -1 && current.nodes[idx] !== block[0]) {
+                  current.nodes.splice(idx, 1);
+                }
+              }
+            }
+          } catch (e) {
+            current.nodes.push(errorBlock(document, `failed to build profiles \u2014 ${e.message}`));
+          }
+          pendingProfiles = [];
+          profileHeading = "";
+        };
         const flushCards = () => {
           flushStats();
+          flushProfiles();
           if (!pendingCards.length) return;
           try {
             current.nodes.push(cardsFromUnits(document, pendingCards));
@@ -929,13 +1038,34 @@ var CustomImportScript = (() => {
             });
             return;
           }
+          if (node._accordionBlocks) {
+            flushCards();
+            if (node._accordionHeading) {
+              const idx = current.nodes.findIndex((h) => h.tagName === "H2" && text(h) === node._accordionHeading);
+              if (idx !== -1) current.nodes.splice(idx, 1);
+            }
+            node._accordionBlocks.forEach((b) => {
+              current.nodes.push(b);
+              blockNames.push("accordion-stryker");
+            });
+            return;
+          }
           if (isStatUnit(node)) {
-            if (pendingCards.length) flushCards();
+            if (pendingCards.length || pendingProfiles.length) flushCards();
             pendingStats.push(node);
             return;
           }
+          if (isProfileUnit(node)) {
+            if (pendingCards.length || pendingStats.length) flushCards();
+            if (!pendingProfiles.length) {
+              const lastH2 = [...current.nodes].reverse().find((n) => n.tagName === "H2");
+              profileHeading = lastH2 ? text(lastH2) : "";
+            }
+            pendingProfiles.push(node);
+            return;
+          }
           if (isCardUnit(node)) {
-            if (pendingStats.length) flushStats();
+            if (pendingStats.length || pendingProfiles.length) flushCards();
             pendingCards.push(node);
             return;
           }
@@ -1074,6 +1204,7 @@ var CustomImportScript = (() => {
           if (statScopes.some(({ scope }) => scope.contains(n))) return;
           if (consumedScopes.some((scope) => scope.contains(n))) return;
           if (curatedScopes.some((scope) => scope.contains(n))) return;
+          if (accordionScopes.some((scope) => scope.contains(n) || scope === n)) return;
           if (!isTextLeaf(n)) return;
           const plain = norm(text(n));
           if (isJunkText(plain)) return;

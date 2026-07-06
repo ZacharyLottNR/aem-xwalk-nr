@@ -860,6 +860,8 @@ const EXTRACTORS = {
   'c-filtered-content-type-grid': extractFilteredGrid,
   'c-filtered-content-type-grid-content': extractFilteredGrid,
   'c-grouplist': extractGroupList,
+  // c-accordion is handled by a pre-pass (collapsed into a placeholder) since it
+  // usually nests inside a content wrapper and is never the outermost unit.
   'c-tabs': extractTabs,
   'c-text': extractText,
   // c-title / c-tagline hold a hydrated heading or tagline; emit their text.
@@ -966,6 +968,79 @@ function statsFromUnits(document, units) {
   });
   if (!cells.length) return null;
   return buildStats(document, { titleBlack: '', theme: 'light', cells, icons });
+}
+
+// A "profile unit" is a grid column (.xf-master-building-block) for one person:
+// a headshot linking to a `/leaders/` (or similar) detail page, a bold name and
+// a role eyebrow, plus a "Meet <name>" link. No heading tag. Each renders as
+// its own sibling column, so the run is buffered and collapsed into one
+// profile-stryker block, like the stat/card runs.
+function isProfileUnit(node) {
+  if (!node.classList?.contains('xf-master-building-block')) return false;
+  if (node.querySelector('h1, h2, h3, h4')) return false;
+  if (!node.querySelector('img')) return false;
+  // A leader detail link, or a "Meet <name>" CTA, marks a person card.
+  const links = [...node.querySelectorAll('a[href]')];
+  const hasLeaderLink = links.some((a) => /\/leaders?\//.test(a.getAttribute('href') || ''));
+  const hasMeetLink = links.some((a) => /^meet\b/i.test(text(a)));
+  return (hasLeaderLink || hasMeetLink) && !!node.querySelector('.futura-bold, .urw-egyptienne');
+}
+
+// Build a profile-stryker block from a run of profile units (see isProfileUnit).
+// Cells: block-level heading, theme, then per-person [image, name, role, bio,
+// link]. Name comes from the bold span, role from the serif eyebrow span; the
+// headshot/name link is the person's detail page.
+function profilesFromUnits(document, units, heading) {
+  const cells = [[heading || ''], ['grid']];
+  units.forEach((unit) => {
+    const img = unit.querySelector('img');
+    const detailLink = [...unit.querySelectorAll('a[href]')]
+      .find((a) => /\/leaders?\//.test(a.getAttribute('href') || ''))
+      || unit.querySelector('a[href]');
+    const href = detailLink?.getAttribute('href') || '';
+    const name = text(unit.querySelector('.futura-bold'))
+      || text(img) || img?.getAttribute('alt') || '';
+    const role = text(unit.querySelector('.urw-egyptienne')) || '';
+    cells.push([
+      imgNode(document, imgSrc(img), img?.getAttribute('alt') || name),
+      name,
+      role,
+      el(document, 'div', ''),
+      href ? anchorNode(document, href, name) : '',
+    ]);
+  });
+  return [WebImporter.Blocks.createBlock(document, { name: 'profile-stryker', cells })];
+}
+
+// c-accordion → accordion-stryker. Stryker renders collapsible policy/FAQ lists
+// as Bootstrap panels: each `.panel` has a `.panel-title` (the row label) and a
+// `.panel-body` (rich content, typically a list of document links). Map each
+// panel to a title/body item row.
+function extractAccordion(document, section, heading) {
+  const panels = [...section.querySelectorAll('.panel')];
+  if (!panels.length) return null;
+  const cells = [[heading || ''], ['standard']];
+  let added = 0;
+  panels.forEach((panel) => {
+    const title = text(panel.querySelector('.panel-title'));
+    const body = panel.querySelector('.panel-body');
+    if (!title) return;
+    // Prefer a clean link list; fall back to the body's rich HTML.
+    const links = body ? [...body.querySelectorAll('a[href]')] : [];
+    let bodyHtml;
+    if (links.length) {
+      bodyHtml = `<ul>${links.map((a) => {
+        const href = a.getAttribute('href') || '#';
+        return `<li><a href="${href}">${text(a)}</a></li>`;
+      }).join('')}</ul>`;
+    } else {
+      bodyHtml = body?.innerHTML.trim() || '';
+    }
+    cells.push([title, el(document, 'div', bodyHtml)]);
+    added += 1;
+  });
+  if (!added) return null;
+  return [WebImporter.Blocks.createBlock(document, { name: 'accordion-stryker', cells })];
 }
 
 // A "promo panel" is a self-contained band with a heading, a short description,
@@ -1156,6 +1231,48 @@ export default {
         curatedScopes.push(xf);
       });
 
+      // Collapsible policy / FAQ accordions (.c-accordion with Bootstrap
+      // panels) usually sit INSIDE a content wrapper (e.g. a colctrl
+      // page-section), so the accordion is never the outermost walked unit and
+      // its panels would otherwise flatten into loose headings + links. Collapse
+      // each into an accordion-stryker block up front, attach it to a
+      // placeholder at the accordion's document position, and scope the
+      // accordion subtree out of the walk + sweep.
+      const accordionScopes = [];
+      document.querySelectorAll('.c-accordion').forEach((acc) => {
+        if (!acc.querySelector('.panel')) return; // skip empty accordion shells
+        // Heading: the nearest preceding heading in document order (e.g.
+        // "Corporate policies"). Search previous siblings up the ancestry.
+        let headingText = '';
+        let cursor = acc;
+        while (cursor && !headingText) {
+          let sib = cursor.previousElementSibling;
+          while (sib) {
+            const h = sib.matches?.('h1, h2, h3, h4') ? sib : sib.querySelector?.('h1, h2, h3, h4');
+            if (h && text(h)) { headingText = text(h); break; }
+            sib = sib.previousElementSibling;
+          }
+          cursor = cursor.parentElement;
+        }
+        const blocks = extractAccordion(document, acc, headingText);
+        if (!blocks || !blocks.length) return;
+        const placeholder = document.createElement('div');
+        placeholder.setAttribute('data-accordion', 'true');
+        placeholder._accordionBlocks = blocks;
+        placeholder._accordionHeading = headingText;
+        // Insert the placeholder as a sibling AFTER the outermost content
+        // wrapper that owns the accordion (its enclosing .page-section), so the
+        // placeholder becomes its own outermost walked unit instead of being
+        // buried inside a wrapper that the outermost-only filter would skip.
+        const ownerSection = acc.closest('.page-section') || acc.parentElement;
+        ownerSection.parentElement.insertBefore(placeholder, ownerSection.nextSibling);
+        accordionScopes.push(placeholder);
+        // Physically remove the accordion subtree so the wrapping unit that owns
+        // it (e.g. a colctrl page-section) doesn't re-flatten the panels into
+        // loose headings + links via the lossless fallback / safety-net sweep.
+        acc.remove();
+      });
+
       // Only pages that actually render the sticky jump/anchor nav should get a
       // section-anchor-stryker block. Detect the real rendered nav (the
       // `.jumpbarnav` / `.c-navigation-bar` bar with in-page anchor links) — NOT
@@ -1185,6 +1302,7 @@ export default {
         '.pDiv', // bespoke promo bands (e.g. Training Calendar)
         '.c-grouplist', // grouped link lists (e.g. "Our businesses")
         '[data-curated-tiles]', // collapsed curated-CTA tile pairs
+        '[data-accordion]', // collapsed policy / FAQ accordions
       ].join(',');
       const all = [...contentRoot.querySelectorAll(SELECTOR)]
         // Drop header/footer chrome and hidden scaffolding.
@@ -1226,6 +1344,10 @@ export default {
       // block. `pendingCards` buffers units until a non-card node flushes them.
       let pendingCards = [];
       let pendingStats = [];
+      let pendingProfiles = [];
+      // A profile run inherits the section heading it sits under (e.g.
+      // "Leadership team"), captured when the run's first unit is buffered.
+      let profileHeading = '';
       const flushStats = () => {
         if (!pendingStats.length) return;
         try {
@@ -1239,8 +1361,32 @@ export default {
         }
         pendingStats = [];
       };
+      const flushProfiles = () => {
+        if (!pendingProfiles.length) return;
+        try {
+          const block = profilesFromUnits(document, pendingProfiles, profileHeading);
+          if (block && block.length) {
+            current.nodes.push(...block);
+            blockNames.push('profile-stryker');
+            // The block carries the heading itself; drop a duplicate loose <h2>
+            // the section emitted just before this run.
+            if (profileHeading) {
+              const idx = current.nodes.findIndex((n) => n.tagName === 'H2'
+                && text(n) === profileHeading);
+              if (idx !== -1 && current.nodes[idx] !== block[0]) {
+                current.nodes.splice(idx, 1);
+              }
+            }
+          }
+        } catch (e) {
+          current.nodes.push(errorBlock(document, `failed to build profiles — ${e.message}`));
+        }
+        pendingProfiles = [];
+        profileHeading = '';
+      };
       const flushCards = () => {
         flushStats();
+        flushProfiles();
         if (!pendingCards.length) return;
         try {
           current.nodes.push(cardsFromUnits(document, pendingCards));
@@ -1275,18 +1421,50 @@ export default {
           return;
         }
 
+        // Collapsed accordion placeholder → emit its prebuilt accordion-stryker
+        // block. The block already carries the section heading, so drop the
+        // duplicate loose <h2> the walk emitted just before it.
+        if (node._accordionBlocks) {
+          flushCards();
+          if (node._accordionHeading) {
+            const idx = current.nodes.findIndex((h) => h.tagName === 'H2'
+              && text(h) === node._accordionHeading);
+            if (idx !== -1) current.nodes.splice(idx, 1);
+          }
+          node._accordionBlocks.forEach((b) => {
+            current.nodes.push(b);
+            blockNames.push('accordion-stryker');
+          });
+          return;
+        }
+
         // Fast-facts stat unit (icon + enlarged number + label, no heading) →
         // buffer into the current stats run. Checked before isCardUnit since a
         // stat unit is also an .xf-master-building-block.
         if (isStatUnit(node)) {
-          if (pendingCards.length) flushCards();
+          if (pendingCards.length || pendingProfiles.length) flushCards();
           pendingStats.push(node);
+          return;
+        }
+
+        // Leadership profile unit (headshot + name + role + "Meet" link, no
+        // heading) → buffer into the current profile run. Checked before
+        // isCardUnit since a profile unit is also an .xf-master-building-block.
+        if (isProfileUnit(node)) {
+          if (pendingCards.length || pendingStats.length) flushCards();
+          // Capture the heading this run sits under (the most recent loose <h2>
+          // in the current section) so it becomes the block heading.
+          if (!pendingProfiles.length) {
+            const lastH2 = [...current.nodes].reverse().find((n) => n.tagName === 'H2');
+            profileHeading = lastH2 ? text(lastH2) : '';
+          }
+          pendingProfiles.push(node);
           return;
         }
 
         // Hydrated card unit → buffer into the current card grid.
         if (isCardUnit(node)) {
-          if (pendingStats.length) flushStats();
+          if (pendingStats.length || pendingProfiles.length) flushCards();
           pendingCards.push(node);
           return;
         }
@@ -1515,6 +1693,7 @@ export default {
         if (statScopes.some(({ scope }) => scope.contains(n))) return;
         if (consumedScopes.some((scope) => scope.contains(n))) return;
         if (curatedScopes.some((scope) => scope.contains(n))) return;
+        if (accordionScopes.some((scope) => scope.contains(n) || scope === n)) return;
         if (!isTextLeaf(n)) return;
         const plain = norm(text(n));
         if (isJunkText(plain)) return; // drop known widget/nav/cookie chrome
