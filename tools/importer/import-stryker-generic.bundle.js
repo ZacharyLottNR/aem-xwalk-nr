@@ -569,6 +569,10 @@ var CustomImportScript = (() => {
     return [WebImporter.Blocks.createBlock(document, { name: "stats-stryker", cells: rows })];
   }
   function extractFullBleedPanel(document, section) {
+    if (section.querySelector(".c-fastfacts-item")) {
+      const facts = extractFastFacts(document, section);
+      if (facts && facts.length) return facts;
+    }
     const imgs = [...section.querySelectorAll("img")];
     const heading = section.querySelector("h1, h2, h3, h4");
     const headingText = text(heading);
@@ -722,6 +726,7 @@ var CustomImportScript = (() => {
     "c-latestnews": extractLatestNews,
     "c-largeheadline": extractLargeHeadline,
     "c-full-bleed-panel": extractFullBleedPanel,
+    "c-fastfacts": extractFastFacts,
     "c-autocarousel": extractCarousel,
     "c-table": extractTable,
     "c-marketo-form": extractMarketoForm,
@@ -901,6 +906,43 @@ var CustomImportScript = (() => {
     }));
     blocks._legalHtml = legalHtml;
     return blocks;
+  }
+  function extractFastFacts(document, section) {
+    const items = [...section.querySelectorAll(".c-fastfacts-item")];
+    if (!items.length) return null;
+    const heading = text(section.querySelector(".c-fastfacts-title"));
+    const rows = [[heading || ""], [""], [el(document, "div", "")], ["plain"]];
+    items.forEach((it) => {
+      const value = text(it.querySelector(".c-fastfacts-number"));
+      const label = text(it.querySelector(".c-fastfacts-text"));
+      if (!value && !label) return;
+      rows.push(["", value, el(document, "div", `<p>${label}</p>`)]);
+    });
+    if (rows.length <= 4) return null;
+    return [WebImporter.Blocks.createBlock(document, { name: "stats-stryker", cells: rows })];
+  }
+  function extractNewsArticle(document, root) {
+    var _a;
+    const h1 = root.querySelector("h1");
+    const titleText = text(h1);
+    if (!titleText) return null;
+    const dateText = text(root.querySelector(".c-publish-date, .c-publish-date h5")) || text([...root.querySelectorAll("h5")].find((h) => text(h)));
+    const rteRegions = [...root.querySelectorAll(".c-rich-text-editor")];
+    let bodyScope = (_a = rteRegions.map((r) => ({ r, n: r.querySelectorAll("p").length })).sort((a, b) => b.n - a.n)[0]) == null ? void 0 : _a.r;
+    if (!bodyScope || !bodyScope.querySelector("p")) bodyScope = root;
+    const bodyParas = [...bodyScope.querySelectorAll("p")].filter((p) => text(p) && !p.closest(".c-disclaimer") && !/^[A-Z0-9]+(-[A-Z0-9]+){2,}$/.test(text(p).trim())).map((p) => `<p>${p.innerHTML.trim()}</p>`);
+    if (!bodyParas.length) return null;
+    const nodes = [];
+    nodes.push(el(document, "h1", titleText));
+    if (dateText) nodes.push(el(document, "p", dateText));
+    if (bodyParas.length) nodes.push(el(document, "div", bodyParas.join("")));
+    let legalHtml = "";
+    document.querySelectorAll(".c-disclaimer p").forEach((p) => {
+      if (text(p)) legalHtml += `<p>${p.innerHTML.trim()}</p>`;
+    });
+    const docCode = [...document.querySelectorAll("p")].find((p) => !p.closest('header, footer, nav, main, [role="main"], .c-disclaimer') && /^[A-Z0-9]+(-[A-Z0-9]+){2,}$/.test(text(p).trim()));
+    if (docCode) legalHtml += `<p>${text(docCode)}</p>`;
+    return { nodes, legalHtml };
   }
   function extractCtaBox(document, box) {
     const link = box.querySelector("a[href]");
@@ -1098,6 +1140,36 @@ var CustomImportScript = (() => {
             }];
           }
         }
+        if (/\/about\/news\/\d{4}\//.test(url || "") && document.querySelector(".c-publish-date, .c-rich-text-editor")) {
+          const article = extractNewsArticle(document, contentRoot);
+          if (article && article.nodes.length > 1) {
+            article.nodes.forEach((n) => main.append(n));
+            blockNames.push("news-article");
+            if (article.legalHtml) {
+              main.append(document.createElement("hr"));
+              main.append(WebImporter.Blocks.createBlock(document, {
+                name: "legal-text-stryker",
+                cells: [[el(document, "div", article.legalHtml)]]
+              }));
+              blockNames.push("legal-text-stryker");
+            }
+            main.append(document.createElement("hr"));
+            main.append(WebImporter.Blocks.createBlock(document, {
+              name: "metadata",
+              cells: {
+                Title: pageTitle,
+                theme: "stryker",
+                nav: "/content/stryker/nav",
+                footer: "/content/stryker/footer"
+              }
+            }));
+            return [{
+              element: main,
+              path,
+              report: { title: pageTitle, template: "stryker-generic", blocks: blockNames }
+            }];
+          }
+        }
         const eventComponent = document.querySelector(".c-event-detail-component");
         if (eventComponent) {
           const event = extractEventDetail(document, eventComponent, pageTitle);
@@ -1275,6 +1347,8 @@ var CustomImportScript = (() => {
           // bespoke promo bands (e.g. Training Calendar)
           ".c-grouplist",
           // grouped link lists (e.g. "Our businesses")
+          ".c-fastfacts",
+          // "Did you know?" stat bands
           "[data-curated-tiles]",
           // collapsed curated-CTA tile pairs
           "[data-accordion]",

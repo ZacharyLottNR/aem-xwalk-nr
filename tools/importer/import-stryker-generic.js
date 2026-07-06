@@ -752,6 +752,14 @@ function buildStats(document, {
 //  - a stats infographic (enlarged number spans) → stats-stryker;
 //  - otherwise an experience-fragment promo (image + text) as default content.
 function extractFullBleedPanel(document, section) {
+  // A "Did you know?" stat band often ships wrapped in a full-bleed panel, so
+  // the panel is the outermost walked unit and the c-fastfacts extractor never
+  // fires on its own. Delegate here so the band becomes a stats-stryker block.
+  if (section.querySelector('.c-fastfacts-item')) {
+    const facts = extractFastFacts(document, section);
+    if (facts && facts.length) return facts;
+  }
+
   const imgs = [...section.querySelectorAll('img')];
   const heading = section.querySelector('h1, h2, h3, h4');
   const headingText = text(heading);
@@ -955,6 +963,7 @@ const EXTRACTORS = {
   'c-latestnews': extractLatestNews,
   'c-largeheadline': extractLargeHeadline,
   'c-full-bleed-panel': extractFullBleedPanel,
+  'c-fastfacts': extractFastFacts,
   'c-autocarousel': extractCarousel,
   'c-table': extractTable,
   'c-marketo-form': extractMarketoForm,
@@ -1213,6 +1222,72 @@ function extractLeaderDetail(document, root) {
 
   blocks._legalHtml = legalHtml;
   return blocks;
+}
+
+// c-fastfacts → stats-stryker (plain theme). A "Did you know?" style band: a
+// `.c-fastfacts-title` heading plus `.c-fastfacts-item` cells, each a big
+// `.c-fastfacts-number` value and a `.c-fastfacts-text` label. No images.
+function extractFastFacts(document, section) {
+  const items = [...section.querySelectorAll('.c-fastfacts-item')];
+  if (!items.length) return null;
+  const heading = text(section.querySelector('.c-fastfacts-title'));
+  // stats-stryker cells: block-level titleBlack, titleGold, intro, theme; then
+  // per-item icon, value, label. Plain theme = dark heading + big values, no
+  // icons.
+  const rows = [[heading || ''], [''], [el(document, 'div', '')], ['plain']];
+  items.forEach((it) => {
+    const value = text(it.querySelector('.c-fastfacts-number'));
+    const label = text(it.querySelector('.c-fastfacts-text'));
+    if (!value && !label) return;
+    rows.push(['', value, el(document, 'div', `<p>${label}</p>`)]);
+  });
+  if (rows.length <= 4) return null;
+  return [WebImporter.Blocks.createBlock(document, { name: 'stats-stryker', cells: rows })];
+}
+
+// A news / press-release article (/about/news/YYYY/*): an <h1> title, a
+// `c-publish-date` date, a body of rich-text paragraphs, and a `c-disclaimer`
+// references block. Map to an ordered title + date + body (+ legal handled by
+// the caller). Returns { blocks, legalHtml } or null.
+function extractNewsArticle(document, root) {
+  const h1 = root.querySelector('h1');
+  const titleText = text(h1);
+  if (!titleText) return null;
+
+  const dateText = text(root.querySelector('.c-publish-date, .c-publish-date h5'))
+    || text([...root.querySelectorAll('h5')].find((h) => text(h)));
+
+  // Body paragraphs, in document order. Prefer the richest `.c-rich-text-editor`
+  // region (a page can have several, some empty); fall back to all article
+  // paragraphs. Exclude the title/date and the reference/disclaimer copy.
+  const rteRegions = [...root.querySelectorAll('.c-rich-text-editor')];
+  let bodyScope = rteRegions
+    .map((r) => ({ r, n: r.querySelectorAll('p').length }))
+    .sort((a, b) => b.n - a.n)[0]?.r;
+  if (!bodyScope || !bodyScope.querySelector('p')) bodyScope = root;
+  const bodyParas = [...bodyScope.querySelectorAll('p')]
+    .filter((p) => text(p) && !p.closest('.c-disclaimer')
+      && !/^[A-Z0-9]+(-[A-Z0-9]+){2,}$/.test(text(p).trim()))
+    .map((p) => `<p>${p.innerHTML.trim()}</p>`);
+  if (!bodyParas.length) return null;
+
+  const nodes = [];
+  nodes.push(el(document, 'h1', titleText));
+  if (dateText) nodes.push(el(document, 'p', dateText));
+  if (bodyParas.length) nodes.push(el(document, 'div', bodyParas.join('')));
+
+  // References live in a .c-disclaimer (outside main) + a trailing doc code —
+  // collect for the caller's legal-text block.
+  let legalHtml = '';
+  document.querySelectorAll('.c-disclaimer p').forEach((p) => {
+    if (text(p)) legalHtml += `<p>${p.innerHTML.trim()}</p>`;
+  });
+  const docCode = [...document.querySelectorAll('p')]
+    .find((p) => !p.closest('header, footer, nav, main, [role="main"], .c-disclaimer')
+      && /^[A-Z0-9]+(-[A-Z0-9]+){2,}$/.test(text(p).trim()));
+  if (docCode) legalHtml += `<p>${text(docCode)}</p>`;
+
+  return { nodes, legalHtml };
 }
 
 // A `.dimensional-box` shadow card holding a short blurb + a single CTA link
@@ -1503,6 +1578,41 @@ export default {
         }
       }
 
+      // News / press-release articles (/about/news/YYYY/*) have a fixed shape
+      // — title, publish date, rich-text body, references. Emit them in the
+      // right order (the source DOM order is title/date separate from body) and
+      // return early, avoiding the loose-content ordering issues of the walk.
+      if (/\/about\/news\/\d{4}\//.test(url || '') && document.querySelector('.c-publish-date, .c-rich-text-editor')) {
+        const article = extractNewsArticle(document, contentRoot);
+        if (article && article.nodes.length > 1) {
+          article.nodes.forEach((n) => main.append(n));
+          blockNames.push('news-article');
+          if (article.legalHtml) {
+            main.append(document.createElement('hr'));
+            main.append(WebImporter.Blocks.createBlock(document, {
+              name: 'legal-text-stryker',
+              cells: [[el(document, 'div', article.legalHtml)]],
+            }));
+            blockNames.push('legal-text-stryker');
+          }
+          main.append(document.createElement('hr'));
+          main.append(WebImporter.Blocks.createBlock(document, {
+            name: 'metadata',
+            cells: {
+              Title: pageTitle,
+              theme: 'stryker',
+              nav: '/content/stryker/nav',
+              footer: '/content/stryker/footer',
+            },
+          }));
+          return [{
+            element: main,
+            path,
+            report: { title: pageTitle, template: 'stryker-generic', blocks: blockNames },
+          }];
+        }
+      }
+
       // Global-events pages are a single c-event-detail-component (title +
       // date/time/location + details + register CTA); map the whole page to one
       // event-details-stryker block and return early.
@@ -1759,6 +1869,7 @@ export default {
         '.sectionseparator', '.c-section-separator', // horizontal content breaks
         '.pDiv', // bespoke promo bands (e.g. Training Calendar)
         '.c-grouplist', // grouped link lists (e.g. "Our businesses")
+        '.c-fastfacts', // "Did you know?" stat bands
         '[data-curated-tiles]', // collapsed curated-CTA tile pairs
         '[data-accordion]', // collapsed policy / FAQ accordions
         '[data-cta]', // collapsed dimensional-box CTAs
