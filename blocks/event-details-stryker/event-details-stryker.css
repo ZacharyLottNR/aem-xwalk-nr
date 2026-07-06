@@ -2,10 +2,6 @@
   max-width: var(--stryker-max-width, 1280px);
   margin: 0 auto;
   padding: 48px 24px;
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 48px;
-  align-items: start;
 }
 
 .event-details-stryker .event-details-stryker-title {
@@ -13,22 +9,80 @@
   font-weight: 700;
   font-size: var(--stryker-h2-size, 36px);
   color: var(--stryker-black, #000);
-  margin: 0 0 20px;
+  margin: 0 0 28px;
   line-height: 1.15;
 }
 
-.event-details-stryker .event-details-stryker-description {
+/* Two columns: labeled event info on the left, map on the right. */
+.event-details-stryker .event-details-stryker-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.event-details-stryker .event-details-stryker-section {
+  margin: 0 0 24px;
+}
+
+.event-details-stryker .event-details-stryker-label {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--stryker-black, #000);
+  margin: 0 0 6px;
+}
+
+.event-details-stryker .event-details-stryker-section p {
+  font-family: var(--stryker-body-font);
+  font-size: var(--stryker-body-size, 16px);
+  line-height: 1.5;
+  color: var(--stryker-black, #000);
+  margin: 0;
+}
+
+.event-details-stryker .event-details-stryker-detail-body {
   font-family: var(--stryker-body-font);
   font-size: var(--stryker-body-size, 16px);
   line-height: 1.6;
-  color: var(--stryker-gray, #58595b);
-  margin: 0 0 28px;
+  color: var(--stryker-black, #000);
 }
 
-.event-details-stryker .event-details-stryker-description :first-child {
+.event-details-stryker .event-details-stryker-detail-body :first-child {
   margin-top: 0;
 }
 
+.event-details-stryker .event-details-stryker-disclaimer {
+  font-family: var(--stryker-body-font);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--stryker-gray, #58595b);
+  margin: 0 0 24px;
+}
+
+/* Print event details: a gray secondary button (browser print). */
+.event-details-stryker .event-details-stryker-print:any-link {
+  display: inline-block;
+  font-family: var(--stryker-heading-font);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--stryker-black, #000);
+  background-color: var(--stryker-light-gray, #f2f2f2);
+  border: 1px solid #d9d9d9;
+  padding: 12px 22px;
+  margin: 0 0 24px;
+  transition: background-color 0.2s;
+}
+
+.event-details-stryker .event-details-stryker-print:any-link:hover {
+  background-color: #e4e4e4;
+  color: var(--stryker-black, #000);
+}
+
+/* Register: primary teal button. */
 .event-details-stryker .event-details-stryker-cta:any-link {
   display: inline-block;
   font-family: var(--stryker-heading-font);
@@ -49,38 +103,33 @@
   color: var(--stryker-white, #fff);
 }
 
-/* Facts panel: a light-gray card with a gold accent rule at the top. */
-.event-details-stryker .event-details-stryker-facts {
-  margin: 0;
-  padding: 28px;
-  background: var(--stryker-light-gray, #f2f2f2);
-  border-top: 4px solid var(--stryker-amber, #ffb500);
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px 20px;
+/* Map embed on the right. */
+.event-details-stryker .event-details-stryker-map {
+  position: relative;
+  width: 100%;
+  min-height: 360px;
+  height: 100%;
 }
 
-.event-details-stryker .event-details-stryker-facts dt {
-  font-family: var(--stryker-heading-font);
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--stryker-teal, #4c7d7a);
-  align-self: baseline;
-}
-
-.event-details-stryker .event-details-stryker-facts dd {
-  margin: 0;
-  font-family: var(--stryker-body-font);
-  font-size: var(--stryker-body-size, 16px);
-  color: var(--stryker-black, #000);
+.event-details-stryker .event-details-stryker-map iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  border: 0;
+  display: block;
 }
 
 @media (width < 800px) {
   .event-details-stryker {
-    grid-template-columns: 1fr;
-    gap: 32px;
     padding: 32px 16px;
+  }
+
+  .event-details-stryker .event-details-stryker-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .event-details-stryker .event-details-stryker-map iframe {
+    min-height: 280px;
   }
 }

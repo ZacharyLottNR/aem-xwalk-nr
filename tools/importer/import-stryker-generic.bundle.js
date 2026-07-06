@@ -977,22 +977,26 @@ var CustomImportScript = (() => {
     }
     const location = joinText(fields.location);
     const country = joinText(fields.country);
-    const locationCombined = [location, country].filter((v) => v && v !== "N/A").join(", ") || location;
     const descHtml = (fields.details || []).map((n) => `<p>${n.innerHTML.trim()}</p>`).join("");
     const creditP = [...section.querySelectorAll("p")].find((p) => /\bCE credit\b|accredit/i.test(text(p)));
     const credit = creditP ? text(creditP).replace(/^Disclaimer:\s*/i, "") : "";
     const cta = [...section.querySelectorAll("a[href]")].find((a) => /register/i.test(text(a)));
     const ctaLabel = text(cta) || "";
     const ctaHref = (cta == null ? void 0 : cta.getAttribute("href")) || "";
+    const mapIframe = [...section.querySelectorAll("iframe[src]")].find((f) => /google\.com\/maps/.test(f.getAttribute("src") || ""));
+    const mapUrl = (mapIframe == null ? void 0 : mapIframe.getAttribute("src")) || "";
     const cells = [
       [text(section.querySelector("h1, h2, h3")) || title || "Event"],
       [el(document, "div", descHtml)],
       [date],
       [time],
-      [locationCombined],
+      [location],
+      [country],
       [credit],
       [ctaLabel],
-      ctaHref ? [anchorNode(document, ctaHref, ctaLabel)] : [""]
+      ctaHref ? [anchorNode(document, ctaHref, ctaLabel)] : [""],
+      [""],
+      mapUrl ? [anchorNode(document, mapUrl, "Map")] : [""]
     ];
     return [WebImporter.Blocks.createBlock(document, { name: "event-details-stryker", cells })];
   }
@@ -1098,8 +1102,27 @@ var CustomImportScript = (() => {
         if (eventComponent) {
           const event = extractEventDetail(document, eventComponent, pageTitle);
           if (event && event.length) {
+            const hcp = document.querySelector(".g-hcpbanner");
+            const hcpHeading = hcp == null ? void 0 : hcp.querySelector("h1, h2, h3, h4");
+            if (hcpHeading && text(hcpHeading)) {
+              main.append(WebImporter.Blocks.createBlock(document, {
+                name: "right-justified-text-stryker",
+                cells: [[el(document, "div", `<h3>${hcpHeading.innerHTML.trim()}</h3>`)]]
+              }));
+              blockNames.push("right-justified-text-stryker");
+              main.append(document.createElement("hr"));
+            }
             event.forEach((b) => main.append(b));
             blockNames.push("event-details-stryker");
+            const lastUpdated = [...document.querySelectorAll("p")].find((p) => /^Last Updated/i.test(text(p)) && !p.closest("header, footer, nav"));
+            if (lastUpdated) {
+              main.append(document.createElement("hr"));
+              main.append(WebImporter.Blocks.createBlock(document, {
+                name: "legal-text-stryker",
+                cells: [[el(document, "div", `<p>${text(lastUpdated)}</p>`)]]
+              }));
+              blockNames.push("legal-text-stryker");
+            }
             main.append(document.createElement("hr"));
             main.append(WebImporter.Blocks.createBlock(document, {
               name: "metadata",

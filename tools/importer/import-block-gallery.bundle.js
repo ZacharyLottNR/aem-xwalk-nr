@@ -356,12 +356,15 @@ var CustomImportScript = (() => {
       blocks.push(["event-details-stryker", [
         ["Patient Temperature Management: How Controlled Warming and Cooling Affect Patient Outcomes"],
         [el(document, "div", "<p>Managing patient temperature in the acute care space is critical to patient safety and delivering better clinical outcomes. Join us to learn practical approaches.</p>")],
-        ["October 20, 2021"],
-        ["2:00 - 3:00 PM ET"],
-        ["Online webinar"],
-        ["1 CE credit approved"],
+        ["Wednesday October 20, 2021"],
+        ["2:00 pm to 3:00 pm (UTC-05:00) Eastern Time (US & Canada)"],
+        ["N/A"],
+        ["United States of America"],
+        ["This program has been approved for 1 CE credit."],
         ["Register now"],
-        [anchor(document, "https://www.stryker.com/", "Register")]
+        [anchor(document, "https://register.gotowebinar.com/", "Register")],
+        ["Kalamazoo, MI"],
+        [""]
       ]]);
       const profileItem = (name, role, bio) => [
         img(document, IMG(360, 240, name), name),

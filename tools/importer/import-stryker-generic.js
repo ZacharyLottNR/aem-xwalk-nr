@@ -1318,7 +1318,6 @@ function extractEventDetail(document, section, title) {
 
   const location = joinText(fields.location);
   const country = joinText(fields.country);
-  const locationCombined = [location, country].filter((v) => v && v !== 'N/A').join(', ') || location;
 
   // Description: the Details section paragraphs.
   const descHtml = (fields.details || [])
@@ -1335,17 +1334,27 @@ function extractEventDetail(document, section, title) {
   const ctaLabel = text(cta) || '';
   const ctaHref = cta?.getAttribute('href') || '';
 
+  // Google map embed URL (the event component renders a maps embed iframe).
+  const mapIframe = [...section.querySelectorAll('iframe[src]')]
+    .find((f) => /google\.com\/maps/.test(f.getAttribute('src') || ''));
+  const mapUrl = mapIframe?.getAttribute('src') || '';
+
   // Prefer the component's own heading (clean title) over the page <title>,
-  // which carries a " | Stryker" suffix.
+  // which carries a " | Stryker" suffix. Cell order matches the model:
+  // title, description, date, time, location, country, credit, register label,
+  // register url, map address, map url.
   const cells = [
     [text(section.querySelector('h1, h2, h3')) || title || 'Event'],
     [el(document, 'div', descHtml)],
     [date],
     [time],
-    [locationCombined],
+    [location],
+    [country],
     [credit],
     [ctaLabel],
     ctaHref ? [anchorNode(document, ctaHref, ctaLabel)] : [''],
+    [''],
+    mapUrl ? [anchorNode(document, mapUrl, 'Map')] : [''],
   ];
   return [WebImporter.Blocks.createBlock(document, { name: 'event-details-stryker', cells })];
 }
@@ -1501,8 +1510,35 @@ export default {
       if (eventComponent) {
         const event = extractEventDetail(document, eventComponent, pageTitle);
         if (event && event.length) {
+          // A right-justified "Information for healthcare professionals" HCP
+          // banner sits above the content on these pages (.g-hcpbanner, outside
+          // <main>). Emit it as a right-justified-text-stryker block first.
+          const hcp = document.querySelector('.g-hcpbanner');
+          const hcpHeading = hcp?.querySelector('h1, h2, h3, h4');
+          if (hcpHeading && text(hcpHeading)) {
+            main.append(WebImporter.Blocks.createBlock(document, {
+              name: 'right-justified-text-stryker',
+              cells: [[el(document, 'div', `<h3>${hcpHeading.innerHTML.trim()}</h3>`)]],
+            }));
+            blockNames.push('right-justified-text-stryker');
+            main.append(document.createElement('hr'));
+          }
+
           event.forEach((b) => main.append(b));
           blockNames.push('event-details-stryker');
+
+          // Trailing "Last Updated ..." legal/reference line → legal-text.
+          const lastUpdated = [...document.querySelectorAll('p')]
+            .find((p) => /^Last Updated/i.test(text(p)) && !p.closest('header, footer, nav'));
+          if (lastUpdated) {
+            main.append(document.createElement('hr'));
+            main.append(WebImporter.Blocks.createBlock(document, {
+              name: 'legal-text-stryker',
+              cells: [[el(document, 'div', `<p>${text(lastUpdated)}</p>`)]],
+            }));
+            blockNames.push('legal-text-stryker');
+          }
+
           main.append(document.createElement('hr'));
           main.append(WebImporter.Blocks.createBlock(document, {
             name: 'metadata',

@@ -1009,6 +1009,13 @@
       {
         "component": "text",
         "valueType": "string",
+        "name": "country",
+        "label": "Country",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
         "name": "credit",
         "label": "Accreditation / CE Credit",
         "value": ""
@@ -1017,14 +1024,29 @@
         "component": "text",
         "valueType": "string",
         "name": "ctaLabel",
-        "label": "CTA Text",
+        "label": "Register Button Text",
         "value": ""
       },
       {
         "component": "aem-content",
         "valueType": "string",
         "name": "ctaUrl",
-        "label": "CTA Link"
+        "label": "Register Button Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "mapAddress",
+        "label": "Map Address",
+        "description": "Optional. Shows a Google map of this address beside the details.",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "mapUrl",
+        "label": "Map Embed URL",
+        "description": "Optional. A Google Maps embed URL; overrides Map Address."
       }
     ]
   },
