@@ -1,2 +1,2 @@
 # Generic Stryker importer
-https://www.stryker.com/us/en/about/governance.html
+https://www.stryker.com/us/en/about/our-management.html

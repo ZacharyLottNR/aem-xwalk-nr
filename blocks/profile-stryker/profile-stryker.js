@@ -6,8 +6,8 @@ function innerCell(row) {
 }
 
 // Render one profile from its cells. Cell order matches the item model's
-// field groups: 0 image, 1 name, 2 role, 3 bio, 4 link (imageAlt folds into
-// the image).
+// field groups: 0 image, 1 name, 2 role, 3 bio, 4 link, 5 ctaLabel (imageAlt
+// folds into the image).
 function renderItem(sourceRow, cells) {
   const imageCell = cells[0];
   const name = innerCell(cells[1])?.textContent?.trim() || '';
@@ -15,6 +15,7 @@ function renderItem(sourceRow, cells) {
   const bioCell = cells[3];
   const linkCell = cells[4];
   const href = linkCell?.querySelector('a')?.href || linkCell?.textContent?.trim() || '';
+  const ctaLabel = innerCell(cells[5])?.textContent?.trim() || '';
 
   const item = document.createElement('div');
   item.className = 'profile-stryker-item';
@@ -58,6 +59,15 @@ function renderItem(sourceRow, cells) {
     bio.className = 'profile-stryker-bio';
     bio.innerHTML = bioCell.innerHTML;
     content.append(bio);
+  }
+
+  // "Meet {name}" style CTA link below the role.
+  if (href && ctaLabel) {
+    const cta = document.createElement('a');
+    cta.className = 'profile-stryker-cta';
+    cta.href = href;
+    cta.textContent = ctaLabel;
+    content.append(cta);
   }
 
   item.append(content);

@@ -1103,12 +1103,18 @@ function profilesFromUnits(document, units, heading) {
     const name = text(unit.querySelector('.futura-bold'))
       || text(img) || img?.getAttribute('alt') || '';
     const role = text(unit.querySelector('.urw-egyptienne')) || '';
+    // A "Meet {name}" CTA link below the role (its own visible link, distinct
+    // from the headshot/name link). Prefer a link whose text starts "Meet".
+    const meetLink = [...unit.querySelectorAll('a[href]')]
+      .find((a) => /^meet\b/i.test(text(a)));
+    const ctaLabel = text(meetLink) || (href ? `Meet ${name.split(' ')[0]}` : '');
     cells.push([
       imgNode(document, imgSrc(img), img?.getAttribute('alt') || name),
       name,
       role,
       el(document, 'div', ''),
       href ? anchorNode(document, href, name) : '',
+      ctaLabel,
     ]);
   });
   return [WebImporter.Blocks.createBlock(document, { name: 'profile-stryker', cells })];
@@ -1160,6 +1166,7 @@ function extractLeaderDetail(document, root) {
       name,
       role,
       el(document, 'div', bioParas.join('')),
+      '',
       '',
     ],
   ];

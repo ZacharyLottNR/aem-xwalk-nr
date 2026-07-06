@@ -6405,6 +6405,14 @@
         "name": "link",
         "label": "Profile Link",
         "description": "Optional. Links the name/headshot to a detail page."
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "ctaLabel",
+        "label": "CTA Text",
+        "description": "Optional. A 'Meet ...' style link shown below the role.",
+        "value": ""
       }
     ]
   },

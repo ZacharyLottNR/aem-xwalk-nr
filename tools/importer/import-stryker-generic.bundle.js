@@ -822,12 +822,15 @@ var CustomImportScript = (() => {
       const href = (detailLink == null ? void 0 : detailLink.getAttribute("href")) || "";
       const name = text(unit.querySelector(".futura-bold")) || text(img) || (img == null ? void 0 : img.getAttribute("alt")) || "";
       const role = text(unit.querySelector(".urw-egyptienne")) || "";
+      const meetLink = [...unit.querySelectorAll("a[href]")].find((a) => /^meet\b/i.test(text(a)));
+      const ctaLabel = text(meetLink) || (href ? `Meet ${name.split(" ")[0]}` : "");
       cells.push([
         imgNode(document, imgSrc(img), (img == null ? void 0 : img.getAttribute("alt")) || name),
         name,
         role,
         el(document, "div", ""),
-        href ? anchorNode(document, href, name) : ""
+        href ? anchorNode(document, href, name) : "",
+        ctaLabel
       ]);
     });
     return [WebImporter.Blocks.createBlock(document, { name: "profile-stryker", cells })];
@@ -865,6 +868,7 @@ var CustomImportScript = (() => {
         name,
         role,
         el(document, "div", bioParas.join("")),
+        "",
         ""
       ]
     ];
