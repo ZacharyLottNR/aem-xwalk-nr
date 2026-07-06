@@ -100,6 +100,7 @@ var CustomImportScript = (() => {
           ["focus"],
           [el(document, "div", "")],
           [el(document, "div", "")],
+          [""],
           focusCard(`${MEDIA}/Test_Images_Portfolio_2?$max_width_1440$`, "Medical and Surgical", "Empowering people for powerful outcomes", "By putting people at the heart of every innovation, we optimize pathways across the continuum of care \u2014 for the excellence of care delivery, the safety and wellbeing of care teams and the outcomes of patients."),
           focusCard(`${MEDIA}/mako-column-photo-v2?$max_width_1440$`, "Orthopaedics and Spine", "Leading what's next", "Our Orthopaedics portfolio is a culmination of powerful solutions that maximize clinical, financial and operational outcomes. From iconic innovations to reliable platforms, from decision-driving data to medical education, we help move procedures and patients forward."),
           focusCard(`${MEDIA}/Test_Images_Portfolio_4?$max_width_1440$`, "Neurotechnology", "Better connected", "By delivering access to meaningful innovation, operational efficiency and the simplification of a single partner, we provide the power of a deeper understanding to help you better serve the needs of your patients and improve clinical and economic outcomes."),
