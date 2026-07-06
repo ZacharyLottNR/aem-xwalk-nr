@@ -326,6 +326,10 @@
           {
             "name": "Secondary (outline)",
             "value": "secondary"
+          },
+          {
+            "name": "Feature (large gold panel, two-tone label)",
+            "value": "feature"
           }
         ]
       }
@@ -5988,8 +5992,8 @@
             "value": "overlay"
           },
           {
-            "name": "Stacked (dark text above a contained image)",
-            "value": "stacked"
+            "name": "Boxed (full-bleed image, white text box on the right)",
+            "value": "boxed"
           }
         ]
       }

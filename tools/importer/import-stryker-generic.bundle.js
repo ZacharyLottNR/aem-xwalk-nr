@@ -322,10 +322,10 @@ var CustomImportScript = (() => {
       const subtext = subEl ? text(subEl) : "";
       const ctaHref = (overlayCta == null ? void 0 : overlayCta.getAttribute("href")) || "";
       const headingWhite = !!headingEl && /(?:^|[^-])color:\s*(?:#fff|#ffffff|rgb\(255,\s*255,\s*255\)|white)/i.test(headingEl.innerHTML);
-      const theme = headingWhite ? "overlay" : "stacked";
+      const theme = headingWhite ? "overlay" : "boxed";
       let headingHtml = heading;
       const boldSpan = headingEl == null ? void 0 : headingEl.querySelector(".futura-bold");
-      if (theme === "stacked" && boldSpan && text(boldSpan) && text(boldSpan) !== heading) {
+      if (theme === "boxed" && boldSpan && text(boldSpan) && text(boldSpan) !== heading) {
         const boldText = text(boldSpan);
         const rest = heading.replace(boldText, "").trim();
         headingHtml = rest ? `${rest} <strong>${boldText}</strong>` : `<strong>${boldText}</strong>`;
@@ -613,6 +613,7 @@ var CustomImportScript = (() => {
             const subEl = a.querySelector(".urw-egyptienne");
             const label = text(boldEl) || text(a);
             const sublabel = subEl && text(subEl) !== label ? text(subEl) : "";
+            const style = sublabel ? "feature" : "primary";
             return WebImporter.Blocks.createBlock(document, {
               name: "button-stryker",
               cells: [
@@ -620,7 +621,7 @@ var CustomImportScript = (() => {
                 [label],
                 [sublabel],
                 [anchorNode(document, a.getAttribute("href") || "#", label)],
-                ["primary"]
+                [style]
               ]
             });
           }

@@ -68,8 +68,8 @@ var CustomImportScript = (() => {
         ["At Stryker, we are committed to doing what's right and upholding our company values."],
         [""],
         [""],
-        [img(document, IMG(900, 500, "Governance"), "Corporate governance")],
-        ["stacked"]
+        [img(document, IMG(1440, 480, "Governance"), "Corporate governance")],
+        ["boxed"]
       ]]);
       const overviewCard = (title, desc) => [
         img(document, IMG(400, 260, "Overview"), title),
@@ -102,13 +102,20 @@ var CustomImportScript = (() => {
         ["Our Code"],
         ["We do what's right"],
         [anchor(document, "https://www.stryker.com/us/en/about/governance/code-of-conduct.html", "Our Code")],
-        ["primary"]
+        ["feature"]
       ]]);
       blocks.push(["button-stryker", [
         [""],
         ["Learn more"],
         [""],
         [anchor(document, "https://www.stryker.com/us/en/about.html", "Learn more")],
+        ["primary"]
+      ]]);
+      blocks.push(["button-stryker", [
+        [""],
+        ["Contact us"],
+        [""],
+        [anchor(document, "https://www.stryker.com/us/en/about/contact.html", "Contact us")],
         ["secondary"]
       ]]);
       blocks.push(["cta-stryker", [

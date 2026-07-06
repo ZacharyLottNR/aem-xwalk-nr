@@ -63,16 +63,17 @@ export default {
       ['overlay'],
     ]]);
 
-    // home-hero-stryker (stacked theme) — dark two-tone heading + subtext above
-    // a contained image, no CTA (e.g. the Corporate governance hero).
+    // home-hero-stryker (boxed theme) — full-bleed image with a white text box
+    // (dark two-tone heading + subtext) on the right, no CTA (e.g. the
+    // Corporate governance hero).
     blocks.push(['home-hero-stryker', [
       [''],
       [el(document, 'div', '<p>Corporate <strong>governance</strong></p>')],
       ["At Stryker, we are committed to doing what's right and upholding our company values."],
       [''],
       [''],
-      [img(document, IMG(900, 500, 'Governance'), 'Corporate governance')],
-      ['stacked'],
+      [img(document, IMG(1440, 480, 'Governance'), 'Corporate governance')],
+      ['boxed'],
     ]]);
 
     // overview-stryker — row0: titleBlack, titleGold, primer, richText; then cards
@@ -114,13 +115,20 @@ export default {
       ['Our Code'],
       ["We do what's right"],
       [anchor(document, 'https://www.stryker.com/us/en/about/governance/code-of-conduct.html', 'Our Code')],
-      ['primary'],
+      ['feature'],
     ]]);
     blocks.push(['button-stryker', [
       [''],
       ['Learn more'],
       [''],
       [anchor(document, 'https://www.stryker.com/us/en/about.html', 'Learn more')],
+      ['primary'],
+    ]]);
+    blocks.push(['button-stryker', [
+      [''],
+      ['Contact us'],
+      [''],
+      [anchor(document, 'https://www.stryker.com/us/en/about/contact.html', 'Contact us')],
       ['secondary'],
     ]]);
 

@@ -80,8 +80,8 @@
               "value": "overlay"
             },
             {
-              "name": "Stacked (dark text above a contained image)",
-              "value": "stacked"
+              "name": "Boxed (full-bleed image, white text box on the right)",
+              "value": "boxed"
             }
           ]
         }

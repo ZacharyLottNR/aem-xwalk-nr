@@ -12,6 +12,15 @@
   margin: 0 0 32px;
 }
 
+/* Inside a columns layout (e.g. the governance grey section), the heading gets
+ * the same gray rule beneath it as the neighbouring button, matching the
+ * source's .component-subheading.border-bottom-gold treatment. */
+.columns-stryker .quick-links-stryker .quick-links-stryker-heading {
+  padding-bottom: 8px;
+  border-bottom: 1px solid #b2b4ae;
+  margin-bottom: 20px;
+}
+
 .quick-links-stryker .quick-links-stryker-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

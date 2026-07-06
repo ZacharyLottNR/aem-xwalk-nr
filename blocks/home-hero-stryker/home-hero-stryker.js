@@ -18,7 +18,7 @@ export default function decorate(block) {
   const ctaTextCell = cell(rows[4]);
   const imageCell = cell(rows[5]);
   const themeRaw = cell(rows[6])?.textContent?.trim().toLowerCase();
-  const theme = themeRaw === 'stacked' ? 'stacked' : 'overlay';
+  const theme = themeRaw === 'boxed' ? 'boxed' : 'overlay';
 
   const picture = imageCell?.querySelector('picture');
   const img = picture?.querySelector('img');
@@ -26,16 +26,14 @@ export default function decorate(block) {
   block.textContent = '';
   block.classList.add(`home-hero-stryker-${theme}`);
 
-  // Background/media image layer. In the overlay theme it sits behind the
-  // content (appended first); in the stacked theme it renders below the text
-  // (appended last, see end of function).
-  let bg = null;
+  // Background image layer sits behind the content in both themes (full-bleed);
+  // the boxed theme just floats the content into a white card on the right.
   if (picture) {
-    bg = document.createElement('div');
+    const bg = document.createElement('div');
     bg.className = 'home-hero-stryker-bg';
     if (img) moveInstrumentation(img, img);
     bg.append(picture);
-    if (theme !== 'stacked') block.append(bg);
+    block.append(bg);
   }
 
   // Content layer
@@ -84,7 +82,4 @@ export default function decorate(block) {
   }
 
   block.append(content);
-
-  // Stacked theme: the contained image renders below the text.
-  if (theme === 'stacked' && bg) block.append(bg);
 }

@@ -408,18 +408,18 @@ function extractCarousel(document, section) {
     const subtext = subEl ? text(subEl) : '';
     const ctaHref = overlayCta?.getAttribute('href') || '';
 
-    // Theme: white heading text over the image → "overlay"; dark text (no white
-    // color styling) → "stacked" (dark heading above a contained image).
+    // Theme: white heading text over the image → "overlay"; dark heading text
+    // → "boxed" (full-bleed image with a white text card on the right).
     const headingWhite = !!headingEl
       && /(?:^|[^-])color:\s*(?:#fff|#ffffff|rgb\(255,\s*255,\s*255\)|white)/i
         .test(headingEl.innerHTML);
-    const theme = headingWhite ? 'overlay' : 'stacked';
+    const theme = headingWhite ? 'overlay' : 'boxed';
 
-    // Preserve a two-tone heading (a bold second word) for the stacked theme by
+    // Preserve a two-tone heading (a bold second word) for the boxed theme by
     // mapping the source's `.futura-bold` span to <strong>.
     let headingHtml = heading;
     const boldSpan = headingEl?.querySelector('.futura-bold');
-    if (theme === 'stacked' && boldSpan && text(boldSpan) && text(boldSpan) !== heading) {
+    if (theme === 'boxed' && boldSpan && text(boldSpan) && text(boldSpan) !== heading) {
       const boldText = text(boldSpan);
       const rest = heading.replace(boldText, '').trim();
       headingHtml = rest ? `${rest} <strong>${boldText}</strong>` : `<strong>${boldText}</strong>`;
@@ -815,6 +815,10 @@ function extractFullBleedPanel(document, section) {
           const subEl = a.querySelector('.urw-egyptienne');
           const label = text(boldEl) || text(a);
           const sublabel = subEl && text(subEl) !== label ? text(subEl) : '';
+          // A two-line label (bold headline + serif sub-line) is the source's
+          // large gold "feature" CTA panel; a plain single-line label is a
+          // standard primary button.
+          const style = sublabel ? 'feature' : 'primary';
           return WebImporter.Blocks.createBlock(document, {
             name: 'button-stryker',
             cells: [
@@ -822,7 +826,7 @@ function extractFullBleedPanel(document, section) {
               [label],
               [sublabel],
               [anchorNode(document, a.getAttribute('href') || '#', label)],
-              ['primary'],
+              [style],
             ],
           });
         }

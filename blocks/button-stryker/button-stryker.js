@@ -13,7 +13,7 @@ export default function decorate(block) {
   const linkCell = innerCell(rows[3]);
   const href = linkCell?.querySelector('a')?.href || linkCell?.textContent?.trim() || '';
   const styleRaw = innerCell(rows[4])?.textContent?.trim().toLowerCase();
-  const style = styleRaw === 'secondary' ? 'secondary' : 'primary';
+  const style = ['secondary', 'feature'].includes(styleRaw) ? styleRaw : 'primary';
 
   block.textContent = '';
   block.classList.add(`button-stryker-${style}`);

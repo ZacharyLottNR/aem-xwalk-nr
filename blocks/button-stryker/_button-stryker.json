@@ -63,6 +63,10 @@
             {
               "name": "Secondary (outline)",
               "value": "secondary"
+            },
+            {
+              "name": "Feature (large gold panel, two-tone label)",
+              "value": "feature"
             }
           ]
         }

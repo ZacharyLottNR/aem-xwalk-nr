@@ -10,6 +10,11 @@
   font-size: var(--stryker-h3-size, 24px);
   color: var(--stryker-black, #000);
   margin: 0 0 20px;
+
+  /* Gray rule beneath the section heading, matching the source's
+   * .component-subheading.border-bottom-gold treatment. */
+  padding-bottom: 8px;
+  border-bottom: 1px solid #b2b4ae;
 }
 
 .button-stryker .button-stryker-button {
@@ -52,6 +57,23 @@
   border: 1px solid var(--stryker-teal, #4c7d7a);
 }
 
+/*
+ * Feature: a large gold panel with a centered two-tone label — a white bold
+ * primary line above a black secondary line (e.g. the governance "Our Code /
+ * We do what's right" CTA).
+ */
+.button-stryker.button-stryker-feature .button-stryker-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 180px;
+  padding: 40px 24px;
+  text-align: center;
+  background-color: var(--stryker-amber, #ffb500);
+  transition: background-color 0.2s;
+}
+
 .button-stryker.button-stryker-primary .button-stryker-button:hover {
   background-color: var(--stryker-teal-dark, #3a615f);
   border-color: var(--stryker-teal-dark, #3a615f);
@@ -60,4 +82,27 @@
 .button-stryker.button-stryker-secondary .button-stryker-button:hover {
   color: var(--stryker-white, #fff);
   background-color: var(--stryker-teal, #4c7d7a);
+}
+
+.button-stryker.button-stryker-feature .button-stryker-button:hover {
+  background-color: #e6a300;
+}
+
+.button-stryker.button-stryker-feature .button-stryker-label {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.1;
+  color: var(--stryker-white, #fff);
+}
+
+.button-stryker.button-stryker-feature .button-stryker-sublabel {
+  font-family: var(--stryker-body-font);
+  font-size: 30px;
+  font-weight: 300;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 1;
+  color: var(--stryker-black, #000);
 }
