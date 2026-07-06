@@ -764,6 +764,44 @@ var CustomImportScript = (() => {
     });
     return [WebImporter.Blocks.createBlock(document, { name: "profile-stryker", cells })];
   }
+  function extractLeaderDetail(document, root) {
+    const h1 = root.querySelector("h1");
+    const name = text(h1);
+    const img = [...root.querySelectorAll("img")].find((im) => isUsableUrl(imgSrc(im)) && !im.closest("header, footer, nav"));
+    if (!name || !img) return null;
+    const roleEl = [...root.querySelectorAll(".urw-egyptienne")].find((e) => text(e));
+    const role = text(roleEl);
+    const bioParas = [];
+    root.querySelectorAll("p").forEach((p) => {
+      var _a;
+      if (p.closest("header, footer, nav")) return;
+      if (p.querySelector('a[href*="our-management"]')) return;
+      let html = p.innerHTML.trim();
+      let plain = text(p);
+      if (!plain) return;
+      if (role && plain.startsWith(role)) {
+        const clone = p.cloneNode(true);
+        (_a = clone.querySelector(".urw-egyptienne")) == null ? void 0 : _a.remove();
+        html = clone.innerHTML.trim();
+        plain = text(clone);
+      }
+      if (!plain.trim()) return;
+      if (/^[A-Z0-9]+(-[A-Z0-9]+){2,}$/.test(plain.trim())) return;
+      bioParas.push(`<p>${html}</p>`);
+    });
+    const cells = [
+      ["Leadership"],
+      ["detail"],
+      [
+        imgNode(document, imgSrc(img), img.getAttribute("alt") || name),
+        name,
+        role,
+        el(document, "div", bioParas.join("")),
+        ""
+      ]
+    ];
+    return [WebImporter.Blocks.createBlock(document, { name: "profile-stryker", cells })];
+  }
   function extractAccordion(document, section, heading) {
     const panels = [...section.querySelectorAll(".panel")];
     if (!panels.length) return null;
@@ -854,6 +892,28 @@ var CustomImportScript = (() => {
         } catch (e) {
         }
         const contentRoot = document.querySelector("main") || document.querySelector('[role="main"]') || document.body;
+        if (/\/leaders?\//.test(url || "")) {
+          const detail = extractLeaderDetail(document, contentRoot);
+          if (detail && detail.length) {
+            detail.forEach((b) => main.append(b));
+            blockNames.push("profile-stryker");
+            main.append(document.createElement("hr"));
+            main.append(WebImporter.Blocks.createBlock(document, {
+              name: "metadata",
+              cells: {
+                Title: pageTitle,
+                theme: "stryker",
+                nav: "/content/stryker/nav",
+                footer: "/content/stryker/footer"
+              }
+            }));
+            return [{
+              element: main,
+              path,
+              report: { title: pageTitle, template: "stryker-generic", blocks: blockNames }
+            }];
+          }
+        }
         const collapseStatRun = (titleSection) => {
           const label = titleSection.getAttribute("data-title") || text(titleSection);
           const xf = titleSection.closest(".experienceFragment, .experiencefragment") || titleSection.parentElement;

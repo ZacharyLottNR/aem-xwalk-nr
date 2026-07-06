@@ -1012,6 +1012,58 @@ function profilesFromUnits(document, units, heading) {
   return [WebImporter.Blocks.createBlock(document, { name: 'profile-stryker', cells })];
 }
 
+// A leader DETAIL page (/leaders/<id>.html) is a single-person bio: an <h1>
+// name, a role eyebrow (.urw-egyptienne) leading a multi-paragraph bio, and a
+// headshot. Map it to one profile-stryker "detail" block (large headshot beside
+// the full bio). Returns null if the expected name/headshot aren't present.
+function extractLeaderDetail(document, root) {
+  const h1 = root.querySelector('h1');
+  const name = text(h1);
+  const img = [...root.querySelectorAll('img')]
+    .find((im) => isUsableUrl(imgSrc(im)) && !im.closest('header, footer, nav'));
+  if (!name || !img) return null;
+
+  // Role = the serif eyebrow span; the bio = every content paragraph, mining
+  // the role text out of the paragraph it leads. Drop the "Back" link and the
+  // trailing document-code paragraph (all-caps/hyphen id). The template ships a
+  // mobile/desktop pair of eyebrow spans (one empty), so take the first
+  // NON-EMPTY one.
+  const roleEl = [...root.querySelectorAll('.urw-egyptienne')].find((e) => text(e));
+  const role = text(roleEl);
+  const bioParas = [];
+  root.querySelectorAll('p').forEach((p) => {
+    if (p.closest('header, footer, nav')) return;
+    if (p.querySelector('a[href*="our-management"]')) return; // "Back" link
+    let html = p.innerHTML.trim();
+    let plain = text(p);
+    if (!plain) return;
+    // Strip the leading role eyebrow from the first bio paragraph.
+    if (role && plain.startsWith(role)) {
+      const clone = p.cloneNode(true);
+      clone.querySelector('.urw-egyptienne')?.remove();
+      html = clone.innerHTML.trim();
+      plain = text(clone);
+    }
+    if (!plain.trim()) return;
+    // Skip the trailing internal document code (e.g. COMM-GSNPS-SYK-3185901).
+    if (/^[A-Z0-9]+(-[A-Z0-9]+){2,}$/.test(plain.trim())) return;
+    bioParas.push(`<p>${html}</p>`);
+  });
+
+  const cells = [
+    ['Leadership'],
+    ['detail'],
+    [
+      imgNode(document, imgSrc(img), img.getAttribute('alt') || name),
+      name,
+      role,
+      el(document, 'div', bioParas.join('')),
+      '',
+    ],
+  ];
+  return [WebImporter.Blocks.createBlock(document, { name: 'profile-stryker', cells })];
+}
+
 // c-accordion → accordion-stryker. Stryker renders collapsible policy/FAQ lists
 // as Bootstrap panels: each `.panel` has a `.panel-title` (the row label) and a
 // `.panel-body` (rich content, typically a list of document links). Map each
@@ -1148,6 +1200,32 @@ export default {
       const contentRoot = document.querySelector('main')
         || document.querySelector('[role="main"]')
         || document.body;
+
+      // Leader detail pages (/leaders/<id>.html) are a single-person bio with a
+      // fixed shape; map the whole page to one profile-stryker "detail" block
+      // and return early rather than running the general section walk.
+      if (/\/leaders?\//.test(url || '')) {
+        const detail = extractLeaderDetail(document, contentRoot);
+        if (detail && detail.length) {
+          detail.forEach((b) => main.append(b));
+          blockNames.push('profile-stryker');
+          main.append(document.createElement('hr'));
+          main.append(WebImporter.Blocks.createBlock(document, {
+            name: 'metadata',
+            cells: {
+              Title: pageTitle,
+              theme: 'stryker',
+              nav: '/content/stryker/nav',
+              footer: '/content/stryker/footer',
+            },
+          }));
+          return [{
+            element: main,
+            path,
+            report: { title: pageTitle, template: 'stryker-generic', blocks: blockNames },
+          }];
+        }
+      }
 
       // Fast-facts style stat runs are fragmented across sibling sections: each
       // icon sits in its own `.c-standalone-image` and each number in a separate
