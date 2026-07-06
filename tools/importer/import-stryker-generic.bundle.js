@@ -827,6 +827,56 @@ var CustomImportScript = (() => {
     if (!added) return null;
     return [WebImporter.Blocks.createBlock(document, { name: "accordion-stryker", cells })];
   }
+  function extractEventDetail(document, section, title) {
+    const fields = {};
+    section.querySelectorAll("h5").forEach((h) => {
+      const label = text(h).toLowerCase();
+      const parts = [];
+      let sib = h.nextElementSibling;
+      while (sib && sib.tagName !== "H5") {
+        if (text(sib)) parts.push(sib);
+        sib = sib.nextElementSibling;
+      }
+      fields[label] = parts;
+    });
+    const joinText = (nodes) => (nodes || []).map((n) => text(n)).join(" ").replace(/\s+/g, " ").trim();
+    const meeting = fields["meeting time"] || [];
+    const meetingP = meeting[0];
+    let date = "";
+    let time = "";
+    if (meetingP) {
+      const startDate = text(meetingP.querySelector(".eventStartDate-wrap"));
+      const endDate = text(meetingP.querySelector(".eventEndDate-wrap"));
+      const startTime = text(meetingP.querySelector(".eventStartTime-wrap"));
+      date = startDate && endDate && startDate !== endDate ? `${startDate} - ${endDate}` : startDate;
+      if (startTime) {
+        const full = text(meetingP);
+        const idx = full.indexOf(startTime);
+        time = idx !== -1 ? full.slice(idx).replace(/\s+/g, " ").trim() : startTime;
+      }
+      if (!date && !time) date = joinText(meeting);
+    }
+    const location = joinText(fields.location);
+    const country = joinText(fields.country);
+    const locationCombined = [location, country].filter((v) => v && v !== "N/A").join(", ") || location;
+    const descHtml = (fields.details || []).map((n) => `<p>${n.innerHTML.trim()}</p>`).join("");
+    const creditP = [...section.querySelectorAll("p")].find((p) => /\bCE credit\b|accredit/i.test(text(p)));
+    const credit = creditP ? text(creditP).replace(/^Disclaimer:\s*/i, "") : "";
+    const cta = [...section.querySelectorAll("a[href]")].find((a) => /register/i.test(text(a)));
+    const ctaLabel = text(cta) || "";
+    const ctaHref = (cta == null ? void 0 : cta.getAttribute("href")) || "";
+    const cells = [
+      [text(section.querySelector("h1, h2, h3")) || title || "Event"],
+      [el(document, "div", descHtml)],
+      [date],
+      [time],
+      [locationCombined],
+      [credit],
+      [ctaLabel],
+      ctaHref ? [anchorNode(document, ctaHref, ctaLabel)] : [""]
+    ];
+    return [WebImporter.Blocks.createBlock(document, { name: "event-details-stryker", cells })];
+  }
   function isPromoPanel(node) {
     if (!node.querySelector) return false;
     if (node.querySelector(".xf-master-building-block, .item, table, .c-tabs, .c-disclaimer")) return false;
@@ -897,6 +947,29 @@ var CustomImportScript = (() => {
           if (detail && detail.length) {
             detail.forEach((b) => main.append(b));
             blockNames.push("profile-stryker");
+            main.append(document.createElement("hr"));
+            main.append(WebImporter.Blocks.createBlock(document, {
+              name: "metadata",
+              cells: {
+                Title: pageTitle,
+                theme: "stryker",
+                nav: "/content/stryker/nav",
+                footer: "/content/stryker/footer"
+              }
+            }));
+            return [{
+              element: main,
+              path,
+              report: { title: pageTitle, template: "stryker-generic", blocks: blockNames }
+            }];
+          }
+        }
+        const eventComponent = document.querySelector(".c-event-detail-component");
+        if (eventComponent) {
+          const event = extractEventDetail(document, eventComponent, pageTitle);
+          if (event && event.length) {
+            event.forEach((b) => main.append(b));
+            blockNames.push("event-details-stryker");
             main.append(document.createElement("hr"));
             main.append(WebImporter.Blocks.createBlock(document, {
               name: "metadata",

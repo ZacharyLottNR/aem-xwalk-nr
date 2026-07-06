@@ -1095,6 +1095,82 @@ function extractAccordion(document, section, heading) {
   return [WebImporter.Blocks.createBlock(document, { name: 'accordion-stryker', cells })];
 }
 
+// c-event-detail-component → event-details-stryker. A global-events page: an
+// <h2> title plus h5-labelled sections (Meeting time, Location, Country,
+// Details, Registration), a CE-credit disclaimer, and a Register link. Map the
+// labelled fields into the block's cells (title, description, date, time,
+// location, credit, ctaLabel, ctaUrl). The value for a section is the text of
+// the sibling(s) after its h5, up to the next h5.
+function extractEventDetail(document, section, title) {
+  // Collect { label -> combined text } from each h5 and the nodes following it.
+  const fields = {};
+  section.querySelectorAll('h5').forEach((h) => {
+    const label = text(h).toLowerCase();
+    const parts = [];
+    let sib = h.nextElementSibling;
+    while (sib && sib.tagName !== 'H5') {
+      if (text(sib)) parts.push(sib);
+      sib = sib.nextElementSibling;
+    }
+    fields[label] = parts;
+  });
+
+  const joinText = (nodes) => (nodes || []).map((n) => text(n)).join(' ').replace(/\s+/g, ' ').trim();
+
+  // Meeting time holds both the date range and the time range on two lines;
+  // split on the source's <br> (the eventStartTime span marks the time line).
+  const meeting = fields['meeting time'] || [];
+  const meetingP = meeting[0];
+  let date = '';
+  let time = '';
+  if (meetingP) {
+    const startDate = text(meetingP.querySelector('.eventStartDate-wrap'));
+    const endDate = text(meetingP.querySelector('.eventEndDate-wrap'));
+    const startTime = text(meetingP.querySelector('.eventStartTime-wrap'));
+    date = startDate && endDate && startDate !== endDate ? `${startDate} - ${endDate}` : startDate;
+    if (startTime) {
+      // Everything from the start-time span onward is the time line.
+      const full = text(meetingP);
+      const idx = full.indexOf(startTime);
+      time = idx !== -1 ? full.slice(idx).replace(/\s+/g, ' ').trim() : startTime;
+    }
+    if (!date && !time) date = joinText(meeting);
+  }
+
+  const location = joinText(fields.location);
+  const country = joinText(fields.country);
+  const locationCombined = [location, country].filter((v) => v && v !== 'N/A').join(', ') || location;
+
+  // Description: the Details section paragraphs.
+  const descHtml = (fields.details || [])
+    .map((n) => `<p>${n.innerHTML.trim()}</p>`)
+    .join('');
+
+  // CE credit / accreditation from the disclaimer line.
+  const creditP = [...section.querySelectorAll('p')]
+    .find((p) => /\bCE credit\b|accredit/i.test(text(p)));
+  const credit = creditP ? text(creditP).replace(/^Disclaimer:\s*/i, '') : '';
+
+  // Register CTA.
+  const cta = [...section.querySelectorAll('a[href]')].find((a) => /register/i.test(text(a)));
+  const ctaLabel = text(cta) || '';
+  const ctaHref = cta?.getAttribute('href') || '';
+
+  // Prefer the component's own heading (clean title) over the page <title>,
+  // which carries a " | Stryker" suffix.
+  const cells = [
+    [text(section.querySelector('h1, h2, h3')) || title || 'Event'],
+    [el(document, 'div', descHtml)],
+    [date],
+    [time],
+    [locationCombined],
+    [credit],
+    [ctaLabel],
+    ctaHref ? [anchorNode(document, ctaHref, ctaLabel)] : [''],
+  ];
+  return [WebImporter.Blocks.createBlock(document, { name: 'event-details-stryker', cells })];
+}
+
 // A "promo panel" is a self-contained band with a heading, a short description,
 // a single CTA link and a banner image (e.g. the "Training Calendar" section).
 // Stryker gives these no c-* class, so detect them structurally: exactly one
@@ -1209,6 +1285,33 @@ export default {
         if (detail && detail.length) {
           detail.forEach((b) => main.append(b));
           blockNames.push('profile-stryker');
+          main.append(document.createElement('hr'));
+          main.append(WebImporter.Blocks.createBlock(document, {
+            name: 'metadata',
+            cells: {
+              Title: pageTitle,
+              theme: 'stryker',
+              nav: '/content/stryker/nav',
+              footer: '/content/stryker/footer',
+            },
+          }));
+          return [{
+            element: main,
+            path,
+            report: { title: pageTitle, template: 'stryker-generic', blocks: blockNames },
+          }];
+        }
+      }
+
+      // Global-events pages are a single c-event-detail-component (title +
+      // date/time/location + details + register CTA); map the whole page to one
+      // event-details-stryker block and return early.
+      const eventComponent = document.querySelector('.c-event-detail-component');
+      if (eventComponent) {
+        const event = extractEventDetail(document, eventComponent, pageTitle);
+        if (event && event.length) {
+          event.forEach((b) => main.append(b));
+          blockNames.push('event-details-stryker');
           main.append(document.createElement('hr'));
           main.append(WebImporter.Blocks.createBlock(document, {
             name: 'metadata',
