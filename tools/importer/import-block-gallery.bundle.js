@@ -126,12 +126,13 @@ var CustomImportScript = (() => {
       const nested = (name, cells) => WebImporter.Blocks.createBlock(document, { name, cells });
       blocks.push(["columns-stryker", [
         ["2"],
+        ["even"],
         [nested("button-stryker", [
           ["Code of conduct"],
           ["Our Code"],
           ["We do what's right"],
           [anchor(document, "https://www.stryker.com/us/en/about/governance/code-of-conduct.html", "Our Code")],
-          ["primary"]
+          ["feature"]
         ])],
         [nested("quick-links-stryker", [
           ["Guidelines, bylaws, charters"],
@@ -139,6 +140,21 @@ var CustomImportScript = (() => {
           ["Board Committees", anchor(document, "https://www.stryker.com/us/en/about/governance/board-committees.html", "Board Committees")],
           ["Bylaws", anchor(document, "https://www.stryker.com/us/en/about/governance/bylaws.html", "Bylaws")],
           ["Charters", anchor(document, "https://www.stryker.com/us/en/about/governance/charters.html", "Charters")]
+        ])]
+      ]]);
+      blocks.push(["columns-stryker", [
+        ["2"],
+        ["wide-narrow"],
+        [nested("accordion-stryker", [
+          ["Corporate policies"],
+          ["standard"],
+          ["English", el(document, "div", '<ul><li><a href="https://www.stryker.com/">Anti-Discrimination</a></li><li><a href="https://www.stryker.com/">Quality</a></li></ul>')],
+          ["Deutsch (German)", el(document, "div", '<ul><li><a href="https://www.stryker.com/">Antidiskriminierung</a></li></ul>')]
+        ])],
+        [nested("cta-stryker", [
+          [el(document, "div", "<p>A full list of our positions and statements can be found in our Corporate Responsibility Hub.</p>")],
+          ["Go now"],
+          [anchor(document, "https://www.stryker.com/us/en/about/corporate-responsibility/cr-hub.html", "Go now")]
         ])]
       ]]);
       blocks.push(["content-break-stryker", [[""]]]);

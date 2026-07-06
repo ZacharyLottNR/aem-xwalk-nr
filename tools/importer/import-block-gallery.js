@@ -142,15 +142,17 @@ export default {
     // columns-stryker — a container that lays out nested blocks side by side.
     // First cell = column count; each following cell holds a nested child block
     // (here a button + a quick-links list, matching the governance page).
+    // Cells: column count, ratio, then one nested child block per column.
     const nested = (name, cells) => WebImporter.Blocks.createBlock(document, { name, cells });
     blocks.push(['columns-stryker', [
       ['2'],
+      ['even'],
       [nested('button-stryker', [
         ['Code of conduct'],
         ['Our Code'],
         ["We do what's right"],
         [anchor(document, 'https://www.stryker.com/us/en/about/governance/code-of-conduct.html', 'Our Code')],
-        ['primary'],
+        ['feature'],
       ])],
       [nested('quick-links-stryker', [
         ['Guidelines, bylaws, charters'],
@@ -158,6 +160,24 @@ export default {
         ['Board Committees', anchor(document, 'https://www.stryker.com/us/en/about/governance/board-committees.html', 'Board Committees')],
         ['Bylaws', anchor(document, 'https://www.stryker.com/us/en/about/governance/bylaws.html', 'Bylaws')],
         ['Charters', anchor(document, 'https://www.stryker.com/us/en/about/governance/charters.html', 'Charters')],
+      ])],
+    ]]);
+
+    // columns-stryker (wide-narrow ratio) — a wide accordion beside a narrow
+    // CTA, matching the governance "Corporate policies" layout.
+    blocks.push(['columns-stryker', [
+      ['2'],
+      ['wide-narrow'],
+      [nested('accordion-stryker', [
+        ['Corporate policies'],
+        ['standard'],
+        ['English', el(document, 'div', '<ul><li><a href="https://www.stryker.com/">Anti-Discrimination</a></li><li><a href="https://www.stryker.com/">Quality</a></li></ul>')],
+        ['Deutsch (German)', el(document, 'div', '<ul><li><a href="https://www.stryker.com/">Antidiskriminierung</a></li></ul>')],
+      ])],
+      [nested('cta-stryker', [
+        [el(document, 'div', '<p>A full list of our positions and statements can be found in our Corporate Responsibility Hub.</p>')],
+        ['Go now'],
+        [anchor(document, 'https://www.stryker.com/us/en/about/corporate-responsibility/cr-hub.html', 'Go now')],
       ])],
     ]]);
 

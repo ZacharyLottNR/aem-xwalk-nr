@@ -1129,7 +1129,7 @@ var CustomImportScript = (() => {
         });
         const accordionScopes = [];
         document.querySelectorAll(".c-accordion").forEach((acc) => {
-          var _a, _b;
+          var _a, _b, _c;
           if (!acc.querySelector(".panel")) return;
           let headingText = "";
           let cursor = acc;
@@ -1147,9 +1147,28 @@ var CustomImportScript = (() => {
           }
           const blocks = extractAccordion(document, acc, headingText);
           if (!blocks || !blocks.length) return;
+          let sharedRow = acc.closest(".row");
+          while (sharedRow && !sharedRow.querySelector(".dimensional-box a[href]")) {
+            sharedRow = (_c = sharedRow.parentElement) == null ? void 0 : _c.closest(".row");
+          }
+          const sideCta = sharedRow ? sharedRow.querySelector(".dimensional-box") : null;
+          let placeholderBlocks = blocks;
+          if (sideCta) {
+            const ctaBlocks = extractCtaBox(document, sideCta);
+            if (ctaBlocks && ctaBlocks.length) {
+              const colsBlock = WebImporter.Blocks.createBlock(document, {
+                name: "columns-stryker",
+                // count, ratio, then one nested child block per column.
+                cells: [["2"], ["wide-narrow"], [blocks[0]], [ctaBlocks[0]]]
+              });
+              colsBlock._isColumns = true;
+              placeholderBlocks = [colsBlock];
+              sideCta.remove();
+            }
+          }
           const placeholder = document.createElement("div");
           placeholder.setAttribute("data-accordion", "true");
-          placeholder._accordionBlocks = blocks;
+          placeholder._accordionBlocks = placeholderBlocks;
           placeholder._accordionHeading = headingText;
           const ownerSection = acc.closest(".page-section") || acc.parentElement;
           ownerSection.parentElement.insertBefore(placeholder, ownerSection.nextSibling);
@@ -1276,13 +1295,14 @@ var CustomImportScript = (() => {
           }
           if (node._accordionBlocks) {
             flushCards();
-            if (node._accordionHeading) {
+            const isBareAccordion = !node._accordionBlocks.some((b) => b._isColumns);
+            if (node._accordionHeading && isBareAccordion) {
               const idx = current.nodes.findIndex((h) => h.tagName === "H2" && text(h) === node._accordionHeading);
               if (idx !== -1) current.nodes.splice(idx, 1);
             }
             node._accordionBlocks.forEach((b) => {
               current.nodes.push(b);
-              blockNames.push("accordion-stryker");
+              blockNames.push(b._isColumns ? "columns-stryker" : "accordion-stryker");
             });
             return;
           }

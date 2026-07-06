@@ -29,9 +29,12 @@ export default async function decorate(block) {
 
   const countRaw = innerCell(fieldRows[0])?.textContent?.trim();
   const count = ['2', '3', '4'].includes(countRaw) ? countRaw : String(itemRows.length || 2);
+  const ratioRaw = innerCell(fieldRows[1])?.textContent?.trim().toLowerCase();
+  const ratio = ['wide-narrow', 'narrow-wide'].includes(ratioRaw) ? ratioRaw : 'even';
 
   block.textContent = '';
   block.classList.add(`columns-stryker-${count}col`);
+  if (count === '2' && ratio !== 'even') block.classList.add(`columns-stryker-${ratio}`);
 
   const grid = document.createElement('div');
   grid.className = 'columns-stryker-grid';

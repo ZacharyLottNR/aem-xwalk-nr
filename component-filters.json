@@ -178,6 +178,7 @@
   {
     "id": "columns-stryker",
     "components": [
+      "accordion-stryker",
       "button-stryker",
       "quick-links-stryker",
       "cta-stryker",

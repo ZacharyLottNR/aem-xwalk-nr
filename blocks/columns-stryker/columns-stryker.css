@@ -22,6 +22,15 @@
   grid-template-columns: repeat(4, 1fr);
 }
 
+/* Uneven 2-column ratios (e.g. a wide accordion beside a narrow CTA). */
+.columns-stryker.columns-stryker-2col.columns-stryker-wide-narrow .columns-stryker-grid {
+  grid-template-columns: 2fr 1fr;
+}
+
+.columns-stryker.columns-stryker-2col.columns-stryker-narrow-wide .columns-stryker-grid {
+  grid-template-columns: 1fr 2fr;
+}
+
 /* Nested blocks inside a column shouldn't re-apply their own page padding /
  * max-width — the column already handles layout. */
 .columns-stryker .columns-stryker-col > div {

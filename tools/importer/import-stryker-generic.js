@@ -1567,9 +1567,36 @@ export default {
         }
         const blocks = extractAccordion(document, acc, headingText);
         if (!blocks || !blocks.length) return;
+
+        // If a shadow-box CTA sits in the SAME Bootstrap row as the accordion
+        // (the source's col-sm-8 accordion beside a col-sm-4 CTA), lay them out
+        // side by side in a columns-stryker block (wide accordion + narrow CTA)
+        // rather than stacking them. The accordion's innermost `.row` doesn't
+        // hold the CTA — walk up to the nearest ancestor row that contains a
+        // dimensional-box CTA sibling.
+        let sharedRow = acc.closest('.row');
+        while (sharedRow && !sharedRow.querySelector('.dimensional-box a[href]')) {
+          sharedRow = sharedRow.parentElement?.closest('.row');
+        }
+        const sideCta = sharedRow ? sharedRow.querySelector('.dimensional-box') : null;
+        let placeholderBlocks = blocks;
+        if (sideCta) {
+          const ctaBlocks = extractCtaBox(document, sideCta);
+          if (ctaBlocks && ctaBlocks.length) {
+            const colsBlock = WebImporter.Blocks.createBlock(document, {
+              name: 'columns-stryker',
+              // count, ratio, then one nested child block per column.
+              cells: [['2'], ['wide-narrow'], [blocks[0]], [ctaBlocks[0]]],
+            });
+            colsBlock._isColumns = true;
+            placeholderBlocks = [colsBlock];
+            sideCta.remove(); // consumed here; skip the standalone CTA pre-pass
+          }
+        }
+
         const placeholder = document.createElement('div');
         placeholder.setAttribute('data-accordion', 'true');
-        placeholder._accordionBlocks = blocks;
+        placeholder._accordionBlocks = placeholderBlocks;
         placeholder._accordionHeading = headingText;
         // Insert the placeholder as a sibling AFTER the outermost content
         // wrapper that owns the accordion (its enclosing .page-section), so the
@@ -1761,14 +1788,19 @@ export default {
         // duplicate loose <h2> the walk emitted just before it.
         if (node._accordionBlocks) {
           flushCards();
-          if (node._accordionHeading) {
+          // Drop the duplicate loose <h2> ONLY when the accordion block itself
+          // carries that heading (a bare accordion). When the accordion was
+          // wrapped in a columns block (its heading is not repeated inside),
+          // keep the loose heading so it sits above the two columns.
+          const isBareAccordion = !node._accordionBlocks.some((b) => b._isColumns);
+          if (node._accordionHeading && isBareAccordion) {
             const idx = current.nodes.findIndex((h) => h.tagName === 'H2'
               && text(h) === node._accordionHeading);
             if (idx !== -1) current.nodes.splice(idx, 1);
           }
           node._accordionBlocks.forEach((b) => {
             current.nodes.push(b);
-            blockNames.push('accordion-stryker');
+            blockNames.push(b._isColumns ? 'columns-stryker' : 'accordion-stryker');
           });
           return;
         }

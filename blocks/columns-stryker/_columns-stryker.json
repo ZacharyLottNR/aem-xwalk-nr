@@ -41,6 +41,27 @@
               "value": "4"
             }
           ]
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "ratio",
+          "label": "Column Ratio (2-column only)",
+          "value": "even",
+          "options": [
+            {
+              "name": "Even (equal widths)",
+              "value": "even"
+            },
+            {
+              "name": "Wide + Narrow (2:1)",
+              "value": "wide-narrow"
+            },
+            {
+              "name": "Narrow + Wide (1:2)",
+              "value": "narrow-wide"
+            }
+          ]
         }
       ]
     }
@@ -49,6 +70,7 @@
     {
       "id": "columns-stryker",
       "components": [
+        "accordion-stryker",
         "button-stryker",
         "quick-links-stryker",
         "cta-stryker",
