@@ -160,6 +160,21 @@
           }
         },
         {
+          "title": "Button Stryker",
+          "id": "button-stryker",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Button Stryker",
+                  "model": "button-stryker"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Callout Banner Stryker",
           "id": "callout-banner-stryker",
           "plugins": {

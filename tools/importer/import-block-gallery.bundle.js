@@ -87,6 +87,20 @@ var CustomImportScript = (() => {
         ["teal"],
         ["h3"]
       ]]);
+      blocks.push(["button-stryker", [
+        ["Code of conduct"],
+        ["Our Code"],
+        ["We do what's right"],
+        [anchor(document, "https://www.stryker.com/us/en/about/governance/code-of-conduct.html", "Our Code")],
+        ["primary"]
+      ]]);
+      blocks.push(["button-stryker", [
+        [""],
+        ["Learn more"],
+        [""],
+        [anchor(document, "https://www.stryker.com/us/en/about.html", "Learn more")],
+        ["secondary"]
+      ]]);
       blocks.push(["content-break-stryker", [[""]]]);
       blocks.push(["section-banner-stryker", [
         [el(document, "div", "<p>Interested in learning more? <strong>Talk to a rep today.</strong></p>")]

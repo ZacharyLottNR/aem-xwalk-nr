@@ -1,0 +1,63 @@
+.button-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.button-stryker .button-stryker-heading {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+  font-size: var(--stryker-h3-size, 24px);
+  color: var(--stryker-black, #000);
+  margin: 0 0 20px;
+}
+
+.button-stryker .button-stryker-button {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  text-decoration: none;
+  font-family: var(--stryker-heading-font);
+  padding: 16px 28px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.button-stryker .button-stryker-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.button-stryker .button-stryker-sublabel {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+/* Primary: solid teal fill. */
+.button-stryker.button-stryker-primary .button-stryker-button {
+  color: var(--stryker-white, #fff);
+  background-color: var(--stryker-teal, #4c7d7a);
+  border: 1px solid var(--stryker-teal, #4c7d7a);
+}
+
+/* Secondary: outlined, fills on hover. */
+.button-stryker.button-stryker-secondary .button-stryker-button {
+  color: var(--stryker-teal, #4c7d7a);
+  background-color: transparent;
+  border: 1px solid var(--stryker-teal, #4c7d7a);
+}
+
+.button-stryker.button-stryker-primary .button-stryker-button:hover {
+  background-color: var(--stryker-teal-dark, #3a615f);
+  border-color: var(--stryker-teal-dark, #3a615f);
+}
+
+.button-stryker.button-stryker-secondary .button-stryker-button:hover {
+  color: var(--stryker-white, #fff);
+  background-color: var(--stryker-teal, #4c7d7a);
+}

@@ -94,6 +94,22 @@ export default {
       ['h3'],
     ]]);
 
+    // button-stryker — heading, label, sublabel, link, style. One per style.
+    blocks.push(['button-stryker', [
+      ['Code of conduct'],
+      ['Our Code'],
+      ["We do what's right"],
+      [anchor(document, 'https://www.stryker.com/us/en/about/governance/code-of-conduct.html', 'Our Code')],
+      ['primary'],
+    ]]);
+    blocks.push(['button-stryker', [
+      [''],
+      ['Learn more'],
+      [''],
+      [anchor(document, 'https://www.stryker.com/us/en/about.html', 'Learn more')],
+      ['secondary'],
+    ]]);
+
     // 2. content-break-stryker — no fields
     blocks.push(['content-break-stryker', [['']]]);
 

@@ -304,24 +304,20 @@ var CustomImportScript = (() => {
       seen.add(keySrc);
       return true;
     });
-    if (imgs.length >= 2) {
-      const rows = [[""], [""], [""], [""], ["big"]];
-      imgs.forEach((im) => rows.push([imgNode(document, imgSrc(im), im.getAttribute("alt") || "")]));
-      return [WebImporter.Blocks.createBlock(document, { name: "image-gallery-stryker", cells: rows })];
-    }
     const firstSlide = section.querySelector(".carouselslide, .autoplay-slide") || section;
-    const img = imgs[0] || firstSlide.querySelector("img");
-    const overlayHeading = section.querySelector(".largeheadline h1, .largeheadline h2, h1, h2");
+    const headline = section.querySelector(".largeheadline");
+    const overlayHeading = (headline == null ? void 0 : headline.querySelector("h1, h2")) || section.querySelector("h1, h2");
     const overlayCta = section.querySelector(".c-curatedcta a[href], .cta-container a[href]");
-    if (img && imgSrc(img) && (overlayHeading || overlayCta)) {
-      const headline = section.querySelector(".largeheadline") || section;
-      const h1 = headline.querySelector("h1");
-      const h2 = headline.querySelector("h2");
+    const heroImg = [...section.querySelectorAll("img")].find((im) => isUsableUrl(imgSrc(im)) && /desktop/i.test(im.getAttribute("alt") || "")) || imgs[0] || firstSlide.querySelector("img");
+    if ((headline || overlayCta) && overlayHeading && heroImg && imgSrc(heroImg)) {
+      const scope = headline || section;
+      const h1 = scope.querySelector("h1");
+      const h2 = scope.querySelector("h2");
       const eyebrow = h1 && h2 ? text(h1) : "";
       const heading = text(h2) || text(h1) || "";
       const headingText = new Set([text(h1), text(h2)].filter(Boolean));
       const ctaLabel = text(overlayCta) || "";
-      const subEl = headline.querySelector(".line2") || [...headline.querySelectorAll("p, span, div")].find((n) => !n.querySelector("h1, h2, h3, h4") && text(n) && !headingText.has(text(n)) && text(n) !== ctaLabel && text(n).length > 10);
+      const subEl = scope.querySelector(".line2") || [...scope.querySelectorAll("p, span, div")].find((n) => !n.querySelector("h1, h2, h3, h4") && text(n) && !headingText.has(text(n)) && text(n) !== ctaLabel && text(n).length > 10);
       const subtext = subEl ? text(subEl) : "";
       const ctaHref = (overlayCta == null ? void 0 : overlayCta.getAttribute("href")) || "";
       if (heading || ctaLabel) {
@@ -335,11 +331,17 @@ var CustomImportScript = (() => {
             [subtext],
             ctaHref ? [anchorNode(document, ctaHref, ctaLabel)] : [""],
             [ctaLabel],
-            [imgNode(document, imgSrc(img), img.getAttribute("alt") || "")]
+            [imgNode(document, imgSrc(heroImg), heroImg.getAttribute("alt") || "")]
           ]
         })];
       }
     }
+    if (imgs.length >= 2) {
+      const rows = [[""], [""], [""], [""], ["big"]];
+      imgs.forEach((im) => rows.push([imgNode(document, imgSrc(im), im.getAttribute("alt") || "")]));
+      return [WebImporter.Blocks.createBlock(document, { name: "image-gallery-stryker", cells: rows })];
+    }
+    const img = imgs[0] || firstSlide.querySelector("img");
     if (img && imgSrc(img)) {
       return [imgNode(document, imgSrc(img), img.getAttribute("alt") || "")];
     }
@@ -580,6 +582,52 @@ var CustomImportScript = (() => {
         cells,
         icons: imgs.map((im) => ({ src: imgSrc(im), alt: im.getAttribute("alt") || "" }))
       });
+    }
+    const panelHeadings = [...section.querySelectorAll("h1, h2, h3, h4")].filter((h) => text(h));
+    if (!imgs.length && panelHeadings.length && section.querySelector("a[href]")) {
+      const linkColumns = panelHeadings.map((h, i) => {
+        const next = panelHeadings[i + 1];
+        const links = [...section.querySelectorAll("a[href]")].filter((a) => {
+          if (!(h.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING)) return false;
+          if (next && next.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING) return false;
+          return text(a);
+        });
+        return { heading: text(h), links };
+      }).filter((c) => c.links.length);
+      if (linkColumns.length) {
+        const blocks = [];
+        linkColumns.forEach(({ heading: colHeading, links }) => {
+          if (links.length === 1) {
+            const a = links[0];
+            const boldEl = a.querySelector(".futura-bold");
+            const subEl = a.querySelector(".urw-egyptienne");
+            const label = text(boldEl) || text(a);
+            const sublabel = subEl && text(subEl) !== label ? text(subEl) : "";
+            blocks.push(WebImporter.Blocks.createBlock(document, {
+              name: "button-stryker",
+              // Cells: heading, label, sublabel, link, style.
+              cells: [
+                [colHeading],
+                [label],
+                [sublabel],
+                [anchorNode(document, a.getAttribute("href") || "#", label)],
+                ["primary"]
+              ]
+            }));
+          } else {
+            const qlCells = [[colHeading], ["default"]];
+            links.forEach((a) => {
+              const label = text(a);
+              qlCells.push([label, anchorNode(document, a.getAttribute("href") || "#", label)]);
+            });
+            blocks.push(WebImporter.Blocks.createBlock(document, {
+              name: "quick-links-stryker",
+              cells: qlCells
+            }));
+          }
+        });
+        if (blocks.length) return blocks;
+      }
     }
     const nodes = [];
     const img = section.querySelector("img");

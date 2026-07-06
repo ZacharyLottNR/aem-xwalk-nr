@@ -265,6 +265,57 @@
     ]
   },
   {
+    "id": "button-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading",
+        "description": "Optional. Shown above the button.",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "label",
+        "label": "Button Label",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "sublabel",
+        "label": "Button Sub-label",
+        "description": "Optional. A smaller second line under the label.",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Link"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "style",
+        "label": "Style",
+        "value": "primary",
+        "options": [
+          {
+            "name": "Primary (solid teal)",
+            "value": "primary"
+          },
+          {
+            "name": "Secondary (outline)",
+            "value": "secondary"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "callout-banner-stryker",
     "fields": [
       {

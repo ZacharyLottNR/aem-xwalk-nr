@@ -372,30 +372,25 @@ function extractCarousel(document, section) {
     return true;
   });
 
-  // Multiple distinct images → gallery. Cells match image-gallery-stryker:
-  // block-level heading, description, ctaText, ctaUrl (all blank here), theme,
-  // then one image per row. A rotating photo carousel maps to the "big" theme
-  // (large edge-to-edge photos), not the small-badge "standard" layout.
-  if (imgs.length >= 2) {
-    const rows = [[''], [''], [''], [''], ['big']];
-    imgs.forEach((im) => rows.push([imgNode(document, imgSrc(im), im.getAttribute('alt') || '')]));
-    return [WebImporter.Blocks.createBlock(document, { name: 'image-gallery-stryker', cells: rows })];
-  }
-
   const firstSlide = section.querySelector('.carouselslide, .autoplay-slide') || section;
-  const img = imgs[0] || firstSlide.querySelector('img');
 
-  // Single-image hero with an overlay (eyebrow/heading/subtext + CTA) →
-  // home-hero-stryker. Stryker builds the overlay from a `.largeheadline`
-  // (h1 = eyebrow, h2 = heading, a trailing `.line2` span = subtext) beside a
-  // `.c-curatedcta` button, layered over the background image. Recover those so
-  // the hero copy and call-to-action aren't lost.
-  const overlayHeading = section.querySelector('.largeheadline h1, .largeheadline h2, h1, h2');
+  // Hero overlay (eyebrow/heading/subtext + optional CTA) → home-hero-stryker.
+  // Stryker builds the overlay from a `.largeheadline` (h1 = eyebrow/headline,
+  // a trailing `.line2` span = subtext) layered over the background image, plus
+  // an optional `.c-curatedcta` button. Checked BEFORE the gallery branch: a
+  // hero often ships desktop + mobile variants of the SAME background image
+  // (two distinct srcs), which must NOT be mistaken for a multi-image gallery.
+  const headline = section.querySelector('.largeheadline');
+  const overlayHeading = headline?.querySelector('h1, h2') || section.querySelector('h1, h2');
   const overlayCta = section.querySelector('.c-curatedcta a[href], .cta-container a[href]');
-  if (img && imgSrc(img) && (overlayHeading || overlayCta)) {
-    const headline = section.querySelector('.largeheadline') || section;
-    const h1 = headline.querySelector('h1');
-    const h2 = headline.querySelector('h2');
+  // Prefer the desktop background variant; fall back to the first usable image.
+  const heroImg = [...section.querySelectorAll('img')]
+    .find((im) => isUsableUrl(imgSrc(im)) && /desktop/i.test(im.getAttribute('alt') || ''))
+    || imgs[0] || firstSlide.querySelector('img');
+  if ((headline || overlayCta) && overlayHeading && heroImg && imgSrc(heroImg)) {
+    const scope = headline || section;
+    const h1 = scope.querySelector('h1');
+    const h2 = scope.querySelector('h2');
     // With both headings present, h1 is the small eyebrow and h2 the headline.
     // With only one, treat it as the headline (no eyebrow).
     const eyebrow = h1 && h2 ? text(h1) : '';
@@ -404,8 +399,8 @@ function extractCarousel(document, section) {
     // heading or the CTA label.
     const headingText = new Set([text(h1), text(h2)].filter(Boolean));
     const ctaLabel = text(overlayCta) || '';
-    const subEl = headline.querySelector('.line2')
-      || [...headline.querySelectorAll('p, span, div')]
+    const subEl = scope.querySelector('.line2')
+      || [...scope.querySelectorAll('p, span, div')]
         .find((n) => !n.querySelector('h1, h2, h3, h4')
           && text(n) && !headingText.has(text(n)) && text(n) !== ctaLabel
           && text(n).length > 10);
@@ -422,12 +417,23 @@ function extractCarousel(document, section) {
           [subtext],
           ctaHref ? [anchorNode(document, ctaHref, ctaLabel)] : [''],
           [ctaLabel],
-          [imgNode(document, imgSrc(img), img.getAttribute('alt') || '')],
+          [imgNode(document, imgSrc(heroImg), heroImg.getAttribute('alt') || '')],
         ],
       })];
     }
   }
 
+  // Multiple distinct images with NO overlay → gallery. Cells match
+  // image-gallery-stryker: block-level heading, description, ctaText, ctaUrl
+  // (all blank here), theme, then one image per row. A rotating photo carousel
+  // maps to the "big" theme (large edge-to-edge photos).
+  if (imgs.length >= 2) {
+    const rows = [[''], [''], [''], [''], ['big']];
+    imgs.forEach((im) => rows.push([imgNode(document, imgSrc(im), im.getAttribute('alt') || '')]));
+    return [WebImporter.Blocks.createBlock(document, { name: 'image-gallery-stryker', cells: rows })];
+  }
+
+  const img = imgs[0] || firstSlide.querySelector('img');
   if (img && imgSrc(img)) {
     return [imgNode(document, imgSrc(img), img.getAttribute('alt') || '')];
   }
@@ -757,6 +763,65 @@ function extractFullBleedPanel(document, section) {
       cells,
       icons: imgs.map((im) => ({ src: imgSrc(im), alt: im.getAttribute('alt') || '' })),
     });
+  }
+
+  // Link-column panel: an imageless band of heading + link columns (e.g. the
+  // governance page's "Code of conduct" button beside a "Guidelines, bylaws,
+  // charters" link list). Emit one block PER heading column — a single-link
+  // column becomes a button-stryker CTA, a multi-link column becomes a
+  // category-column quick-links-stryker.
+  const panelHeadings = [...section.querySelectorAll('h1, h2, h3, h4')]
+    .filter((h) => text(h));
+  if (!imgs.length && panelHeadings.length && section.querySelector('a[href]')) {
+    // Assign each link to the heading it falls under (by document order).
+    const linkColumns = panelHeadings.map((h, i) => {
+      const next = panelHeadings[i + 1];
+      const links = [...section.querySelectorAll('a[href]')].filter((a) => {
+        if (!(h.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING)) return false;
+        if (next && (next.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING)) return false;
+        return text(a);
+      });
+      return { heading: text(h), links };
+    }).filter((c) => c.links.length);
+
+    if (linkColumns.length) {
+      const blocks = [];
+      linkColumns.forEach(({ heading: colHeading, links }) => {
+        if (links.length === 1) {
+          // Single CTA → button-stryker. The label may be two lines (a bold
+          // primary line + a serif sub-line); split on those spans.
+          const a = links[0];
+          const boldEl = a.querySelector('.futura-bold');
+          const subEl = a.querySelector('.urw-egyptienne');
+          const label = text(boldEl) || text(a);
+          const sublabel = subEl && text(subEl) !== label ? text(subEl) : '';
+          blocks.push(WebImporter.Blocks.createBlock(document, {
+            name: 'button-stryker',
+            // Cells: heading, label, sublabel, link, style.
+            cells: [
+              [colHeading],
+              [label],
+              [sublabel],
+              [anchorNode(document, a.getAttribute('href') || '#', label)],
+              ['primary'],
+            ],
+          }));
+        } else {
+          // Multiple links → quick-links-stryker (default category-column
+          // theme). Cells: heading, theme, then [linkLabel, linkUrl] items.
+          const qlCells = [[colHeading], ['default']];
+          links.forEach((a) => {
+            const label = text(a);
+            qlCells.push([label, anchorNode(document, a.getAttribute('href') || '#', label)]);
+          });
+          blocks.push(WebImporter.Blocks.createBlock(document, {
+            name: 'quick-links-stryker',
+            cells: qlCells,
+          }));
+        }
+      });
+      if (blocks.length) return blocks;
+    }
   }
 
   // Default: image + text as default content.
