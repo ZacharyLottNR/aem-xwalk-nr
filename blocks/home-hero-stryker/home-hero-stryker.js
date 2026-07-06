@@ -9,26 +9,33 @@ export default function decorate(block) {
   const rows = [...block.children];
 
   // Cell order follows the model field order:
-  // 0: eyebrow, 1: heading, 2: subtext, 3: cta link, 4: cta text, 5: background image
+  // 0: eyebrow, 1: heading, 2: subtext, 3: cta link, 4: cta text,
+  // 5: background image, 6: theme
   const eyebrowCell = cell(rows[0]);
   const headingCell = cell(rows[1]);
   const subtextCell = cell(rows[2]);
   const ctaLinkCell = cell(rows[3]);
   const ctaTextCell = cell(rows[4]);
   const imageCell = cell(rows[5]);
+  const themeRaw = cell(rows[6])?.textContent?.trim().toLowerCase();
+  const theme = themeRaw === 'stacked' ? 'stacked' : 'overlay';
 
   const picture = imageCell?.querySelector('picture');
   const img = picture?.querySelector('img');
 
   block.textContent = '';
+  block.classList.add(`home-hero-stryker-${theme}`);
 
-  // Background image layer
+  // Background/media image layer. In the overlay theme it sits behind the
+  // content (appended first); in the stacked theme it renders below the text
+  // (appended last, see end of function).
+  let bg = null;
   if (picture) {
-    const bg = document.createElement('div');
+    bg = document.createElement('div');
     bg.className = 'home-hero-stryker-bg';
     if (img) moveInstrumentation(img, img);
     bg.append(picture);
-    block.append(bg);
+    if (theme !== 'stacked') block.append(bg);
   }
 
   // Content layer
@@ -48,7 +55,12 @@ export default function decorate(block) {
   if (headingText) {
     const heading = document.createElement('h1');
     heading.className = 'home-hero-stryker-heading';
-    heading.textContent = headingText;
+    // Preserve inline emphasis (e.g. a bold second word in the stacked theme's
+    // two-tone heading); fall back to plain text when there's no markup. The
+    // emphasis may sit in a nested <p>/<div> or directly in the cell.
+    const inner = headingCell.querySelector('p, div') || headingCell;
+    if (inner.querySelector('strong, b, em')) heading.innerHTML = inner.innerHTML;
+    else heading.textContent = headingText;
     content.append(heading);
   }
 
@@ -72,4 +84,7 @@ export default function decorate(block) {
   }
 
   block.append(content);
+
+  // Stacked theme: the contained image renders below the text.
+  if (theme === 'stacked' && bg) block.append(bg);
 }

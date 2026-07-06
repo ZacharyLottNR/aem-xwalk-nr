@@ -179,6 +179,22 @@
           {
             "name": "Highlight",
             "value": "highlight"
+          },
+          {
+            "name": "Background: Light Gray (full bleed)",
+            "value": "bg-light-gray"
+          },
+          {
+            "name": "Background: Gray (full bleed)",
+            "value": "bg-gray"
+          },
+          {
+            "name": "Background: Teal (full bleed)",
+            "value": "bg-teal"
+          },
+          {
+            "name": "Background: Black (full bleed)",
+            "value": "bg-black"
           }
         ]
       }
@@ -629,6 +645,32 @@
     ]
   },
   {
+    "id": "columns-stryker",
+    "fields": [
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "columns",
+        "label": "Columns",
+        "value": "2",
+        "options": [
+          {
+            "name": "2",
+            "value": "2"
+          },
+          {
+            "name": "3",
+            "value": "3"
+          },
+          {
+            "name": "4",
+            "value": "4"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "columns-valueprop",
     "fields": [
       {
@@ -738,6 +780,31 @@
             "value": "right"
           }
         ]
+      }
+    ]
+  },
+  {
+    "id": "cta-stryker",
+    "fields": [
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "text",
+        "label": "Text",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "ctaLabel",
+        "label": "CTA Text",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "ctaUrl",
+        "label": "CTA Link"
       }
     ]
   },
@@ -5908,6 +5975,23 @@
         "name": "imageAlt",
         "label": "Background Image Alt",
         "value": ""
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "theme",
+        "label": "Theme",
+        "value": "overlay",
+        "options": [
+          {
+            "name": "Overlay (text over full-bleed image)",
+            "value": "overlay"
+          },
+          {
+            "name": "Stacked (dark text above a contained image)",
+            "value": "stacked"
+          }
+        ]
       }
     ]
   },

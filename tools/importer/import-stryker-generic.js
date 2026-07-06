@@ -394,7 +394,8 @@ function extractCarousel(document, section) {
     // With both headings present, h1 is the small eyebrow and h2 the headline.
     // With only one, treat it as the headline (no eyebrow).
     const eyebrow = h1 && h2 ? text(h1) : '';
-    const heading = text(h2) || text(h1) || '';
+    const headingEl = h2 || h1;
+    const heading = text(headingEl) || '';
     // Subtext = the largeheadline's `.line2` (or any text leaf) that isn't a
     // heading or the CTA label.
     const headingText = new Set([text(h1), text(h2)].filter(Boolean));
@@ -406,18 +407,37 @@ function extractCarousel(document, section) {
           && text(n).length > 10);
     const subtext = subEl ? text(subEl) : '';
     const ctaHref = overlayCta?.getAttribute('href') || '';
+
+    // Theme: white heading text over the image → "overlay"; dark text (no white
+    // color styling) → "stacked" (dark heading above a contained image).
+    const headingWhite = !!headingEl
+      && /(?:^|[^-])color:\s*(?:#fff|#ffffff|rgb\(255,\s*255,\s*255\)|white)/i
+        .test(headingEl.innerHTML);
+    const theme = headingWhite ? 'overlay' : 'stacked';
+
+    // Preserve a two-tone heading (a bold second word) for the stacked theme by
+    // mapping the source's `.futura-bold` span to <strong>.
+    let headingHtml = heading;
+    const boldSpan = headingEl?.querySelector('.futura-bold');
+    if (theme === 'stacked' && boldSpan && text(boldSpan) && text(boldSpan) !== heading) {
+      const boldText = text(boldSpan);
+      const rest = heading.replace(boldText, '').trim();
+      headingHtml = rest ? `${rest} <strong>${boldText}</strong>` : `<strong>${boldText}</strong>`;
+    }
+
     if (heading || ctaLabel) {
       return [WebImporter.Blocks.createBlock(document, {
         name: 'home-hero-stryker',
-        // Cells follow the model field order: eyebrow, heading, subtext,
-        // ctaUrl, ctaLabel, image (imageAlt folds into the image).
+        // Cells follow the block's row order: eyebrow, heading, subtext,
+        // ctaUrl, ctaLabel, image (imageAlt folds into the image), theme.
         cells: [
           [eyebrow],
-          [heading],
+          [el(document, 'div', `<p>${headingHtml}</p>`)],
           [subtext],
           ctaHref ? [anchorNode(document, ctaHref, ctaLabel)] : [''],
           [ctaLabel],
           [imgNode(document, imgSrc(heroImg), heroImg.getAttribute('alt') || '')],
+          [theme],
         ],
       })];
     }
@@ -785,19 +805,18 @@ function extractFullBleedPanel(document, section) {
     }).filter((c) => c.links.length);
 
     if (linkColumns.length) {
-      const blocks = [];
-      linkColumns.forEach(({ heading: colHeading, links }) => {
+      // Build one child block per column: a single-link column → button-stryker
+      // CTA; a multi-link column → category quick-links-stryker.
+      const childBlocks = linkColumns.map(({ heading: colHeading, links }) => {
         if (links.length === 1) {
-          // Single CTA → button-stryker. The label may be two lines (a bold
-          // primary line + a serif sub-line); split on those spans.
+          // The label may be two lines (a bold primary line + a serif sub-line).
           const a = links[0];
           const boldEl = a.querySelector('.futura-bold');
           const subEl = a.querySelector('.urw-egyptienne');
           const label = text(boldEl) || text(a);
           const sublabel = subEl && text(subEl) !== label ? text(subEl) : '';
-          blocks.push(WebImporter.Blocks.createBlock(document, {
+          return WebImporter.Blocks.createBlock(document, {
             name: 'button-stryker',
-            // Cells: heading, label, sublabel, link, style.
             cells: [
               [colHeading],
               [label],
@@ -805,22 +824,36 @@ function extractFullBleedPanel(document, section) {
               [anchorNode(document, a.getAttribute('href') || '#', label)],
               ['primary'],
             ],
-          }));
-        } else {
-          // Multiple links → quick-links-stryker (default category-column
-          // theme). Cells: heading, theme, then [linkLabel, linkUrl] items.
-          const qlCells = [[colHeading], ['default']];
-          links.forEach((a) => {
-            const label = text(a);
-            qlCells.push([label, anchorNode(document, a.getAttribute('href') || '#', label)]);
           });
-          blocks.push(WebImporter.Blocks.createBlock(document, {
-            name: 'quick-links-stryker',
-            cells: qlCells,
-          }));
         }
+        const qlCells = [[colHeading], ['default']];
+        links.forEach((a) => {
+          const label = text(a);
+          qlCells.push([label, anchorNode(document, a.getAttribute('href') || '#', label)]);
+        });
+        return WebImporter.Blocks.createBlock(document, {
+          name: 'quick-links-stryker',
+          cells: qlCells,
+        });
       });
-      if (blocks.length) return blocks;
+
+      if (childBlocks.length) {
+        // A single column doesn't need a columns wrapper; emit it directly.
+        if (childBlocks.length === 1) {
+          childBlocks[0]._grayCard = true;
+          return childBlocks;
+        }
+        // Multiple columns → wrap in a columns-stryker block (first cell is the
+        // column count, then one nested child block per column). Tag it so the
+        // section assembly wraps it in a full-bleed light-gray section (matching
+        // the source's bg-light-gray full-bleed panel).
+        const colsBlock = WebImporter.Blocks.createBlock(document, {
+          name: 'columns-stryker',
+          cells: [[String(childBlocks.length)], ...childBlocks.map((b) => [b])],
+        });
+        colsBlock._grayCard = true;
+        return [colsBlock];
+      }
     }
   }
 
@@ -1127,6 +1160,34 @@ function extractLeaderDetail(document, root) {
     ],
   ];
   return [WebImporter.Blocks.createBlock(document, { name: 'profile-stryker', cells })];
+}
+
+// A `.dimensional-box` shadow card holding a short blurb + a single CTA link
+// (e.g. the governance "Corporate Responsibility Hub / Go now" box) →
+// cta-stryker. Cells: text (richtext), ctaLabel, ctaUrl.
+function extractCtaBox(document, box) {
+  const link = box.querySelector('a[href]');
+  if (!link) return null;
+  const ctaLabel = text(link);
+  const ctaHref = link.getAttribute('href') || '';
+  // Text = the box paragraphs that aren't the CTA link itself.
+  const textParas = [...box.querySelectorAll('p')]
+    .filter((p) => !p.querySelector('a[href]') && text(p))
+    .map((p) => `<p>${p.innerHTML.trim()}</p>`);
+  // Fall back to any non-link text leaf if there are no clean paragraphs.
+  if (!textParas.length) {
+    const leaf = [...box.querySelectorAll('p, span, div')]
+      .find((n) => !n.querySelector('a[href]') && text(n) && text(n) !== ctaLabel);
+    if (leaf) textParas.push(`<p>${text(leaf)}</p>`);
+  }
+  return [WebImporter.Blocks.createBlock(document, {
+    name: 'cta-stryker',
+    cells: [
+      [el(document, 'div', textParas.join(''))],
+      [ctaLabel],
+      [anchorNode(document, ctaHref, ctaLabel)],
+    ],
+  })];
 }
 
 // c-accordion → accordion-stryker. Stryker renders collapsible policy/FAQ lists
@@ -1519,6 +1580,29 @@ export default {
         acc.remove();
       });
 
+      // Shadow-box CTAs (`.dimensional-box` with a blurb + single link, e.g. the
+      // "Corporate Responsibility Hub / Go now" box) nest inside content
+      // wrappers too. Collapse each into a cta-stryker block via a placeholder,
+      // like the accordion pre-pass, so it isn't flattened to loose text + link.
+      document.querySelectorAll('.dimensional-box').forEach((box) => {
+        if (!box.querySelector('a[href]')) return;
+        if (box.closest('header, footer, nav')) return;
+        // A dimensional-box INSIDE a c-full-bleed-panel is one column of a
+        // link-column layout (e.g. the "Code of conduct" button beside the
+        // "Guidelines" list) — leave it for extractFullBleedPanel's columns
+        // handling. Only standalone shadow-box CTAs become cta-stryker here.
+        if (box.closest('.c-full-bleed-panel')) return;
+        const blocks = extractCtaBox(document, box);
+        if (!blocks || !blocks.length) return;
+        const placeholder = document.createElement('div');
+        placeholder.setAttribute('data-cta', 'true');
+        placeholder._ctaBlocks = blocks;
+        const ownerSection = box.closest('.page-section') || box.parentElement;
+        ownerSection.parentElement.insertBefore(placeholder, ownerSection.nextSibling);
+        accordionScopes.push(placeholder);
+        box.remove();
+      });
+
       // Only pages that actually render the sticky jump/anchor nav should get a
       // section-anchor-stryker block. Detect the real rendered nav (the
       // `.jumpbarnav` / `.c-navigation-bar` bar with in-page anchor links) — NOT
@@ -1549,6 +1633,7 @@ export default {
         '.c-grouplist', // grouped link lists (e.g. "Our businesses")
         '[data-curated-tiles]', // collapsed curated-CTA tile pairs
         '[data-accordion]', // collapsed policy / FAQ accordions
+        '[data-cta]', // collapsed dimensional-box CTAs
       ].join(',');
       const all = [...contentRoot.querySelectorAll(SELECTOR)]
         // Drop header/footer chrome and hidden scaffolding.
@@ -1680,6 +1765,16 @@ export default {
           node._accordionBlocks.forEach((b) => {
             current.nodes.push(b);
             blockNames.push('accordion-stryker');
+          });
+          return;
+        }
+
+        // Collapsed dimensional-box CTA placeholder → emit its cta-stryker block.
+        if (node._ctaBlocks) {
+          flushCards();
+          node._ctaBlocks.forEach((b) => {
+            current.nodes.push(b);
+            blockNames.push('cta-stryker');
           });
           return;
         }
@@ -1993,19 +2088,46 @@ export default {
       }
 
       // Assemble: <hr> between sections, Section Metadata for labeled ones.
-      sectionsOut.forEach((sec, idx) => {
+      // A node tagged `_grayCard` (e.g. the governance columns block) is lifted
+      // into its OWN full-bleed light-gray EDS section, separated by <hr>s and
+      // carrying a Section Metadata Style, matching the source's bg-light-gray
+      // full-bleed panel.
+      let firstAppend = true;
+      const appendHr = () => { if (!firstAppend) main.append(document.createElement('hr')); firstAppend = false; };
+      sectionsOut.forEach((sec) => {
         if (!sec.nodes.length && !sec.anchorLabel) return;
-        if (idx > 0) main.append(document.createElement('hr'));
-        sec.nodes.forEach((n) => main.append(n));
-        // Emit the anchorLabel Section Metadata only when the page has the
-        // rendered jump nav; otherwise it's orphan metadata with nothing to
-        // drive.
-        if (sec.anchorLabel && hasAnchorNav) {
-          main.append(WebImporter.Blocks.createBlock(document, {
-            name: 'Section Metadata',
-            cells: { anchorLabel: sec.anchorLabel },
-          }));
-        }
+        // Split this section's nodes on any _grayCard node so it becomes its
+        // own styled EDS section.
+        let run = [];
+        const flushRun = (anchorLabel) => {
+          if (!run.length) return;
+          appendHr();
+          run.forEach((n) => main.append(n));
+          if (anchorLabel && hasAnchorNav) {
+            main.append(WebImporter.Blocks.createBlock(document, {
+              name: 'Section Metadata',
+              cells: { anchorLabel },
+            }));
+          }
+          run = [];
+        };
+        let anchorEmitted = false;
+        sec.nodes.forEach((n) => {
+          if (n._grayCard) {
+            // Emit the buffered run (carrying the section's anchor label once).
+            flushRun(anchorEmitted ? '' : sec.anchorLabel);
+            anchorEmitted = true;
+            appendHr();
+            main.append(n);
+            main.append(WebImporter.Blocks.createBlock(document, {
+              name: 'Section Metadata',
+              cells: { style: 'bg-light-gray' },
+            }));
+          } else {
+            run.push(n);
+          }
+        });
+        flushRun(anchorEmitted ? '' : sec.anchorLabel);
       });
 
       // Legal text is ALWAYS the last content block: emit the collected

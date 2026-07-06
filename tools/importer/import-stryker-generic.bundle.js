@@ -314,24 +314,35 @@ var CustomImportScript = (() => {
       const h1 = scope.querySelector("h1");
       const h2 = scope.querySelector("h2");
       const eyebrow = h1 && h2 ? text(h1) : "";
-      const heading = text(h2) || text(h1) || "";
+      const headingEl = h2 || h1;
+      const heading = text(headingEl) || "";
       const headingText = new Set([text(h1), text(h2)].filter(Boolean));
       const ctaLabel = text(overlayCta) || "";
       const subEl = scope.querySelector(".line2") || [...scope.querySelectorAll("p, span, div")].find((n) => !n.querySelector("h1, h2, h3, h4") && text(n) && !headingText.has(text(n)) && text(n) !== ctaLabel && text(n).length > 10);
       const subtext = subEl ? text(subEl) : "";
       const ctaHref = (overlayCta == null ? void 0 : overlayCta.getAttribute("href")) || "";
+      const headingWhite = !!headingEl && /(?:^|[^-])color:\s*(?:#fff|#ffffff|rgb\(255,\s*255,\s*255\)|white)/i.test(headingEl.innerHTML);
+      const theme = headingWhite ? "overlay" : "stacked";
+      let headingHtml = heading;
+      const boldSpan = headingEl == null ? void 0 : headingEl.querySelector(".futura-bold");
+      if (theme === "stacked" && boldSpan && text(boldSpan) && text(boldSpan) !== heading) {
+        const boldText = text(boldSpan);
+        const rest = heading.replace(boldText, "").trim();
+        headingHtml = rest ? `${rest} <strong>${boldText}</strong>` : `<strong>${boldText}</strong>`;
+      }
       if (heading || ctaLabel) {
         return [WebImporter.Blocks.createBlock(document, {
           name: "home-hero-stryker",
-          // Cells follow the model field order: eyebrow, heading, subtext,
-          // ctaUrl, ctaLabel, image (imageAlt folds into the image).
+          // Cells follow the block's row order: eyebrow, heading, subtext,
+          // ctaUrl, ctaLabel, image (imageAlt folds into the image), theme.
           cells: [
             [eyebrow],
-            [heading],
+            [el(document, "div", `<p>${headingHtml}</p>`)],
             [subtext],
             ctaHref ? [anchorNode(document, ctaHref, ctaLabel)] : [""],
             [ctaLabel],
-            [imgNode(document, imgSrc(heroImg), heroImg.getAttribute("alt") || "")]
+            [imgNode(document, imgSrc(heroImg), heroImg.getAttribute("alt") || "")],
+            [theme]
           ]
         })];
       }
@@ -595,17 +606,15 @@ var CustomImportScript = (() => {
         return { heading: text(h), links };
       }).filter((c) => c.links.length);
       if (linkColumns.length) {
-        const blocks = [];
-        linkColumns.forEach(({ heading: colHeading, links }) => {
+        const childBlocks = linkColumns.map(({ heading: colHeading, links }) => {
           if (links.length === 1) {
             const a = links[0];
             const boldEl = a.querySelector(".futura-bold");
             const subEl = a.querySelector(".urw-egyptienne");
             const label = text(boldEl) || text(a);
             const sublabel = subEl && text(subEl) !== label ? text(subEl) : "";
-            blocks.push(WebImporter.Blocks.createBlock(document, {
+            return WebImporter.Blocks.createBlock(document, {
               name: "button-stryker",
-              // Cells: heading, label, sublabel, link, style.
               cells: [
                 [colHeading],
                 [label],
@@ -613,20 +622,30 @@ var CustomImportScript = (() => {
                 [anchorNode(document, a.getAttribute("href") || "#", label)],
                 ["primary"]
               ]
-            }));
-          } else {
-            const qlCells = [[colHeading], ["default"]];
-            links.forEach((a) => {
-              const label = text(a);
-              qlCells.push([label, anchorNode(document, a.getAttribute("href") || "#", label)]);
             });
-            blocks.push(WebImporter.Blocks.createBlock(document, {
-              name: "quick-links-stryker",
-              cells: qlCells
-            }));
           }
+          const qlCells = [[colHeading], ["default"]];
+          links.forEach((a) => {
+            const label = text(a);
+            qlCells.push([label, anchorNode(document, a.getAttribute("href") || "#", label)]);
+          });
+          return WebImporter.Blocks.createBlock(document, {
+            name: "quick-links-stryker",
+            cells: qlCells
+          });
         });
-        if (blocks.length) return blocks;
+        if (childBlocks.length) {
+          if (childBlocks.length === 1) {
+            childBlocks[0]._grayCard = true;
+            return childBlocks;
+          }
+          const colsBlock = WebImporter.Blocks.createBlock(document, {
+            name: "columns-stryker",
+            cells: [[String(childBlocks.length)], ...childBlocks.map((b) => [b])]
+          });
+          colsBlock._grayCard = true;
+          return [colsBlock];
+        }
       }
     }
     const nodes = [];
@@ -849,6 +868,25 @@ var CustomImportScript = (() => {
       ]
     ];
     return [WebImporter.Blocks.createBlock(document, { name: "profile-stryker", cells })];
+  }
+  function extractCtaBox(document, box) {
+    const link = box.querySelector("a[href]");
+    if (!link) return null;
+    const ctaLabel = text(link);
+    const ctaHref = link.getAttribute("href") || "";
+    const textParas = [...box.querySelectorAll("p")].filter((p) => !p.querySelector("a[href]") && text(p)).map((p) => `<p>${p.innerHTML.trim()}</p>`);
+    if (!textParas.length) {
+      const leaf = [...box.querySelectorAll("p, span, div")].find((n) => !n.querySelector("a[href]") && text(n) && text(n) !== ctaLabel);
+      if (leaf) textParas.push(`<p>${text(leaf)}</p>`);
+    }
+    return [WebImporter.Blocks.createBlock(document, {
+      name: "cta-stryker",
+      cells: [
+        [el(document, "div", textParas.join(""))],
+        [ctaLabel],
+        [anchorNode(document, ctaHref, ctaLabel)]
+      ]
+    })];
   }
   function extractAccordion(document, section, heading) {
     const panels = [...section.querySelectorAll(".panel")];
@@ -1117,6 +1155,20 @@ var CustomImportScript = (() => {
           accordionScopes.push(placeholder);
           acc.remove();
         });
+        document.querySelectorAll(".dimensional-box").forEach((box) => {
+          if (!box.querySelector("a[href]")) return;
+          if (box.closest("header, footer, nav")) return;
+          if (box.closest(".c-full-bleed-panel")) return;
+          const blocks = extractCtaBox(document, box);
+          if (!blocks || !blocks.length) return;
+          const placeholder = document.createElement("div");
+          placeholder.setAttribute("data-cta", "true");
+          placeholder._ctaBlocks = blocks;
+          const ownerSection = box.closest(".page-section") || box.parentElement;
+          ownerSection.parentElement.insertBefore(placeholder, ownerSection.nextSibling);
+          accordionScopes.push(placeholder);
+          box.remove();
+        });
         const hasAnchorNav = !!document.querySelector(
           '.jumpbarnav a[href^="#"], .c-navigation-bar a[href^="#"], .bar-nav a.anchor'
         );
@@ -1139,8 +1191,10 @@ var CustomImportScript = (() => {
           // grouped link lists (e.g. "Our businesses")
           "[data-curated-tiles]",
           // collapsed curated-CTA tile pairs
-          "[data-accordion]"
+          "[data-accordion]",
           // collapsed policy / FAQ accordions
+          "[data-cta]"
+          // collapsed dimensional-box CTAs
         ].join(",");
         const all = [...contentRoot.querySelectorAll(SELECTOR)].filter((n) => !n.closest("header, footer, nav")).filter((n) => !statScopes.some(({ scope, title }) => n !== title && scope.contains(n) && scope !== n)).filter((n) => !curatedScopes.some((scope) => scope.contains(n)));
         const units = all.filter((n) => !all.some((o) => o !== n && o.contains(n)));
@@ -1228,6 +1282,14 @@ var CustomImportScript = (() => {
             node._accordionBlocks.forEach((b) => {
               current.nodes.push(b);
               blockNames.push("accordion-stryker");
+            });
+            return;
+          }
+          if (node._ctaBlocks) {
+            flushCards();
+            node._ctaBlocks.forEach((b) => {
+              current.nodes.push(b);
+              blockNames.push("cta-stryker");
             });
             return;
           }
@@ -1429,16 +1491,42 @@ var CustomImportScript = (() => {
           }));
           blockNames.push("section-anchor-stryker");
         }
-        sectionsOut.forEach((sec, idx) => {
+        let firstAppend = true;
+        const appendHr = () => {
+          if (!firstAppend) main.append(document.createElement("hr"));
+          firstAppend = false;
+        };
+        sectionsOut.forEach((sec) => {
           if (!sec.nodes.length && !sec.anchorLabel) return;
-          if (idx > 0) main.append(document.createElement("hr"));
-          sec.nodes.forEach((n) => main.append(n));
-          if (sec.anchorLabel && hasAnchorNav) {
-            main.append(WebImporter.Blocks.createBlock(document, {
-              name: "Section Metadata",
-              cells: { anchorLabel: sec.anchorLabel }
-            }));
-          }
+          let run = [];
+          const flushRun = (anchorLabel) => {
+            if (!run.length) return;
+            appendHr();
+            run.forEach((n) => main.append(n));
+            if (anchorLabel && hasAnchorNav) {
+              main.append(WebImporter.Blocks.createBlock(document, {
+                name: "Section Metadata",
+                cells: { anchorLabel }
+              }));
+            }
+            run = [];
+          };
+          let anchorEmitted = false;
+          sec.nodes.forEach((n) => {
+            if (n._grayCard) {
+              flushRun(anchorEmitted ? "" : sec.anchorLabel);
+              anchorEmitted = true;
+              appendHr();
+              main.append(n);
+              main.append(WebImporter.Blocks.createBlock(document, {
+                name: "Section Metadata",
+                cells: { style: "bg-light-gray" }
+              }));
+            } else {
+              run.push(n);
+            }
+          });
+          flushRun(anchorEmitted ? "" : sec.anchorLabel);
         });
         if (legalParas.length) {
           main.append(document.createElement("hr"));

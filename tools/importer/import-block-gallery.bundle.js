@@ -59,7 +59,17 @@ var CustomImportScript = (() => {
         ["Technology that helps you deliver better outcomes for more patients."],
         [anchor(document, "https://www.stryker.com/us/en/index.html", "Explore")],
         ["Explore solutions"],
-        [img(document, IMG(900, 620, "Hero"), "Hero background")]
+        [img(document, IMG(900, 620, "Hero"), "Hero background")],
+        ["overlay"]
+      ]]);
+      blocks.push(["home-hero-stryker", [
+        [""],
+        [el(document, "div", "<p>Corporate <strong>governance</strong></p>")],
+        ["At Stryker, we are committed to doing what's right and upholding our company values."],
+        [""],
+        [""],
+        [img(document, IMG(900, 500, "Governance"), "Corporate governance")],
+        ["stacked"]
       ]]);
       const overviewCard = (title, desc) => [
         img(document, IMG(400, 260, "Overview"), title),
@@ -100,6 +110,29 @@ var CustomImportScript = (() => {
         [""],
         [anchor(document, "https://www.stryker.com/us/en/about.html", "Learn more")],
         ["secondary"]
+      ]]);
+      blocks.push(["cta-stryker", [
+        [el(document, "div", "<p>A full list of our positions and statements can be found in our Corporate Responsibility Hub.</p>")],
+        ["Go now"],
+        [anchor(document, "https://www.stryker.com/us/en/about/corporate-responsibility/cr-hub.html", "Go now")]
+      ]]);
+      const nested = (name, cells) => WebImporter.Blocks.createBlock(document, { name, cells });
+      blocks.push(["columns-stryker", [
+        ["2"],
+        [nested("button-stryker", [
+          ["Code of conduct"],
+          ["Our Code"],
+          ["We do what's right"],
+          [anchor(document, "https://www.stryker.com/us/en/about/governance/code-of-conduct.html", "Our Code")],
+          ["primary"]
+        ])],
+        [nested("quick-links-stryker", [
+          ["Guidelines, bylaws, charters"],
+          ["default"],
+          ["Board Committees", anchor(document, "https://www.stryker.com/us/en/about/governance/board-committees.html", "Board Committees")],
+          ["Bylaws", anchor(document, "https://www.stryker.com/us/en/about/governance/bylaws.html", "Bylaws")],
+          ["Charters", anchor(document, "https://www.stryker.com/us/en/about/governance/charters.html", "Charters")]
+        ])]
       ]]);
       blocks.push(["content-break-stryker", [[""]]]);
       blocks.push(["section-banner-stryker", [

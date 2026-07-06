@@ -51,7 +51,8 @@ export default {
       [anchor(document, 'https://youtu.be/kRIuiIy_SCs', 'https://youtu.be/kRIuiIy_SCs')],
     ]]);
 
-    // home-hero-stryker — eyebrow, heading, subtext, cta link, cta text, bg image
+    // home-hero-stryker — eyebrow, heading, subtext, cta link, cta text, bg
+    // image, theme. Overlay theme: text over a full-bleed image.
     blocks.push(['home-hero-stryker', [
       ['Now available'],
       ['Connected care, reimagined'],
@@ -59,6 +60,19 @@ export default {
       [anchor(document, 'https://www.stryker.com/us/en/index.html', 'Explore')],
       ['Explore solutions'],
       [img(document, IMG(900, 620, 'Hero'), 'Hero background')],
+      ['overlay'],
+    ]]);
+
+    // home-hero-stryker (stacked theme) — dark two-tone heading + subtext above
+    // a contained image, no CTA (e.g. the Corporate governance hero).
+    blocks.push(['home-hero-stryker', [
+      [''],
+      [el(document, 'div', '<p>Corporate <strong>governance</strong></p>')],
+      ["At Stryker, we are committed to doing what's right and upholding our company values."],
+      [''],
+      [''],
+      [img(document, IMG(900, 500, 'Governance'), 'Corporate governance')],
+      ['stacked'],
     ]]);
 
     // overview-stryker — row0: titleBlack, titleGold, primer, richText; then cards
@@ -108,6 +122,35 @@ export default {
       [''],
       [anchor(document, 'https://www.stryker.com/us/en/about.html', 'Learn more')],
       ['secondary'],
+    ]]);
+
+    // cta-stryker — a shadow-box CTA: text, cta label, cta link.
+    blocks.push(['cta-stryker', [
+      [el(document, 'div', '<p>A full list of our positions and statements can be found in our Corporate Responsibility Hub.</p>')],
+      ['Go now'],
+      [anchor(document, 'https://www.stryker.com/us/en/about/corporate-responsibility/cr-hub.html', 'Go now')],
+    ]]);
+
+    // columns-stryker — a container that lays out nested blocks side by side.
+    // First cell = column count; each following cell holds a nested child block
+    // (here a button + a quick-links list, matching the governance page).
+    const nested = (name, cells) => WebImporter.Blocks.createBlock(document, { name, cells });
+    blocks.push(['columns-stryker', [
+      ['2'],
+      [nested('button-stryker', [
+        ['Code of conduct'],
+        ['Our Code'],
+        ["We do what's right"],
+        [anchor(document, 'https://www.stryker.com/us/en/about/governance/code-of-conduct.html', 'Our Code')],
+        ['primary'],
+      ])],
+      [nested('quick-links-stryker', [
+        ['Guidelines, bylaws, charters'],
+        ['default'],
+        ['Board Committees', anchor(document, 'https://www.stryker.com/us/en/about/governance/board-committees.html', 'Board Committees')],
+        ['Bylaws', anchor(document, 'https://www.stryker.com/us/en/about/governance/bylaws.html', 'Bylaws')],
+        ['Charters', anchor(document, 'https://www.stryker.com/us/en/about/governance/charters.html', 'Charters')],
+      ])],
     ]]);
 
     // 2. content-break-stryker — no fields

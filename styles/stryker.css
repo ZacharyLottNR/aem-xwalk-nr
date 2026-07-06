@@ -91,6 +91,45 @@ body.theme-stryker main > .section > div {
   max-width: var(--stryker-max-width);
 }
 
+/*
+ * Full-bleed section background variants (set via the section's Style field).
+ * The colored band spans the full viewport width while the inner content stays
+ * capped at the max width. Vertical padding gives the band breathing room.
+ */
+body.theme-stryker main > .section.bg-light-gray,
+body.theme-stryker main > .section.bg-gray,
+body.theme-stryker main > .section.bg-teal,
+body.theme-stryker main > .section.bg-black {
+  margin: 0;
+  padding: 56px 0;
+}
+
+body.theme-stryker main > .section.bg-light-gray {
+  background-color: var(--stryker-light-gray, #f2f2f2);
+}
+
+body.theme-stryker main > .section.bg-gray {
+  background-color: var(--stryker-gray, #58595b);
+  color: var(--stryker-white, #fff);
+}
+
+body.theme-stryker main > .section.bg-teal {
+  background-color: var(--stryker-teal, #4c7d7a);
+  color: var(--stryker-white, #fff);
+}
+
+body.theme-stryker main > .section.bg-black {
+  background-color: var(--stryker-black, #000);
+  color: var(--stryker-white, #fff);
+}
+
+/* On dark bands, keep headings legible. */
+body.theme-stryker main > .section.bg-gray :is(h1, h2, h3, h4),
+body.theme-stryker main > .section.bg-teal :is(h1, h2, h3, h4),
+body.theme-stryker main > .section.bg-black :is(h1, h2, h3, h4) {
+  color: var(--stryker-white, #fff);
+}
+
 /* Image hover tooltip (dark pill) — mirrors the source site behavior */
 .stryker-img-tooltip {
   position: fixed;

@@ -22,11 +22,16 @@
       "columns-statistics",
       "asset-detail",
       "cart-page",
+      "accordion-stryker",
+      "button-stryker",
       "callout-banner-stryker",
       "cards-stryker",
+      "center-justified-text-stryker",
       "content-break-stryker",
       "cross-promo-stryker",
+      "cta-stryker",
       "double-text-and-media-stryker",
+      "event-details-stryker",
       "get-to-know-us-stryker",
       "home-hero-stryker",
       "home-video-hero-stryker",
@@ -35,6 +40,7 @@
       "legal-text-stryker",
       "overview-stryker",
       "product-preview-stryker",
+      "profile-stryker",
       "quick-links-stryker",
       "right-justified-text-stryker",
       "section-anchor-stryker",
@@ -167,6 +173,16 @@
       "button",
       "title",
       "text-and-media-stryker"
+    ]
+  },
+  {
+    "id": "columns-stryker",
+    "components": [
+      "button-stryker",
+      "quick-links-stryker",
+      "cta-stryker",
+      "text-and-media-stryker",
+      "title-stryker"
     ]
   },
   {

@@ -67,6 +67,23 @@
           "name": "imageAlt",
           "label": "Background Image Alt",
           "value": ""
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "theme",
+          "label": "Theme",
+          "value": "overlay",
+          "options": [
+            {
+              "name": "Overlay (text over full-bleed image)",
+              "value": "overlay"
+            },
+            {
+              "name": "Stacked (dark text above a contained image)",
+              "value": "stacked"
+            }
+          ]
         }
       ]
     }
