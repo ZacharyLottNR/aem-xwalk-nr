@@ -3,11 +3,15 @@ function innerCell(row) {
 }
 
 // A labeled section: an h5 label above a value paragraph (or arbitrary node).
-function labeledSection(label, valueNode) {
+// A labeled section: an h5 label above a value node. `ruled` adds the gray
+// underline rule beneath the label (the source draws it under Details and
+// Registration only), matching the source's section "content breaks".
+function labeledSection(label, valueNode, ruled) {
   const wrap = document.createElement('div');
   wrap.className = 'event-details-stryker-section';
   const h = document.createElement('h5');
   h.className = 'event-details-stryker-label';
+  if (ruled) h.classList.add('event-details-stryker-label-ruled');
   h.textContent = label;
   wrap.append(h, valueNode);
   return wrap;
@@ -82,7 +86,7 @@ export default function decorate(block) {
     const v = document.createElement('div');
     v.className = 'event-details-stryker-detail-body';
     v.innerHTML = descCell.innerHTML;
-    info.append(labeledSection('Details', v));
+    info.append(labeledSection('Details', v, true));
   }
 
   if (credit) {
@@ -98,7 +102,7 @@ export default function decorate(block) {
     const reg = document.createElement('div');
     reg.className = 'event-details-stryker-section';
     const h = document.createElement('h5');
-    h.className = 'event-details-stryker-label';
+    h.className = 'event-details-stryker-label event-details-stryker-label-ruled';
     h.textContent = 'Registration';
     const cta = document.createElement('a');
     cta.className = 'event-details-stryker-cta button';

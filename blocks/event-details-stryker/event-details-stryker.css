@@ -33,6 +33,14 @@
   margin: 0 0 6px;
 }
 
+/* Section "content break": a gray rule beneath the label (the source draws it
+ * under the Details and Registration sections only). */
+.event-details-stryker .event-details-stryker-label-ruled {
+  padding-bottom: 8px;
+  border-bottom: 1px solid #b2b4ae;
+  margin-bottom: 12px;
+}
+
 .event-details-stryker .event-details-stryker-section p {
   font-family: var(--stryker-body-font);
   font-size: var(--stryker-body-size, 16px);
