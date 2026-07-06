@@ -268,6 +268,51 @@ var CustomImportScript = (() => {
         ["super"],
         ["media-right"]
       ]]);
+      const accordionItem = (title, body) => [title, el(document, "div", `<p>${body}</p>`)];
+      blocks.push(["accordion-stryker", [
+        ["Frequently asked questions"],
+        ["standard"],
+        accordionItem("Is the product safe to use?", "Yes. Our products meet all applicable safety and quality standards."),
+        accordionItem("How do I request service?", "Contact your Stryker representative or submit a request through the support portal."),
+        accordionItem("Where can I find instructions for use?", "Instructions for use are available at ifu.stryker.com.")
+      ]]);
+      blocks.push(["accordion-stryker", [
+        ["Governance policies"],
+        ["plain"],
+        accordionItem("Code of Conduct", "Our commitment to integrity guides every decision we make."),
+        accordionItem("Guidelines, bylaws and charters", "Corporate governance documents are available for download."),
+        accordionItem("Committee composition", "Details of our board committees and their members.")
+      ]]);
+      blocks.push(["event-details-stryker", [
+        ["Patient Temperature Management: How Controlled Warming and Cooling Affect Patient Outcomes"],
+        [el(document, "div", "<p>Managing patient temperature in the acute care space is critical to patient safety and delivering better clinical outcomes. Join us to learn practical approaches.</p>")],
+        ["October 20, 2021"],
+        ["2:00 - 3:00 PM ET"],
+        ["Online webinar"],
+        ["1 CE credit approved"],
+        ["Register now"],
+        [anchor(document, "https://www.stryker.com/", "Register")]
+      ]]);
+      const profileItem = (name, role, bio) => [
+        img(document, IMG(320, 400, name), name),
+        name,
+        role,
+        el(document, "div", `<p>${bio}</p>`),
+        anchor(document, "https://www.stryker.com/us/en/about/our-management.html", "Profile")
+      ];
+      blocks.push(["profile-stryker", [
+        ["Our management"],
+        ["grid"],
+        profileItem("Kevin Lobo", "Chair and Chief Executive Officer", "Leading Stryker with a focus on innovation and growth."),
+        profileItem("Glenn Boehnlein", "Vice President, Chief Financial Officer", "Overseeing global finance and investor relations."),
+        profileItem("Viju Menon", "Group President, Global Quality and Operations", "Driving quality and operational excellence worldwide."),
+        profileItem("Jeanne Blondia", "Vice President, Finance and Treasurer", "Managing capital structure and treasury operations.")
+      ]]);
+      blocks.push(["profile-stryker", [
+        ["Leadership spotlight"],
+        ["detail"],
+        profileItem("Kevin Lobo", "Chair and Chief Executive Officer", "Kevin A. Lobo is Chair and Chief Executive Officer of Stryker. He joined Stryker in 2011 and has led the company through a period of sustained growth, expanding its portfolio across MedSurg, Neurotechnology, Orthopaedics and Spine while championing a strong, people-first culture.")
+      ]]);
       ["left", "center", "right"].forEach((align) => {
         blocks.push(["cross-promo-stryker", [
           [img(document, IMG(420, 240, `ProCare ${align}`), "ProCare Services")],

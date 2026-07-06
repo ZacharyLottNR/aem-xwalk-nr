@@ -204,6 +204,55 @@
     ]
   },
   {
+    "id": "accordion-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading",
+        "description": "Optional. Shown above the accordion.",
+        "value": ""
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "theme",
+        "label": "Theme",
+        "value": "standard",
+        "options": [
+          {
+            "name": "Standard (bordered rows)",
+            "value": "standard"
+          },
+          {
+            "name": "Plain (minimal, no side borders)",
+            "value": "plain"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "accordion-item-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "title",
+        "label": "Title",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "body",
+        "label": "Body",
+        "value": ""
+      }
+    ]
+  },
+  {
     "id": "asset-detail",
     "fields": [
       {
@@ -773,6 +822,66 @@
         "valueType": "string",
         "name": "embed_uri",
         "label": "URI"
+      }
+    ]
+  },
+  {
+    "id": "event-details-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "title",
+        "label": "Event Title",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "description",
+        "label": "Description",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "date",
+        "label": "Date",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "time",
+        "label": "Time",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "location",
+        "label": "Location",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "credit",
+        "label": "Accreditation / CE Credit",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "ctaLabel",
+        "label": "CTA Text",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "ctaUrl",
+        "label": "CTA Link"
       }
     ]
   },
@@ -6059,6 +6168,83 @@
         "valueType": "string",
         "name": "feature",
         "label": "Feature"
+      }
+    ]
+  },
+  {
+    "id": "profile-stryker",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading",
+        "description": "Optional. Shown above the profiles.",
+        "value": ""
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "theme",
+        "label": "Theme",
+        "value": "grid",
+        "options": [
+          {
+            "name": "Grid (headshot cards)",
+            "value": "grid"
+          },
+          {
+            "name": "Detail (single large bio)",
+            "value": "detail"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "profile-item-stryker",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Headshot",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Headshot Alt",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "name",
+        "label": "Name",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "role",
+        "label": "Role / Title",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "bio",
+        "label": "Bio",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Profile Link",
+        "description": "Optional. Links the name/headshot to a detail page."
       }
     ]
   },

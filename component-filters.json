@@ -54,6 +54,12 @@
     ]
   },
   {
+    "id": "accordion-stryker",
+    "components": [
+      "accordion-item-stryker"
+    ]
+  },
+  {
     "id": "cards-accelerator",
     "components": [
       "card"
@@ -278,6 +284,12 @@
     "components": [
       "product-preview-stryker-frame",
       "product-preview-stryker-feature"
+    ]
+  },
+  {
+    "id": "profile-stryker",
+    "components": [
+      "profile-item-stryker"
     ]
   },
   {

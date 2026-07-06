@@ -1,0 +1,127 @@
+.accordion-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.accordion-stryker .accordion-stryker-heading {
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+  font-size: var(--stryker-h2-size, 36px);
+  color: var(--stryker-black, #000);
+  margin: 0 0 24px;
+}
+
+.accordion-stryker .accordion-stryker-list {
+  border-top: 1px solid var(--stryker-border, #d9d9d9);
+}
+
+.accordion-stryker .accordion-stryker-item {
+  border-bottom: 1px solid var(--stryker-border, #d9d9d9);
+}
+
+.accordion-stryker .accordion-stryker-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 20px 8px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--stryker-heading-font);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--stryker-black, #000);
+}
+
+.accordion-stryker .accordion-stryker-trigger:hover {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+.accordion-stryker .accordion-stryker-icon {
+  position: relative;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.accordion-stryker .accordion-stryker-icon::before,
+.accordion-stryker .accordion-stryker-icon::after {
+  content: "";
+  position: absolute;
+  background: var(--stryker-teal, #4c7d7a);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* horizontal bar of the plus */
+.accordion-stryker .accordion-stryker-icon::before {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+/* vertical bar of the plus — hidden when expanded to become a minus */
+.accordion-stryker .accordion-stryker-icon::after {
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.accordion-stryker .accordion-stryker-trigger[aria-expanded="true"] .accordion-stryker-icon::after {
+  transform: translateX(-50%) scaleY(0);
+  opacity: 0;
+}
+
+.accordion-stryker .accordion-stryker-panel {
+  padding: 0 8px 24px;
+  font-family: var(--stryker-body-font);
+  font-size: var(--stryker-body-size, 16px);
+  line-height: 1.6;
+  color: var(--stryker-gray, #58595b);
+}
+
+.accordion-stryker .accordion-stryker-panel :first-child {
+  margin-top: 0;
+}
+
+.accordion-stryker .accordion-stryker-panel a:any-link {
+  color: var(--stryker-teal, #4c7d7a);
+}
+
+/*
+ * Standard theme: each row sits on a light-gray card with side padding so the
+ * policy list reads as discrete, bordered rows.
+ */
+.accordion-stryker.accordion-stryker-standard .accordion-stryker-item {
+  background: var(--stryker-light-gray, #f2f2f2);
+  border-bottom: 4px solid var(--stryker-white, #fff);
+}
+
+.accordion-stryker.accordion-stryker-standard .accordion-stryker-list {
+  border-top: 0;
+}
+
+.accordion-stryker.accordion-stryker-standard .accordion-stryker-trigger,
+.accordion-stryker.accordion-stryker-standard .accordion-stryker-panel {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Plain theme keeps the minimal hairline-divider look (defaults above). */
+
+@media (width < 600px) {
+  .accordion-stryker {
+    padding: 32px 16px;
+  }
+
+  .accordion-stryker .accordion-stryker-trigger {
+    font-size: 16px;
+  }
+}
