@@ -85,6 +85,23 @@
           "valueType": "string",
           "name": "name",
           "label": "Name",
+          "description": "Full name. Used when First/Last name aren't set.",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "firstName",
+          "label": "First Name",
+          "description": "Optional. In the detail theme this renders in gold.",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "lastName",
+          "label": "Last Name",
+          "description": "Optional. In the detail theme this renders in black.",
           "value": ""
         },
         {

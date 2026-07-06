@@ -827,6 +827,8 @@ var CustomImportScript = (() => {
       cells.push([
         imgNode(document, imgSrc(img), (img == null ? void 0 : img.getAttribute("alt")) || name),
         name,
+        "",
+        "",
         role,
         el(document, "div", ""),
         href ? anchorNode(document, href, name) : "",
@@ -840,9 +842,17 @@ var CustomImportScript = (() => {
     const name = text(h1);
     const img = [...root.querySelectorAll("img")].find((im) => isUsableUrl(imgSrc(im)) && !im.closest("header, footer, nav"));
     if (!name || !img) return null;
+    const goldSpan = [...(h1 == null ? void 0 : h1.querySelectorAll("span[style]")) || []].find((s) => /color:\s*(?:#ffb500|#ffb600|rgb\(255,\s*18[01],\s*0\))/i.test(s.getAttribute("style") || "") && text(s));
+    let firstName = "";
+    let lastName = "";
+    if (goldSpan) {
+      firstName = text(goldSpan);
+      lastName = name.replace(firstName, "").trim();
+    }
     const roleEl = [...root.querySelectorAll(".urw-egyptienne")].find((e) => text(e));
     const role = text(roleEl);
     const bioParas = [];
+    let legalHtml = "";
     root.querySelectorAll("p").forEach((p) => {
       var _a;
       if (p.closest("header, footer, nav")) return;
@@ -857,22 +867,40 @@ var CustomImportScript = (() => {
         plain = text(clone);
       }
       if (!plain.trim()) return;
-      if (/^[A-Z0-9]+(-[A-Z0-9]+){2,}$/.test(plain.trim())) return;
+      if (/^[A-Z0-9]+(-[A-Z0-9]+){2,}$/.test(plain.trim())) {
+        legalHtml += `<p>${html}</p>`;
+        return;
+      }
       bioParas.push(`<p>${html}</p>`);
     });
-    const cells = [
-      ["Leadership"],
-      ["detail"],
-      [
-        imgNode(document, imgSrc(img), img.getAttribute("alt") || name),
-        name,
-        role,
-        el(document, "div", bioParas.join("")),
-        "",
-        ""
+    const backLink = [...root.querySelectorAll("a[href]")].find((a) => /back/i.test(text(a)) || /our-management\.html$/.test(a.getAttribute("href") || ""));
+    const blocks = [];
+    if (backLink) {
+      blocks.push(WebImporter.Blocks.createBlock(document, {
+        name: "navigation-button-stryker",
+        // Cells: direction, label, link.
+        cells: [["back"], ["Back"], [anchorNode(document, backLink.getAttribute("href") || "#", "Back")]]
+      }));
+    }
+    blocks.push(WebImporter.Blocks.createBlock(document, {
+      name: "profile-stryker",
+      cells: [
+        [""],
+        ["detail"],
+        [
+          imgNode(document, imgSrc(img), img.getAttribute("alt") || name),
+          firstName || lastName ? "" : name,
+          firstName,
+          lastName,
+          role,
+          el(document, "div", bioParas.join("")),
+          "",
+          ""
+        ]
       ]
-    ];
-    return [WebImporter.Blocks.createBlock(document, { name: "profile-stryker", cells })];
+    }));
+    blocks._legalHtml = legalHtml;
+    return blocks;
   }
   function extractCtaBox(document, box) {
     const link = box.querySelector("a[href]");
@@ -1036,8 +1064,19 @@ var CustomImportScript = (() => {
         if (/\/leaders?\//.test(url || "")) {
           const detail = extractLeaderDetail(document, contentRoot);
           if (detail && detail.length) {
-            detail.forEach((b) => main.append(b));
-            blockNames.push("profile-stryker");
+            detail.forEach((b, i) => {
+              if (i > 0) main.append(document.createElement("hr"));
+              main.append(b);
+              blockNames.push("profile-stryker");
+            });
+            if (detail._legalHtml) {
+              main.append(document.createElement("hr"));
+              main.append(WebImporter.Blocks.createBlock(document, {
+                name: "legal-text-stryker",
+                cells: [[el(document, "div", detail._legalHtml)]]
+              }));
+              blockNames.push("legal-text-stryker");
+            }
             main.append(document.createElement("hr"));
             main.append(WebImporter.Blocks.createBlock(document, {
               name: "metadata",

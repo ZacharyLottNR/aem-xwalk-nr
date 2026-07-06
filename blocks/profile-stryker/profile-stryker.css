@@ -99,8 +99,9 @@
 }
 
 /*
- * Detail theme: a single large profile — headshot beside a longer bio. When
- * multiple items are authored they stack as full-width rows.
+ * Detail theme: a single large profile — a longer bio on the LEFT beside a
+ * headshot on the RIGHT (matching the leader bio pages). When multiple items
+ * are authored they stack as full-width rows.
  */
 .profile-stryker.profile-stryker-detail .profile-stryker-grid {
   grid-template-columns: 1fr;
@@ -109,15 +110,52 @@
 
 .profile-stryker.profile-stryker-detail .profile-stryker-item {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 40px;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 48px;
   align-items: start;
 }
 
+/* Bio text column comes first; headshot is ordered to the right. */
+.profile-stryker.profile-stryker-detail .profile-stryker-content {
+  order: 1;
+}
 
+.profile-stryker.profile-stryker-detail .profile-stryker-media {
+  order: 2;
+}
+
+/* Two-tone name: gold first name, black last name. */
 .profile-stryker.profile-stryker-detail .profile-stryker-name {
-  font-size: 28px;
-  margin-top: 0;
+  font-family: var(--stryker-heading-font);
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--stryker-black, #000);
+  margin: 0 0 12px;
+  line-height: 1.1;
+}
+
+.profile-stryker .profile-stryker-name-first {
+  color: var(--stryker-amber, #ffb500);
+}
+
+.profile-stryker .profile-stryker-name-last {
+  color: var(--stryker-black, #000);
+}
+
+/* Detail role + bio: serif body text, matching the source. */
+.profile-stryker.profile-stryker-detail .profile-stryker-role {
+  font-family: var(--stryker-body-font);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--stryker-black, #000);
+  margin: 0 0 20px;
+}
+
+.profile-stryker.profile-stryker-detail .profile-stryker-bio {
+  font-family: var(--stryker-body-font);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--stryker-black, #000);
 }
 
 /* Tablet */

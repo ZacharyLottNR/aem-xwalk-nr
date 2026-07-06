@@ -1,0 +1,26 @@
+.navigation-button-stryker {
+  max-width: var(--stryker-max-width, 1280px);
+  margin: 0 auto;
+  padding: 16px 24px 0;
+}
+
+.navigation-button-stryker .navigation-button-stryker-link:any-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--stryker-body-font);
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: none;
+  color: var(--stryker-teal, #4c7d7a);
+  transition: color 0.2s;
+}
+
+.navigation-button-stryker .navigation-button-stryker-link:any-link:hover {
+  color: var(--stryker-teal-dark, #3a615f);
+}
+
+.navigation-button-stryker .navigation-button-stryker-icon {
+  font-size: 12px;
+  line-height: 1;
+}

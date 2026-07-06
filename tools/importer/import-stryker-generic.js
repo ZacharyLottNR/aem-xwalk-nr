@@ -1108,9 +1108,13 @@ function profilesFromUnits(document, units, heading) {
     const meetLink = [...unit.querySelectorAll('a[href]')]
       .find((a) => /^meet\b/i.test(text(a)));
     const ctaLabel = text(meetLink) || (href ? `Meet ${name.split(' ')[0]}` : '');
+    // Cells: image, name, firstName, lastName, role, bio, link, ctaLabel. The
+    // grid theme uses the single full name (first/last left blank).
     cells.push([
       imgNode(document, imgSrc(img), img?.getAttribute('alt') || name),
       name,
+      '',
+      '',
       role,
       el(document, 'div', ''),
       href ? anchorNode(document, href, name) : '',
@@ -1131,14 +1135,26 @@ function extractLeaderDetail(document, root) {
     .find((im) => isUsableUrl(imgSrc(im)) && !im.closest('header, footer, nav'));
   if (!name || !img) return null;
 
+  // The name is two-tone: a gold-colored first-name span, then the rest is the
+  // last name (e.g. "<span #ffb500>Kevin</span> Lobo"). Split on that span.
+  const goldSpan = [...(h1?.querySelectorAll('span[style]') || [])]
+    .find((s) => /color:\s*(?:#ffb500|#ffb600|rgb\(255,\s*18[01],\s*0\))/i
+      .test(s.getAttribute('style') || '') && text(s));
+  let firstName = '';
+  let lastName = '';
+  if (goldSpan) {
+    firstName = text(goldSpan);
+    lastName = name.replace(firstName, '').trim();
+  }
+
   // Role = the serif eyebrow span; the bio = every content paragraph, mining
-  // the role text out of the paragraph it leads. Drop the "Back" link and the
-  // trailing document-code paragraph (all-caps/hyphen id). The template ships a
-  // mobile/desktop pair of eyebrow spans (one empty), so take the first
-  // NON-EMPTY one.
+  // the role text out of the paragraph it leads. Drop the "Back" link. The
+  // template ships a mobile/desktop pair of eyebrow spans (one empty), so take
+  // the first NON-EMPTY one.
   const roleEl = [...root.querySelectorAll('.urw-egyptienne')].find((e) => text(e));
   const role = text(roleEl);
   const bioParas = [];
+  let legalHtml = '';
   root.querySelectorAll('p').forEach((p) => {
     if (p.closest('header, footer, nav')) return;
     if (p.querySelector('a[href*="our-management"]')) return; // "Back" link
@@ -1153,24 +1169,50 @@ function extractLeaderDetail(document, root) {
       plain = text(clone);
     }
     if (!plain.trim()) return;
-    // Skip the trailing internal document code (e.g. COMM-GSNPS-SYK-3185901).
-    if (/^[A-Z0-9]+(-[A-Z0-9]+){2,}$/.test(plain.trim())) return;
+    // The trailing internal document code (e.g. COMM-GSNPS-SYK-3185901) is
+    // legal/reference copy — collect it for the legal-text block, not the bio.
+    if (/^[A-Z0-9]+(-[A-Z0-9]+){2,}$/.test(plain.trim())) {
+      legalHtml += `<p>${html}</p>`;
+      return;
+    }
     bioParas.push(`<p>${html}</p>`);
   });
 
-  const cells = [
-    ['Leadership'],
-    ['detail'],
-    [
-      imgNode(document, imgSrc(img), img.getAttribute('alt') || name),
-      name,
-      role,
-      el(document, 'div', bioParas.join('')),
-      '',
-      '',
+  // Back navigation button (its own block above the profile).
+  const backLink = [...root.querySelectorAll('a[href]')]
+    .find((a) => /back/i.test(text(a)) || /our-management\.html$/.test(a.getAttribute('href') || ''));
+  const blocks = [];
+  if (backLink) {
+    blocks.push(WebImporter.Blocks.createBlock(document, {
+      name: 'navigation-button-stryker',
+      // Cells: direction, label, link.
+      cells: [['back'], ['Back'], [anchorNode(document, backLink.getAttribute('href') || '#', 'Back')]],
+    }));
+  }
+
+  // Profile detail block. Heading is intentionally empty (the source has no
+  // section heading on the bio page). Cells: image, name, firstName, lastName,
+  // role, bio, link, ctaLabel.
+  blocks.push(WebImporter.Blocks.createBlock(document, {
+    name: 'profile-stryker',
+    cells: [
+      [''],
+      ['detail'],
+      [
+        imgNode(document, imgSrc(img), img.getAttribute('alt') || name),
+        firstName || lastName ? '' : name,
+        firstName,
+        lastName,
+        role,
+        el(document, 'div', bioParas.join('')),
+        '',
+        '',
+      ],
     ],
-  ];
-  return [WebImporter.Blocks.createBlock(document, { name: 'profile-stryker', cells })];
+  }));
+
+  blocks._legalHtml = legalHtml;
+  return blocks;
 }
 
 // A `.dimensional-box` shadow card holding a short blurb + a single CTA link
@@ -1420,8 +1462,20 @@ export default {
       if (/\/leaders?\//.test(url || '')) {
         const detail = extractLeaderDetail(document, contentRoot);
         if (detail && detail.length) {
-          detail.forEach((b) => main.append(b));
-          blockNames.push('profile-stryker');
+          detail.forEach((b, i) => {
+            if (i > 0) main.append(document.createElement('hr'));
+            main.append(b);
+            blockNames.push('profile-stryker');
+          });
+          // Legal/reference copy (internal doc code) as the trailing legal block.
+          if (detail._legalHtml) {
+            main.append(document.createElement('hr'));
+            main.append(WebImporter.Blocks.createBlock(document, {
+              name: 'legal-text-stryker',
+              cells: [[el(document, 'div', detail._legalHtml)]],
+            }));
+            blockNames.push('legal-text-stryker');
+          }
           main.append(document.createElement('hr'));
           main.append(WebImporter.Blocks.createBlock(document, {
             name: 'metadata',

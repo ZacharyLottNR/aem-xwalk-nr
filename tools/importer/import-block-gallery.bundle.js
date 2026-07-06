@@ -364,11 +364,14 @@ var CustomImportScript = (() => {
         [anchor(document, "https://www.stryker.com/", "Register")]
       ]]);
       const profileItem = (name, role, bio) => [
-        img(document, IMG(320, 400, name), name),
+        img(document, IMG(360, 240, name), name),
         name,
+        "",
+        "",
         role,
         el(document, "div", `<p>${bio}</p>`),
-        anchor(document, "https://www.stryker.com/us/en/about/our-management.html", "Profile")
+        anchor(document, "https://www.stryker.com/us/en/about/our-management.html", name),
+        `Meet ${name.split(" ")[0]}`
       ];
       blocks.push(["profile-stryker", [
         ["Our management"],
@@ -379,9 +382,28 @@ var CustomImportScript = (() => {
         profileItem("Jeanne Blondia", "Vice President, Finance and Treasurer", "Managing capital structure and treasury operations.")
       ]]);
       blocks.push(["profile-stryker", [
-        ["Leadership spotlight"],
+        [""],
         ["detail"],
-        profileItem("Kevin Lobo", "Chair and Chief Executive Officer", "Kevin A. Lobo is Chair and Chief Executive Officer of Stryker. He joined Stryker in 2011 and has led the company through a period of sustained growth, expanding its portfolio across MedSurg, Neurotechnology, Orthopaedics and Spine while championing a strong, people-first culture.")
+        [
+          img(document, IMG(560, 380, "Kevin Lobo"), "Kevin Lobo"),
+          "",
+          "Kevin",
+          "Lobo",
+          "Chair and Chief Executive Officer",
+          el(document, "div", "<p>Kevin A. Lobo is Chair and Chief Executive Officer of Stryker. He joined Stryker in 2011 and has led the company through a period of sustained growth, expanding its portfolio across MedSurg, Neurotechnology, Orthopaedics and Spine while championing a strong, people-first culture.</p>"),
+          "",
+          ""
+        ]
+      ]]);
+      blocks.push(["navigation-button-stryker", [
+        ["back"],
+        ["Back"],
+        [anchor(document, "https://www.stryker.com/us/en/about/our-management.html", "Back")]
+      ]]);
+      blocks.push(["navigation-button-stryker", [
+        ["home"],
+        ["Home"],
+        [anchor(document, "https://www.stryker.com/us/en/index.html", "Home")]
       ]]);
       ["left", "center", "right"].forEach((align) => {
         blocks.push(["cross-promo-stryker", [

@@ -6,16 +6,18 @@ function innerCell(row) {
 }
 
 // Render one profile from its cells. Cell order matches the item model's
-// field groups: 0 image, 1 name, 2 role, 3 bio, 4 link, 5 ctaLabel (imageAlt
-// folds into the image).
-function renderItem(sourceRow, cells) {
+// field groups: 0 image, 1 name, 2 firstName, 3 lastName, 4 role, 5 bio,
+// 6 link, 7 ctaLabel (imageAlt folds into the image).
+function renderItem(sourceRow, cells, theme) {
   const imageCell = cells[0];
   const name = innerCell(cells[1])?.textContent?.trim() || '';
-  const role = innerCell(cells[2])?.textContent?.trim() || '';
-  const bioCell = cells[3];
-  const linkCell = cells[4];
+  const firstName = innerCell(cells[2])?.textContent?.trim() || '';
+  const lastName = innerCell(cells[3])?.textContent?.trim() || '';
+  const role = innerCell(cells[4])?.textContent?.trim() || '';
+  const bioCell = cells[5];
+  const linkCell = cells[6];
   const href = linkCell?.querySelector('a')?.href || linkCell?.textContent?.trim() || '';
-  const ctaLabel = innerCell(cells[5])?.textContent?.trim() || '';
+  const ctaLabel = innerCell(cells[7])?.textContent?.trim() || '';
 
   const item = document.createElement('div');
   item.className = 'profile-stryker-item';
@@ -33,16 +35,42 @@ function renderItem(sourceRow, cells) {
   const content = document.createElement('div');
   content.className = 'profile-stryker-content';
 
-  if (name) {
-    const n = document.createElement('h3');
+  // Name: the detail theme renders a two-tone name (gold first name + black
+  // last name) as an <h1>; the grid theme uses a single <h3>, linked when a
+  // profile link is present.
+  const hasSplitName = firstName || lastName;
+  if (name || hasSplitName) {
+    const isDetail = theme === 'detail';
+    const n = document.createElement(isDetail ? 'h1' : 'h3');
     n.className = 'profile-stryker-name';
-    if (href) {
+
+    const buildName = (target) => {
+      if (hasSplitName) {
+        if (firstName) {
+          const f = document.createElement('span');
+          f.className = 'profile-stryker-name-first';
+          f.textContent = firstName;
+          target.append(f);
+        }
+        if (lastName) {
+          if (firstName) target.append(document.createTextNode(' '));
+          const l = document.createElement('span');
+          l.className = 'profile-stryker-name-last';
+          l.textContent = lastName;
+          target.append(l);
+        }
+      } else {
+        target.append(document.createTextNode(name));
+      }
+    };
+
+    if (href && !isDetail) {
       const a = document.createElement('a');
       a.href = href;
-      a.textContent = name;
+      buildName(a);
       n.append(a);
     } else {
-      n.textContent = name;
+      buildName(n);
     }
     content.append(n);
   }
@@ -79,18 +107,19 @@ export default function decorate(block) {
 
   // Single-cell rows carry the block-level fields (heading, theme) in order;
   // multi-cell rows are profile items.
-  let heading = '';
   const singleCellValues = [];
   const itemRows = [];
   rows.forEach((row) => {
     const cells = [...row.children];
     const hasMedia = row.querySelector('picture, img');
     if (cells.length >= 2 || hasMedia) itemRows.push(row);
-    else if (row.textContent.trim()) singleCellValues.push(row.textContent.trim());
+    else singleCellValues.push(row.textContent.trim());
   });
 
-  if (singleCellValues.length) [heading] = singleCellValues;
-  const theme = singleCellValues.slice(1).some((v) => /^detail$/i.test(v)) ? 'detail' : 'grid';
+  // The theme is whichever single-cell value names a known theme; the heading
+  // is the first single-cell value that ISN'T the theme token (may be empty).
+  const theme = singleCellValues.some((v) => /^detail$/i.test(v)) ? 'detail' : 'grid';
+  const heading = singleCellValues.find((v) => v && !/^(detail|grid)$/i.test(v)) || '';
 
   block.textContent = '';
   block.classList.add(`profile-stryker-${theme}`);
@@ -105,7 +134,7 @@ export default function decorate(block) {
   const grid = document.createElement('div');
   grid.className = 'profile-stryker-grid';
   itemRows.forEach((row) => {
-    grid.append(renderItem(row, [...row.children]));
+    grid.append(renderItem(row, [...row.children], theme));
   });
   if (grid.children.length) block.append(grid);
 
